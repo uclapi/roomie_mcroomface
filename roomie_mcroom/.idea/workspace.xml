@@ -4,6 +4,7 @@
     <list default="true" id="5dc2758f-6b7d-4bf2-ae19-a15586c64e72" name="Default" comment="" />
     <ignored path="roomie_mcroom.iws" />
     <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
