@@ -3,11 +3,17 @@ from .models import Room, Booking, UserProfile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import permissions
+
+from rest_framework.decorators import authentication_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 # Create your views here.
 
 
 @api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
+    print(request.user)
     rooms = Room.objects.all()
     roomDict = {}
     for index, room in enumerate(rooms):
