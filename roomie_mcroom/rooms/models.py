@@ -21,7 +21,8 @@ class UserProfile(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey(UserProfile)
     room = models.ForeignKey(Room)
-    start = models.DateTimeField()
-    end = models.DateTimeField()
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
     event = models.CharField(max_length=1000)
 
