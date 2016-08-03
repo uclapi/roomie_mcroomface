@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from .models import Room, Booking, UserProfile
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import permissions
-
-from rest_framework.decorators import authentication_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from django.contrib.auth import authenticate
 # Create your views here.
 
 
@@ -28,5 +27,16 @@ def get_rooms_list(request):
         }
 
     return Response(roomDict)
+
+@api_view(['POST'])
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username, password)
+
+
+
 
 
