@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
-    print(request.user)
+
     rooms = Room.objects.all()
     roomDict = {}
     for index, room in enumerate(rooms):
@@ -73,6 +73,8 @@ def is_time_valid(date, start_time, end_time):
 
 @api_view(['POST'])
 def book_a_room(request, room_id, year, month, day, start_hour, start_minute, end_hour, end_minute):
+
+
     convert_time = lambda x: datetime.datetime(x, '%H:%M').time()
 
     try:
