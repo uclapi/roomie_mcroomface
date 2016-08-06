@@ -25,6 +25,9 @@ class Booking(models.Model):
     start = models.TimeField()
     end = models.TimeField()
 
+    class Meta:
+        abstract = True
+
 class SocietyBooking(Booking):
     society_name = models.CharField(max_length=100)
     event_name = models.CharField(max_length=100, blank=True)
