@@ -8,7 +8,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 import datetime
 from django.contrib.auth import authenticate
 # Create your views here.
-
+closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
+opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
@@ -68,30 +69,6 @@ def get_room_bookings(request, room_id, year, month, day):
 # @api_view(['GET'])
 
 
-def is_time_valid(date, start_time, end_time):
-    pass
-
-@api_view(['POST'])
-def book_a_room(request, room_id, year, month, day, start_hour, start_minute, end_hour, end_minute):
-
-
-    convert_time = lambda x: datetime.datetime(x, '%H:%M').time()
-
-    try:
-        start_time = convert_time(start_hour + ":" + start_minute)
-        end_time = convert_time(end_hour + ':' + end_minute)
-        dateString = day + month + year
-        dateOfSearch = datetime.datetime.strptime(dateString, "%d%m%Y").date()
-    except:
-        return Response({"error" : "Invalid time/date given"})
-
-
-
-    if request.method == 'POST':
-        pass
-    return Response({"success":"success"})
-
-
 @api_view(['POST'])
 def login(request):
     if request.method == 'POST':
@@ -110,4 +87,83 @@ def login(request):
 
     return Response({"success":False})
 
+@api_view(['POST'])
+def book_a_room_society(request):
+    pass
 
+@api_view(['POST'])
+def book_a_room_normal(request):
+    pass
+
+@api_view(['POST'])
+def book_a_room(request, room_id, year, month, day, start_hour, start_minute, end_hour, end_minute):
+
+    current_user = request.user.user_profile
+    convert_time = lambda x: datetime.datetime(x, '%H:%M').time()
+
+
+    ## Once the new Booking model is migrated, copy the below snippet to duplicate function for society bookings
+    ## and move the rest of the functions to a general function body with society booking as a parameter
+    try:
+        room = Room.objects.get(room_id = room_id)
+    except:
+        return Response({"error":"404 room_id doesn't exist"})
+
+    try:
+        start_time = convert_time(start_hour + ":" + start_minute)
+        end_time = convert_time(end_hour + ':' + end_minute)
+        dateString = day + month + year
+        dateOfSearch = datetime.datetime.strptime(dateString, "%d%m%Y").date()
+    except:
+        return Response({"error" : "Invalid time/date given"})
+
+    if is_time_valid(dateOfSearch, start_time, end_time)["success"]:
+        if checkAvailability(room_id, dateOfSearch, start_time, end_time)["success"]:
+            return _book_room(current_user, room, dateOfSearch, start_time, end_time, is_society_booking)
+        else:
+            return Response()
+    else:
+        return Response(is_time_valid(dateOfSearch, start_time, end_time)["error"])
+
+def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_society_booking):
+    if is_society_booking:
+        instance = SocietyBooking(
+            user = current_user,
+            room = room,
+            date = dateOfSearch,
+            start = start_time,
+            end = end_time,
+            society_name = current_user.associated_society,
+            event_name = ""
+        )
+        instance.save()
+    else:
+        instance = NormalBooking(
+            user = current_user,
+            room = room,
+            date = dateOfSearch,
+            start = start_time,
+            end = end_time,
+            notes = ""
+        )
+        instance.save()
+
+def weekOrWeekend(date):
+    return "weekend" if date.weekday() in [5, 6] else "week"
+
+def is_time_valid(date, start_time, end_time):
+    if end_time >= start_time:
+        return {"success": False, "error":{"error":"Invalid times given"}}
+
+    dayMode = weekOrWeekend(date)
+
+    if end_time > closing_time[dayMode]:
+        return {"success":False, "error":{"error":"Choose an end time before closing time"}}
+
+    if start_time < opening_time[dayMode]:
+        return {"success":False, "error":{"error":"Choose a starting time after opening time"}}
+
+    return {"success" : True}
+
+def checkAvailability(room, date, start_time, end_time):
+    pass
