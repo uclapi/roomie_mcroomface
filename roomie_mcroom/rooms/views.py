@@ -49,7 +49,7 @@ def get_room_bookings(request, room_id, year, month, day):
     except:
         return Response({"error":"invalid date"})
     bookings = Booking.objects.filter(date = dateOfSearch, room = room)
-
+    bookings.extend(BookingSociety.object.filter(date=dateOfSearch, room=room))
     # serialize this data {{start, end, duration, booked_person}}
 
     booking_dict = {}
@@ -59,7 +59,7 @@ def get_room_bookings(request, room_id, year, month, day):
             "username" : booking.user.user.first_name + " " + booking.user.user.last_name,
             "start" : booking.start,
             "end" : booking.end,
-            "notes" : booking.event
+            "notes" : booking.remarks if type(booking) is Booking else booking.remarks + " -"+ booking.society
         }
 
     return Response(booking_dict)
@@ -102,7 +102,12 @@ def book_a_room_society(request):
         except:
             return Response({"error":"post request data parsing failed"})
 
-        return book_a_room(request, room_id, year, month, day, start_time, end_time, is_society_booking = True, meta_data ={"event_name" : event_name, "society":society})
+        try:
+            room = Room.objects.get(room=room_id)
+        except:
+            return Response({"error": "room_id does not exist"})
+
+        return book_a_room(request, room, year, month, day, start_time, end_time, is_society_booking = True, meta_data ={"event_name" : event_name, "society":society})
 
 
 # people in any group can access this
@@ -121,9 +126,14 @@ def book_a_room_normal(request):
         except:
             return Response({"error": "post request data parsing failed"})
 
-        return book_a_room(request, room_id, year, month, day, start_time, end_time, is_society_booking=False, meta_data = {"notes" : notes})
+        try:
+            room = Room.objects.filter(room=room_id, indiv_bookable=True)[0]
+        except:
+            return Response({"error": "No permission to acces this room / or room_id does not exist"})
 
-def book_a_room(request, room_id, year, month, day, start_time, end_time, is_society_booking, meta_data):
+        return book_a_room(request, room, year, month, day, start_time, end_time, is_society_booking=False, meta_data = {"notes" : notes})
+
+def book_a_room(request, room, year, month, day, start_time, end_time, is_society_booking, meta_data):
 
     current_user = request.user.user_profile
     convert_time = lambda x: datetime.datetime(x, '%H:%M').time()
@@ -134,21 +144,17 @@ def book_a_room(request, room_id, year, month, day, start_time, end_time, is_soc
 
     # when fetching the rooms list, check if we are booking for society or normal,
     # and use double filters to get rooms from the database
+
     try:
         start_time = convert_time(start_time)
         end_time = convert_time(end_time)
-        room = Room.objects.get(room_id = room_id)
-    except:
-        return Response({"error":"404 room_id doesn't exist"})
-
-    try:
         dateString = day + month + year
         dateOfSearch = datetime.datetime.strptime(dateString, "%d%m%Y").date()
     except:
         return Response({"error" : "Invalid time/date given"})
 
     if is_time_valid(dateOfSearch, start_time, end_time)["success"]:
-        if checkAvailability(room_id, dateOfSearch, start_time, end_time, is_society_booking)["success"]:
+        if checkAvailability(room, dateOfSearch, start_time, end_time)["success"]:
             return _book_room(current_user, room, dateOfSearch, start_time, end_time, is_society_booking, meta_data)
         else:
             return Response()
@@ -157,7 +163,7 @@ def book_a_room(request, room_id, year, month, day, start_time, end_time, is_soc
 
 
 ## implement quota reduction in this function and  appropriate restrictions and return messages
-def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_society_booking):
+def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_society_booking, meta_data):
     if is_society_booking:
         instance = BookingSociety(
             user = current_user,
@@ -166,7 +172,7 @@ def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_societ
             start = start_time,
             end = end_time,
             society_name = current_user.associated_society,
-            event_name = ""
+            event_name = meta_data["event_name"]
         )
         instance.save()
         return Response({"success": True})
@@ -177,7 +183,7 @@ def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_societ
             date = dateOfSearch,
             start = start_time,
             end = end_time,
-            notes = ""
+            remarks = meta_data["notes"]
         )
         instance.save()
         return Response({"success": True})
@@ -211,3 +217,42 @@ def checkAvailability(room, date, start_time, end_time):
             return {"success":False, "error":{"error":"this slot is already booked"}}
 
     return {"success":True}
+
+
+## parameters are => date: YYYYMMDD
+@api_view(['GET'])
+def get_users_booking(request):
+    try:
+        date = request.GET.get("date")
+    except:
+        return Response({"error":"No parameters found"})
+
+    try:
+        date = datetime.datetime.strptime(date, "%Y%m%d").date()
+    except:
+        return Response({"error":"invalid dates given"})
+
+    current_user = request.user.user_profile
+
+    bookings = Booking.objects.filter(date = date, user = current_user)
+
+
+    ## ---IMPORTANT -- change this to access permissions once the persmission groups are created
+    ## add booking id to the field
+    if current_user.society_access:
+        bookings.extend(BookingSociety.objects.filter(date = date, user = current_user))
+
+    #serialize the data and send it back
+    retDict = {}
+    for index, booking in enumerate(bookings):
+        retDict[1] = {
+            "username": booking.user.user.first_name + " " + booking.user.user.last_name,
+            "start" : booking.start,
+            "end": booking.end,
+            "notes": booking.remarks if type(booking) is Booking else booking.remarks + " -" + booking.society
+        }
+
+    return Response(retDict)
+
+
+
