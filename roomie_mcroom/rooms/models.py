@@ -24,13 +24,13 @@ class Booking(models.Model):
     date = models.DateField()
     start = models.TimeField()
     end = models.TimeField()
+    remarks = models.CharField(max_length=150, blank=True)
 
-    class Meta:
-        abstract = True
-
-class SocietyBooking(Booking):
-    society_name = models.CharField(max_length=100)
-    event_name = models.CharField(max_length=100, blank=True)
-
-class NormalBooking(Booking):
-    notes = models.CharField(max_length=150, blank=True)
+class BookingSociety(models.Model):
+    user = models.ForeignKey(UserProfile, related_name='society_booking')
+    room = models.ForeignKey(Room, related_name='society_booking')
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    remarks = models.CharField(max_length=150, blank=True)
+    society = models.CharField(max_length=100)
