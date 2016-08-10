@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^book_room_normal$', views.book_a_room_normal),
     url(r'^book_room_society$', views.book_a_room_society),
     url(r'^get_users_booking$', views.get_users_booking),
+    url(r'^token/', views.obtain_expiring_auth_token)
 ]

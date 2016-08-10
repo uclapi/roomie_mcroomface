@@ -5,6 +5,13 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
 from django.contrib.auth import authenticate
+from django.utils.timezone import utc
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from django.http import HttpResponse
+import json
+
+
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
 opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
@@ -28,6 +35,23 @@ def get_rooms_list(request):
         }
 
     return Response(roomDict)
+
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
+def obtain_expiring_auth_token(request):
+    token, created = Token.objects.get_or_create(user=request.user)
+
+    utc_now = datetime.datetime.utcnow()
+    if not created and token.created < utc_now - datetime.timedelta(hours=24):
+        token.delete()
+        token = Token.objects.create(user=request.user)
+        token.created = datetime.datetime.utcnow()
+        token.save()
+
+    # return Response({'token': token.key})
+    response_data = {'token': token.key}
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 @api_view(['GET'])
 def get_room_bookings(request, room_id, year, month, day):
