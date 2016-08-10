@@ -10,6 +10,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.http import HttpResponse
 import json
+import pytz
 
 
 # Create your views here.
@@ -40,18 +41,19 @@ def get_rooms_list(request):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def obtain_expiring_auth_token(request):
+    local_tz = pytz.timezone('Europe/Moscow')
     token, created = Token.objects.get_or_create(user=request.user)
 
-    utc_now = datetime.datetime.utcnow()
-    if not created and token.created < utc_now - datetime.timedelta(hours=24):
+    utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
+
+    if not created and token.created < utc_now:
         token.delete()
         token = Token.objects.create(user=request.user)
         token.created = datetime.datetime.utcnow()
         token.save()
 
-    # return Response({'token': token.key})
-    response_data = {'token': token.key}
-    return HttpResponse(json.dumps(response_data), content_type="application/json")
+    return Response({'token': token.key})
 
 @api_view(['GET'])
 def get_room_bookings(request, room_id, year, month, day):
