@@ -5,23 +5,27 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
 from django.contrib.auth import authenticate
+from .custom_permission import *
 from django.utils.timezone import utc
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.http import HttpResponse
 import json
 import pytz
-
+from django.contrib.auth.decorators import user_passes_test, permission_required
 
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
 opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
 
+@api_view(['GET', 'POST'])
+def no_access(request):
+    return Response({"error":"you dont have the appropriate permission kiddo"})
+
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
-
     rooms = Room.objects.all()
     roomDict = {}
     for index, room in enumerate(rooms):
@@ -37,6 +41,8 @@ def get_rooms_list(request):
 
     return Response(roomDict)
 
+
+## permission class needs to include group 4
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
@@ -162,7 +168,7 @@ def book_a_room_normal(request):
 def book_a_room(request, room, year, month, day, start_time, end_time, is_society_booking, meta_data):
 
     current_user = request.user.user_profile
-    convert_time = lambda x: datetime.datetime(x, '%H:%M').time()
+    convert_time = lambda x: datetime.datetime.strptime(x, '%H:%M').time()
 
 
     ## Once the new Booking model is migrated, copy the below snippet to duplicate function for society bookings
@@ -279,6 +285,29 @@ def get_users_booking(request):
         }
 
     return Response(retDict)
+
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated, IsOwner))
+def delete_booking(request):
+    print(request.GET)
+    try:
+        id = request.GET.get("booking_id")
+    except:
+        return Response({"error":"no \"booking_id\" found"})
+
+    try:
+        booking = Booking.objects.get(id = id)
+    except:
+        try:
+            booking = BookingSociety.objects.get(id = id)
+        except:
+            return Response({"error":"booking not found"})
+
+    if request.user.user_profile != booking.user:
+        return Response({"error":"you are not the one who booked this room mate"})
+    booking.delete()
+    return Response({"success":True})
 
 
 
