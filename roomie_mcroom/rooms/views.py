@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from .models import *
+from django.contrib.auth.models import Group, Permission
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
@@ -309,5 +310,53 @@ def delete_booking(request):
     booking.delete()
     return Response({"success":True})
 
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_required('rooms.can_add_and_remove_people_to_group_3')
+def add_user_to_group3(request):
+    current_user = request.user.user_profile
+
+    try:
+        email = request.POST.get("email")
+    except:
+        return Response({"error":"no email found"})
+
+    try:
+        user = User.objects.get(username = email)
+    except:
+        return Response({"error":"username doesn't exist"})
+
+    group_3 = Group.objects.get(name = 'Group_3')
+    user.groups.add(group_3)
+    user.user_profile.associated_society = current_user.associated_society
+    user.user_profile.society_access = True
+    user.user_profile.save()
+    user.save()
+    return { "success":"Successfully added " + email + " to society access groups!" }
 
 
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_required('rooms.can_add_and_remove_people_to_group3')
+def remove_user_from_group3(request):
+
+    try:
+        email = request.POST.get("email")
+    except:
+        return Response({"error":"no email found"})
+
+    try:
+        user = User.objects.get(username = email)
+    except:
+        return Response({"error":"username doesn't exist"})
+
+    group_3 = Group.objects.get(name = 'Group_3')
+    try:
+        group_3.user_set.remove(user)
+    except:
+        return Response({"error":"user wasn't in Group 3"})
+    user.user_profile.associated_society = ""
+    user.user_profile.society_access = False
+    user.user_profile.save()
+    user.save()
+    return Response({"success":True})

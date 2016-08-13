@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^get_users_booking$', views.get_users_booking),
     url(r'^token/', views.obtain_expiring_auth_token),
     url(r'^delete_booking$', views.delete_booking),
-    url(r'^no_permission', views.no_access, name= 'no permission')
+    url(r'^no_permission', views.no_access, name= 'no permission'),
+    url(r'^add_user_to_group3', views.add_user_to_group3),
+    url(r'^delete_user_from_group3$', views.remove_user_from_group3)
 ]
