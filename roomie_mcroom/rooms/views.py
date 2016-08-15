@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from .custom_permission import *
 from django.utils.timezone import utc
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -118,6 +118,16 @@ def login(request):
 
     return Response({"success":False})
 
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
+def logout_view(request):
+
+    if request.method == 'GET':
+        logout(request)
+        return Response({"success": "You've logged out"})
+
+    return Response({"success": False})
 
 #only people in group 3 and 4 can access this
 @api_view(['POST'])
