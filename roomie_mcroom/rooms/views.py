@@ -51,24 +51,25 @@ def get_rooms_list(request):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def obtain_expiring_auth_token(request):
-    # local_tz = pytz.timezone('Europe/Moscow')
-    # token, created = Token.objects.get_or_create(user=request.user)
-    #
-    # utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    # utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
-    #
-    # if not created and token.created < utc_now:
-    #     token.delete()
-    #     token = Token.objects.create(user=request.user)
-    #     token.created = datetime.datetime.utcnow()
-    #     token.save()
-    #
-    # print(token.key)
+    local_tz = pytz.timezone('Europe/Moscow')
+    token, created = Token.objects.get_or_create(user=request.user)
 
-    token = Token.objects.get_or_create(user=request.user)
-    print(token[0].key)
+    utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
 
-    return Response({'token': token[0].key})
+    if not created and token.created < utc_now:
+        token.delete()
+        token = Token.objects.create(user=request.user)
+        token.created = datetime.datetime.utcnow()
+        token.save()
+
+    print(token.key)
+
+    # just for testing non expiring token
+    # token = Token.objects.get_or_create(user=request.user)
+    # print(token[0].key)
+
+    return Response({'token': token.key})
 
 @api_view(['GET'])
 def get_room_bookings(request, room_id, year, month, day):
