@@ -14,6 +14,7 @@ from django.http import HttpResponse
 import json
 import pytz
 from django.contrib.auth.decorators import user_passes_test, permission_required
+from .authentication import ExpiringTokenAuthentication
 
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
@@ -24,9 +25,11 @@ def no_access(request):
     return Response({"error":"you dont have the appropriate permission kiddo"})
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
+    print(request.user)
+    print(request.auth)
     rooms = Room.objects.all()
     roomDict = {}
     for index, room in enumerate(rooms):
@@ -48,19 +51,24 @@ def get_rooms_list(request):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def obtain_expiring_auth_token(request):
-    local_tz = pytz.timezone('Europe/Moscow')
-    token, created = Token.objects.get_or_create(user=request.user)
+    # local_tz = pytz.timezone('Europe/Moscow')
+    # token, created = Token.objects.get_or_create(user=request.user)
+    #
+    # utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    # utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
+    #
+    # if not created and token.created < utc_now:
+    #     token.delete()
+    #     token = Token.objects.create(user=request.user)
+    #     token.created = datetime.datetime.utcnow()
+    #     token.save()
+    #
+    # print(token.key)
 
-    utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
+    token = Token.objects.get_or_create(user=request.user)
+    print(token[0].key)
 
-    if not created and token.created < utc_now:
-        token.delete()
-        token = Token.objects.create(user=request.user)
-        token.created = datetime.datetime.utcnow()
-        token.save()
-
-    return Response({'token': token.key})
+    return Response({'token': token[0].key})
 
 @api_view(['GET'])
 def get_room_bookings(request, room_id, year, month, day):
@@ -118,6 +126,8 @@ def login(request):
 
     return Response({"success":False})
 
+
+# the method below can't be called logout, django gets confused. So that's why logout_view
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
