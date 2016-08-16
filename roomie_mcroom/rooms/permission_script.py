@@ -21,7 +21,7 @@ new_group, _ = Group.objects.get_or_create(name = 'Group_2')
 permission1 = Permission.objects.create(codename = 'can_book_normal_room', name = 'Can book normal room', content_type = normal_booking)
 permission2 = Permission.objects.create(codename = 'can_book_7_days_in_advance', name = 'Can book 7 days in advance', content_type = normal_booking)
 new_group.permissions.add(permission2, permission1)
-#group3
+#group4
 new_group, _ = Group.objects.get_or_create(name = 'Group_4')
 people = ContentType.objects.get_for_model(UserProfile)
 permission1 = Permission.objects.create(codename = 'can_add_new_people', name = 'Can add new people', content_type = people)
