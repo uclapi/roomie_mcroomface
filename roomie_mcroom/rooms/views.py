@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from .custom_permission import *
 from django.utils.timezone import utc
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -14,6 +14,7 @@ from django.http import HttpResponse
 import json
 import pytz
 from django.contrib.auth.decorators import user_passes_test, permission_required
+from .authentication import ExpiringTokenAuthentication
 
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
@@ -24,9 +25,11 @@ def no_access(request):
     return Response({"error":"you dont have the appropriate permission kiddo"})
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
+    print(request.user)
+    print(request.auth)
     rooms = Room.objects.all()
     roomDict = {}
     for index, room in enumerate(rooms):
@@ -59,6 +62,12 @@ def obtain_expiring_auth_token(request):
         token = Token.objects.create(user=request.user)
         token.created = datetime.datetime.utcnow()
         token.save()
+
+    print(token.key)
+
+    # just for testing non expiring token
+    # token = Token.objects.get_or_create(user=request.user)
+    # print(token[0].key)
 
     return Response({'token': token.key})
 
@@ -126,6 +135,18 @@ def login(request):
 
     return Response({"success":False})
 
+
+# the method below can't be called logout, django gets confused. So that's why logout_view
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
+def logout_view(request):
+
+    if request.method == 'GET':
+        logout(request)
+        return Response({"success": "You've logged out"})
+
+    return Response({"success": False})
 
 #only people in group 3 and 4 can access this
 @api_view(['POST'])

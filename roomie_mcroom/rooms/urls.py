@@ -3,6 +3,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r'^login', views.login),
+    url(r'^logout', views.logout_view),
     url(r'^get_list_of_rooms$', views.get_rooms_list),
     url(r'^get_room_bookings$', views.get_room_bookings),
     url(r'^book_room_normal$', views.book_a_room_normal),
