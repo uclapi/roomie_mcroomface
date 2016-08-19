@@ -1,0 +1,57 @@
+@import '../constants.less';
+
+.container{
+  position: relative;
+  -webkit-transition:  left 0.4s ease-in-out;
+  -moz-transition:  left 0.4s ease-in-out;
+  -ms-transition:  left 0.4s ease-in-out;
+  -o-transition:  left 0.4s ease-in-out;
+  transition:  left 0.4s ease-in-out;
+  height: 100%;
+
+  .main-content{
+    #top-right{
+      @buttonPadding: 14px;
+      float: right;
+      margin: 8px;
+      padding-left: @buttonPadding;
+      padding-right: @buttonPadding;
+      text-align: center;
+      width: auto;
+    }
+
+    .menu-bar{
+      background-color: #EA1E59;
+      height: 60px;
+      position: fixed;
+      width: 100%;
+     .BoxShadowHelper(2); 
+    }
+    
+    .love{
+      display: none;
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+
+      @media screen and (min-width: 35.5em) {
+        display: block;
+      }
+
+      a{
+        color: @primaryColour; 
+        text-decoration: none;
+      }
+    }
+  }
+  
+  .content{
+    padding-top: 60px;
+  }
+
+}
+
+.sidebar-open{
+  left: @sideBarWidth;
+}
+

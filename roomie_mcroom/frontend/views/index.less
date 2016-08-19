@@ -1,3 +1,89 @@
-body{
-  color: blue;
+@import './constants.less';
+
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  font-family: 'Ubuntu', sans-serif;
 }
+
+.centered{
+  text-align:center;
+}
+
+#app{
+  height: 100%;
+}
+
+body{
+  color: #555;
+  height: 100%;
+}
+
+html{
+  height: 100%;
+}
+
+.button{
+  color: white;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 10em;
+  width: 10em;
+  margin: auto;
+  text-decoration: none;
+  &:hover{
+    background-color:white;
+    color: #EA1E59;
+  }
+}
+.burger-button{
+  height: @buttonSize;
+  width: @buttonSize;
+  margin: @buttonMargin;
+  float: left;
+
+  .bar {
+    background-color: white;
+    height: 3px;
+    border-radius: 1px;
+    width: 20px;
+    display: block;
+    margin: 4px 5px 0px 5px;
+  }
+  #top{
+    margin-top: 6px;
+  }
+}
+
+h1{
+  font-size: 2.5em;
+}
+
+h2{
+  font-size: 2em;
+}
+
+p{
+  font-size: 1.2em;
+}
+
+.BoxShadowHelper(@level: 1){
+    & when (@level = 1) {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+    & when (@level = 2) {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+    & when (@level = 3) {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+    & when (@level = 4) {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    }
+    & when (@level = 5) {
+        box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    }
+}
+
+@import './components/sidebar.less';
+@import './components/layout.less';
+@import './pages/home.less';

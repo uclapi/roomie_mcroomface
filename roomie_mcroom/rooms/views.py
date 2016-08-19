@@ -5,6 +5,7 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import datetime
 from django.contrib.auth import authenticate
+from django.shortcuts import render
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
 opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
@@ -256,3 +257,5 @@ def get_users_booking(request):
 
 
 
+def web_app(request):
+    return render(request, 'index.html')

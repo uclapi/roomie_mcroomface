@@ -1,3 +1,125 @@
+html,
+button,
+input,
+select,
+textarea,
+.pure-g [class*="pure-u"] {
+  font-family: 'Ubuntu', sans-serif;
+}
+.centered {
+  text-align: center;
+}
+#app {
+  height: 100%;
+}
 body {
-  color: blue;
+  color: #555;
+  height: 100%;
+}
+html {
+  height: 100%;
+}
+.button {
+  color: white;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 10em;
+  width: 10em;
+  margin: auto;
+  text-decoration: none;
+}
+.button:hover {
+  background-color: white;
+  color: #EA1E59;
+}
+.burger-button {
+  height: 30px;
+  width: 30px;
+  margin: 15px;
+  float: left;
+}
+.burger-button .bar {
+  background-color: white;
+  height: 3px;
+  border-radius: 1px;
+  width: 20px;
+  display: block;
+  margin: 4px 5px 0px 5px;
+}
+.burger-button #top {
+  margin-top: 6px;
+}
+h1 {
+  font-size: 2.5em;
+}
+h2 {
+  font-size: 2em;
+}
+p {
+  font-size: 1.2em;
+}
+.sideBar {
+  padding-top: 60px;
+  width: 240px;
+  left: -240px;
+  position: absolute;
+  height: 100%;
+  background-color: #212121;
+}
+.container {
+  position: relative;
+  -webkit-transition: left 0.4s ease-in-out;
+  -moz-transition: left 0.4s ease-in-out;
+  -ms-transition: left 0.4s ease-in-out;
+  -o-transition: left 0.4s ease-in-out;
+  transition: left 0.4s ease-in-out;
+  height: 100%;
+}
+.container .main-content #top-right {
+  float: right;
+  margin: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  text-align: center;
+  width: auto;
+}
+.container .main-content .menu-bar {
+  background-color: #EA1E59;
+  height: 60px;
+  position: fixed;
+  width: 100%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.container .main-content .love {
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
+@media screen and (min-width: 35.5em) {
+  .container .main-content .love {
+    display: block;
+  }
+}
+.container .main-content .love a {
+  color: #EA1E59;
+  text-decoration: none;
+}
+.container .content {
+  padding-top: 60px;
+}
+.sidebar-open {
+  left: 240px;
+}
+.header {
+  padding: 5vw 2em 6vw 2em;
+  background-color: #353A47;
+  color: white;
+}
+.header h1 {
+  margin-top: 0px;
+}
+.header .button {
+  margin-top: 4vw;
+  display: block;
 }
