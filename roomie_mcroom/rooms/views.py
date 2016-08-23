@@ -143,6 +143,10 @@ def login(request):
 
     return Response({"error":"only POST request is allowed"})
 
+@api_view(['GET'])
+def password_changed_successfully(request):
+    return Response({"success":"thanks bud"})
+
 
 # the method below can't be called logout, django gets confused. So that's why logout_view
 @api_view(['GET'])
