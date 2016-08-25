@@ -19,6 +19,6 @@ new_group.permissions.add(permission2, booking)
 new_group, _ = Group.objects.get_or_create(name = 'Group_4')
 people = ContentType.objects.get_for_model(UserProfile)
 permission1 = Permission.objects.create(codename = 'can_add_new_people', name = 'Can add new people', content_type = people)
-permission2 = Permission.objects.create(codename = 'can_add_and_remove_people_to_gorup_3', name = 'Can add or remove people to group 3', content_type = people)
+permission2 = Permission.objects.create(codename = 'can_add_and_remove_people_to_group_3', name = 'Can add or remove people to group 3', content_type = people)
 permission3 = Permission.objects.create(codename = 'can_generate_tokens', name = 'Can generate tokens', content_type = people) # not really, check if the AuthenticationToken is a model
 new_group.permissions.add(permission1, permission2, permission3)

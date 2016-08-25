@@ -55,14 +55,14 @@ def obtain_expiring_auth_token(request):
     local_tz = pytz.timezone('Europe/Moscow')
     #change this => get user's associated society, and use that to create tokens
     #hopefully one person can only be in one society lmao
-    token, created = Token.objects.get_or_create(user=request.user)
+    token, created = Token.objects.get_or_create(user=request.user.user_profile.associated_society.all()[0].user)
 
     utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=100)
     utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
 
     if not created and token.created < utc_now:
         token.delete()
-        token = Token.objects.create(user=request.user)
+        token = Token.objects.create(user=request.user.user_profile.associated_society.all()[0].user)
         token.created = datetime.datetime.utcnow()
         token.save()
 
@@ -76,7 +76,9 @@ def obtain_expiring_auth_token(request):
 
 @api_view(['GET'])
 @authentication_classes((BasicAuthentication, SessionAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 def get_room_bookings(request):
+    print("hehe")
     # two things have to be implemented here
     # 1) make sure this call is from authenticated user
     # 2) then we check if the user is allowed to check this specific room, eg. common rooms
@@ -111,7 +113,7 @@ def get_room_bookings(request):
             "username" : booking.user.user.username + " " + booking.user.user.first_name + " " + booking.user.user.last_name,
             "start" : booking.start,
             "end" : booking.end,
-            "notes" : booking.remarks if type(booking) is Booking else booking.remarks + " -"+ booking.society.society_name
+            "notes" : booking.remarks if type(booking) is Booking else booking.remarks + " -"+ booking.society.user.first_name
         }
 
     return Response(booking_dict)
@@ -135,7 +137,7 @@ def login(request):
             return Response({
                 "email":user.email,
                 "quota_left":user.user_profile.quota_left,
-                "societies": [ k.society_name for k in user.user_profile.associated_society.all()]
+                "societies": [ k.user.first_name for k in user.user_profile.associated_society.all()]
             })
         else:
             print("user isnt")
@@ -156,7 +158,8 @@ def logout_view(request):
 
 #only people in group 3 and 4 can access this
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_book_society_rooms')
 def book_a_room_society(request):
     if request.method == 'POST':
@@ -171,26 +174,27 @@ def book_a_room_society(request):
             return Response({"error":"post request data parsing failed"})
 
         try:
-            soc = Society.objects.get(society_name = society)
+            soc = User.objects.get(username = society)
         except:
             return Response({"error":"wrong soc id"})
 
-        if not (soc in request.user.user_profile.associated_society.all()):
+        if soc.user_profile not in request.user.user_profile.associated_society.all():
             return Response({"error": "Permission denied with this society access"})
 
         try:
-            room = Room.objects.get(room=room_id)
+            room = Room.objects.get(room_id=room_id)
         except:
             return Response({"error": "room_id does not exist"})
 
-        return book_a_room(request, room, date, start_time, end_time, is_society_booking = True, meta_data ={"event_name" : event_name, "society":soc})
+        return book_a_room(request, room, date, start_time, end_time, is_society_booking = True, meta_data ={"event_name" : event_name, "society":soc.user_profile})
 
 
 # people in any group can access this
 # -- IMPORTANT -->  Check careers team access before reducing the quota user.groups.exist("careers_team") or something
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
-# @permission_required(('rooms.can_book_normal_rooms'))
+@permission_classes((permissions.IsAuthenticated,))
+@permission_required(('rooms.can_book_normal_rooms'))
 def book_a_room_normal(request):
     if request.method == 'POST':
         try:
@@ -213,12 +217,6 @@ def book_a_room(request, room, date, start_time, end_time, is_society_booking, m
 
     current_user = request.user.user_profile
     convert_time = lambda x: datetime.datetime.strptime(x, '%H:%M').time()
-
-    ## Once the new Booking model is migrated, copy the below snippet to duplicate function for society bookings
-    ## and move the rest of the functions to a general function body with society booking as a parameter
-
-    # when fetching the rooms list, check if we are booking for society or normal,
-    # and use double filters to get rooms from the database
 
     try:
         start_time = convert_time(start_time)
@@ -270,8 +268,8 @@ def _book_room(current_user, room, dateOfSearch, start_time, end_time, is_societ
             date = dateOfSearch,
             start = start_time,
             end = end_time,
-            society_name = meta_data["society"],
-            event_name = meta_data["event_name"]
+            society = meta_data["society"],
+            remarks = meta_data["event_name"]
         )
         instance.save()
         return Response({"success": True})
@@ -321,6 +319,7 @@ def checkAvailability(room, date, start_time, end_time):
 ## parameters are => date: YYYYMMDD
 @api_view(['GET'])
 @authentication_classes((BasicAuthentication, SessionAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 def get_users_booking(request):
     try:
         date = request.GET.get("date")
@@ -332,6 +331,7 @@ def get_users_booking(request):
     except:
         return Response({"error":"invalid dates given"})
 
+
     current_user = request.user.user_profile
 
     bookings = list(Booking.objects.filter(date = date, user = current_user))
@@ -341,22 +341,22 @@ def get_users_booking(request):
     ## add booking id to the field
     if current_user.society_access:
         bookings.extend(list(BookingSociety.objects.filter(date = date, user = current_user)))
-
     #serialize the data and send it back
     retDict = {}
     for index, booking in enumerate(bookings):
-        retDict[1] = {
+        retDict[index] = {
             "username": booking.user.user.first_name + " " + booking.user.user.last_name,
             "start" : booking.start,
             "end": booking.end,
-            "notes": booking.remarks if type(booking) is Booking else booking.remarks + " -" + booking.society.society_name
+            "booking_id" : booking.booking_id,
+            "notes": booking.remarks if type(booking) is Booking else booking.remarks + " -" + booking.society.user.first_name
         }
 
     return Response(retDict)
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
-@permission_classes((permissions.IsAuthenticated, IsOwner))
+@permission_classes((permissions.IsAuthenticated,))
 def delete_booking(request):
     print(request.GET)
     try:
@@ -365,10 +365,10 @@ def delete_booking(request):
         return Response({"error":"no \"booking_id\" found"})
 
     try:
-        booking = Booking.objects.get(id = id)
+        booking = Booking.objects.get(booking_id = id)
     except:
         try:
-            booking = BookingSociety.objects.get(id = id)
+            booking = BookingSociety.objects.get(booking_id = id)
         except:
             return Response({"error":"booking not found"})
 
@@ -379,17 +379,17 @@ def delete_booking(request):
 
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_gorup_3')
 def add_user_to_group3(request):
     current_user = request.user.user_profile
-
+    print(request.POST)
     try:
-        email = request.POST.get("email")
+        username = request.POST.get("username")
     except:
-        return Response({"error":"no email found"})
-
+        return Response({"error":"no username found"})
     try:
-        user = User.objects.get(email = email)
+        user = User.objects.get(username = username)
     except:
         return Response({"error":"username doesn't exist"})
 
@@ -400,21 +400,21 @@ def add_user_to_group3(request):
     user.user_profile.society_access = True
     user.user_profile.save()
     user.save()
-    return Response({ "success":"Successfully added " + email + " to society access groups!" })
+    return Response({ "success":"Successfully added " + username + " to society access groups!" })
 
-####major updates needed
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_gorup_3')
 def remove_user_from_group3(request):
     current_user = request.user
     try:
-        email = request.POST.get("email")
+        username = request.POST.get("username")
     except:
         return Response({"error":"no email found"})
 
     try:
-        user = User.objects.get(email = email)
+        user = User.objects.get(username = username)
     except:
         return Response({"error":"username doesn't exist"})
 

@@ -3,11 +3,6 @@ from django.contrib.auth.models import User, AbstractBaseUser
 import uuid
 
 # Create your models here.
-class Society(models.Model):
-    # society_id = models.CharField(max_length=15, primary_key=True)
-    user_model = models.OneToOneField(User, related_name='auth_model')
-    society_name = models.CharField(max_length=100)
-
 class Room(models.Model):
     name = models.CharField(max_length=100)
     room_id = models.CharField(primary_key=True, max_length=100)
@@ -21,7 +16,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user_profile')
     society_access = models.BooleanField(default=False)
     quota_left = models.IntegerField(default = 180)
-    associated_society = models.ManyToManyField(Society, blank=True)
+    associated_society = models.ManyToManyField('self', blank=True)
 
 class Booking(models.Model):
     booking_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -40,4 +35,4 @@ class BookingSociety(models.Model):
     start = models.TimeField()
     end = models.TimeField()
     remarks = models.CharField(max_length=150, blank=True)
-    society = models.ForeignKey(Society)
+    society = models.ForeignKey(UserProfile)
