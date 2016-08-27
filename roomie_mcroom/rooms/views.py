@@ -27,6 +27,7 @@ def no_access(request):
 
 @api_view(['GET', 'POST'])
 def set_password(request):
+    print("yoyoy")
     if request.method == 'GET':
         try:
             user_id = request.GET.get("user_id")
