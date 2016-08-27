@@ -25,6 +25,29 @@ def no_access(request):
     return Response({"error":"you dont have the appropriate permission kiddo"})
 
 @api_view(['GET'])
+def set_password(request):
+    # need some way of retrieving the user from the param
+    try:
+        user_id = request.GET.get("user_id")
+        #some encryption to be used below
+        new_password = request.GET.get("password")
+    except:
+        return Response({"error": "user_id or password isn't found"})
+
+    try:
+        user_profile = UserProfile.objects.get(user_id=user_id)
+    except:
+        return Response({"error": "404 user id does not exist"})
+    finally:
+        pass
+
+    user_profile.user.set_password(new_password)
+    # dont know if I need to do this as well
+    # user_profile.user.save()
+    user_profile.save()
+
+
+@api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):

@@ -1,6 +1,5 @@
 from . import views
 from django.conf.urls import url
-from django.contrib.auth.views import password_change
 
 urlpatterns = [
     url(r'^login', views.login),
@@ -11,9 +10,9 @@ urlpatterns = [
     url(r'^book_room_society$', views.book_a_room_society),
     url(r'^get_users_booking$', views.get_users_booking),
     url(r'^token/', views.obtain_expiring_auth_token),
-    url(r'^delete_booking$', views.delete_booking),
+    url(r'^delete_booking$', views.delete_booking),z1
     url(r'^no_permission', views.no_access, name= 'no permission'),
     url(r'^add_user_to_group3', views.add_user_to_group3),
     url(r'^delete_user_from_group3$', views.remove_user_from_group3),
-    url(r'password_change/$', password_change, {'post_change_redirect' : 'https://google.com'})
+    url(r'set_password/$', views.set_password)
 ]
