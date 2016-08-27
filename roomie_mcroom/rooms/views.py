@@ -15,6 +15,7 @@ import json
 import pytz
 from django.contrib.auth.decorators import user_passes_test, permission_required
 from .authentication import ExpiringTokenAuthentication
+from django.shortcuts import render
 
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
@@ -24,27 +25,32 @@ opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
 def no_access(request):
     return Response({"error":"you dont have the appropriate permission kiddo"})
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def set_password(request):
-    # need some way of retrieving the user from the param
-    try:
-        user_id = request.GET.get("user_id")
-        #some encryption to be used below
-        new_password = request.GET.get("password")
-    except:
-        return Response({"error": "user_id or password isn't found"})
+    if request.method == 'GET':
+        try:
+            user_id = request.GET.get("user_id")
+        except:
+            return Response({"error": "user_id or password isn't found"})
+        return render(request, 'set_password.html', {'user_id': user_id})
 
-    try:
-        user_profile = UserProfile.objects.get(user_id=user_id)
-    except:
-        return Response({"error": "404 user id does not exist"})
-    finally:
-        pass
+    else:
+        try:
+            user_id = request.GET.get("user_id")
+            new_password = request.GET.get("password")
+        except:
+            return Response({"error": "user_id or password isn't found"})
 
-    user_profile.user.set_password(new_password)
-    # dont know if I need to do this as well
-    # user_profile.user.save()
-    user_profile.save()
+        try:
+            user_profile = UserProfile.objects.get(user_id=user_id)
+        except:
+            return Response({"error": "404 user id does not exist"})
+
+        user_profile.user.set_password(new_password)
+        # dont know if I need to do this as well
+        # user_profile.user.save()
+        user_profile.save()
+        return Response({'success': "You're password has been set"})
 
 
 @api_view(['GET'])
