@@ -16,6 +16,7 @@ import pytz
 from django.contrib.auth.decorators import user_passes_test, permission_required
 from .authentication import ExpiringTokenAuthentication
 from django.shortcuts import render
+from django.core.context_processors import csrf
 
 # Create your views here.
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
@@ -27,29 +28,30 @@ def no_access(request):
 
 @api_view(['GET', 'POST'])
 def set_password(request):
-    print("yoyoy")
     if request.method == 'GET':
         try:
             user_id = request.GET.get("user_id")
         except:
             return Response({"error": "user_id or password isn't found"})
-        return render(request, 'set_password.html', {'user_id': user_id})
+        c = csrf(request)
+        print(c)
+        return render(request, 'set_password.html', {'user_id': user_id, 'csrf_token':c['csrf_token']})
 
     else:
+        print('method is post')
         try:
-            user_id = request.GET.get("user_id")
-            new_password = request.GET.get("password")
+            user_id = request.POST.get("user_id")
+            new_password = request.POST.get("password")
         except:
             return Response({"error": "user_id or password isn't found"})
-
+        print(user_id, new_password)
         try:
-            user_profile = UserProfile.objects.get(user_id=user_id)
+            user_profile = UserProfile.objects.get(id=user_id)
         except:
             return Response({"error": "404 user id does not exist"})
 
         user_profile.user.set_password(new_password)
-        # dont know if I need to do this as well
-        # user_profile.user.save()
+        user_profile.user.save()
         user_profile.save()
         return Response({'success': "You're password has been set"})
 

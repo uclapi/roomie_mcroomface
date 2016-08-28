@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^accounts/login/$', views.no_access, name= 'no permission'),
     url(r'^add_user_to_group3', views.add_user_to_group3),
     url(r'^delete_user_from_group3$', views.remove_user_from_group3),
-    url(r'^set_password/$', views.set_password)
+    url(r'^set_password', views.set_password)
 ]
