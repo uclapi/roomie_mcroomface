@@ -7,7 +7,7 @@ from rooms.models import *
 
 emails = {'anirudhx5@gmail.com'}
 
-request_url = 'https://api.mailgun.net/v3/{0}/messages'.format(sandbox)
+request_url = 'https://api.mailgun.net/v3/{}/messages'.format(sandbox)
 
 def sendEmail(email, password_setting_link):
     print('reached here')
@@ -17,11 +17,11 @@ def sendEmail(email, password_setting_link):
         'subject': 'Hello',
         'text': 'Click on {} to set your password'.format(password_setting_link)
     })
-    print('Status: {0}' % request.status_code)
-    print('Body:   {0}' % request.text)
+    print('Status: {}'.format(request.status_code))
+    print('Body:   {}'.format(request.text))
 
 for email in emails:
     us = User.objects.create_user(username=email, password=email, email=email)
     up = UserProfile(user=us)
     up.save()
-    sendEmail(email, "http://127.0.0.1:8000/set_password?user_id={0}".format(up.id))
+    sendEmail(email, "http://127.0.0.1:8000/set_password?user_id={}".format(up.id))

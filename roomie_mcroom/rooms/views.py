@@ -32,8 +32,7 @@ def set_password(request):
         user_id = request.GET.get("user_id", '')
         if not user_id:
             return Response({"error": "user_id or password isn't found"})
-        return render(request, 'set_password.html', {'user_id': user_id,
-                                                     'csrf_token': csrf(request)['csrf_token']})
+        return render(request, 'set_password.html', {'user_id': user_id, 'csrf_token': csrf(request)['csrf_token']})
 
     else:
         user_id = request.POST.get("user_id", '')
@@ -41,6 +40,7 @@ def set_password(request):
 
         if not user_id or not new_password:
             return Response({"error": "user_id or password isn't found"})
+
         try:
             user_profile = UserProfile.objects.get(id=user_id)
         except:
