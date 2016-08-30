@@ -26099,6 +26099,50 @@ arguments[4][46][0].apply(exports,arguments)
 },{"_process":50,"dup":46}],238:[function(require,module,exports){
 'use strict';
 
+module.exports = {
+  login: function login(email, pass, cb) {
+    cb = arguments[arguments.length - 1];
+    if (localStorage.token) {
+      if (cb) cb(true);
+      return;
+    }
+    pretendRequest(email, pass, function (res) {
+      if (res.authenticated) {
+        localStorage.token = res.token;
+        if (cb) cb(true);
+      } else {
+        if (cb) cb(false);
+      }
+    });
+  },
+  getToken: function getToken() {
+    return localStorage.token;
+  },
+  logout: function logout(cb) {
+    delete localStorage.token;
+    if (cb) cb();
+  },
+  loggedIn: function loggedIn() {
+    return !!localStorage.token;
+  }
+};
+
+function pretendRequest(email, pass, cb) {
+  setTimeout(function () {
+    if (email === 'joe@example.com' && pass === 'password1') {
+      cb({
+        authenticated: true,
+        token: Math.random().toString(36).substring(7)
+      });
+    } else {
+      cb({ authenticated: false });
+    }
+  }, 0);
+}
+
+},{}],239:[function(require,module,exports){
+'use strict';
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -26112,6 +26156,14 @@ var _reactRouter = require('react-router');
 var _home = require('./pages/home.jsx');
 
 var _home2 = _interopRequireDefault(_home);
+
+var _login = require('./pages/login.jsx');
+
+var _login2 = _interopRequireDefault(_login);
+
+var _error = require('./pages/error.jsx');
+
+var _error2 = _interopRequireDefault(_error);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26152,10 +26204,12 @@ var Test = function (_React$Component) {
   _reactRouter.Router,
   { history: _reactRouter.browserHistory },
   _react2.default.createElement(_reactRouter.Route, { path: '/', component: _home2.default }),
-  _react2.default.createElement(_reactRouter.Route, { path: '/test', component: Test })
+  _react2.default.createElement(_reactRouter.Route, { path: '/test', component: Test }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/login', component: _login2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"./pages/home.jsx":241,"react":235,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
+},{"./pages/error.jsx":242,"./pages/home.jsx":243,"./pages/login.jsx":244,"react":235,"react-dom":52,"react-router":82}],240:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26168,6 +26222,10 @@ var _sidebar = require('./sidebar.jsx');
 
 var _sidebar2 = _interopRequireDefault(_sidebar);
 
+var _auth = require('../../utils/auth.js');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -26176,7 +26234,7 @@ module.exports = _react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      loggedIn: false
+      loggedIn: _auth2.default.loggedIn()
     };
   },
 
@@ -26204,10 +26262,10 @@ module.exports = _react2.default.createClass({
     element.className = classes.join(' ');
   },
 
-  toggleLogin: function toggleLogin(e) {
+  logout: function logout(e) {
     e.preventDefault();
-    console.log(this.state.loggedIn);
-    this.setState({ loggedIn: !this.state.loggedIn });
+    _auth2.default.logout();
+    this.setState({ loggedIn: false });
   },
 
   render: function render() {
@@ -26237,11 +26295,11 @@ module.exports = _react2.default.createClass({
             { className: 'pure-u-1-2' },
             this.state.loggedIn ? _react2.default.createElement(
               'div',
-              { className: 'button', id: 'top-right', onClick: this.toggleLogin },
+              { className: 'button', id: 'top-right', onClick: this.logout },
               'Log out'
             ) : _react2.default.createElement(
-              'div',
-              { className: 'button', id: 'top-right', onClick: this.toggleLogin },
+              _reactRouter.Link,
+              { className: 'button', id: 'top-right', to: '/login' },
               'Sign In'
             )
           )
@@ -26266,14 +26324,8 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"./sidebar.jsx":240,"react":235,"react-router":82}],240:[function(require,module,exports){
+},{"../../utils/auth.js":238,"./sidebar.jsx":241,"react":235,"react-router":82}],241:[function(require,module,exports){
 'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
 
@@ -26283,95 +26335,107 @@ var _reactRouter = require('react-router');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+module.exports = _react2.default.createClass({
+  displayName: 'exports',
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sidebar = function (_React$Component) {
-  _inherits(Sidebar, _React$Component);
-
-  function Sidebar() {
-    _classCallCheck(this, Sidebar);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).apply(this, arguments));
-  }
-
-  _createClass(Sidebar, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { className: 'sideBar' },
+      _react2.default.createElement(
         'div',
-        { className: 'sideBar' },
+        { className: 'pure-menu' },
         _react2.default.createElement(
-          'div',
-          { className: 'pure-menu' },
+          _reactRouter.Link,
+          { className: 'pure-menu-heading', to: '/' },
+          'Engineering Hub'
+        ),
+        _react2.default.createElement(
+          'ul',
+          { className: 'pure-menu-list' },
           _react2.default.createElement(
-            _reactRouter.Link,
-            { className: 'pure-menu-heading', to: '/' },
-            'Engineering Hub'
+            'li',
+            { className: 'pure-menu-item' },
+            _react2.default.createElement(
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/test' },
+              'Home'
+            )
           ),
           _react2.default.createElement(
-            'ul',
-            { className: 'pure-menu-list' },
+            'li',
+            { className: 'pure-menu-item' },
             _react2.default.createElement(
-              'li',
-              { className: 'pure-menu-item' },
-              _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'pure-menu-link', to: '/' },
-                'Home'
-              )
-            ),
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/login' },
+              'Book a Room'
+            )
+          ),
+          _react2.default.createElement(
+            'li',
+            { className: 'pure-menu-item' },
             _react2.default.createElement(
-              'li',
-              { className: 'pure-menu-item' },
-              _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'pure-menu-link', to: '/' },
-                'Book a Room'
-              )
-            ),
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/' },
+              'Calendar'
+            )
+          ),
+          _react2.default.createElement(
+            'li',
+            { className: 'pure-menu-item' },
             _react2.default.createElement(
-              'li',
-              { className: 'pure-menu-item' },
-              _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'pure-menu-link', to: '/' },
-                'Calendar'
-              )
-            ),
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/' },
+              'Rooms'
+            )
+          ),
+          _react2.default.createElement(
+            'li',
+            { className: 'pure-menu-item' },
             _react2.default.createElement(
-              'li',
-              { className: 'pure-menu-item' },
-              _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'pure-menu-link', to: '/' },
-                'Rooms'
-              )
-            ),
-            _react2.default.createElement(
-              'li',
-              { className: 'pure-menu-item' },
-              _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'pure-menu-link', to: '/' },
-                'Society Admin'
-              )
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/' },
+              'Society Admin'
             )
           )
         )
-      );
-    }
-  }]);
+      )
+    );
+  }
+});
 
-  return Sidebar;
-}(_react2.default.Component);
+},{"react":235,"react-router":82}],242:[function(require,module,exports){
+'use strict';
 
-exports.default = Sidebar;
+var _react = require('react');
 
-},{"react":235,"react-router":82}],241:[function(require,module,exports){
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+  displayName: 'exports',
+
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { className: 'error' },
+      _react2.default.createElement(
+        'div',
+        { className: 'content' },
+        _react2.default.createElement(
+          'h1',
+          null,
+          'Error 404 page not found'
+        )
+      )
+    );
+  }
+});
+
+},{"react":235,"react-router":82}],243:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26448,24 +26512,28 @@ var Home = function (_React$Component) {
               'div',
               { className: 'pure-u-22-24 pure-u-sm-18-24 pure-u-md-1-2' },
               _react2.default.createElement(
-                'h2',
-                null,
-                'What?'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'The engineering hub is a new bookable space only for engineering students and members of societies related to the engineering department. Here engineers are free to do whatever they want, which will mostly involve lots of maths and programming probably...'
-              ),
-              _react2.default.createElement(
-                'h2',
-                null,
-                'Where?'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Its hidden away round the back of the church becuase no one else wants to interact with engineers.'
+                'div',
+                { className: 'card' },
+                _react2.default.createElement(
+                  'h2',
+                  null,
+                  'What?'
+                ),
+                _react2.default.createElement(
+                  'p',
+                  null,
+                  'The engineering hub is a new bookable space only for engineering students and members of societies related to the engineering department. Here engineers are free to do whatever they want, which will mostly involve lots of maths and programming probably...'
+                ),
+                _react2.default.createElement(
+                  'h2',
+                  null,
+                  'Where?'
+                ),
+                _react2.default.createElement(
+                  'p',
+                  null,
+                  'Its hidden away round the back of the church becuase no one else wants to interact with engineers.'
+                )
               )
             ),
             _react2.default.createElement('div', { className: 'pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4' })
@@ -26480,4 +26548,129 @@ var Home = function (_React$Component) {
 
 exports.default = Home;
 
-},{"../components/layout.jsx":239,"react":235,"react-router":82}]},{},[238]);
+},{"../components/layout.jsx":240,"react":235,"react-router":82}],244:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _layout = require('../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+var _auth = require('../../utils/auth.js');
+
+var _auth2 = _interopRequireDefault(_auth);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var labelStyle = {
+  width: '4em'
+};
+
+var buttonStyle = {
+  marginLeft: '5em'
+};
+
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
+  displayName: 'exports',
+
+  getInitialState: function getInitialState() {
+    return {
+      error: true
+    };
+  },
+  setVisible: function setVisible() {
+    var popUp = document.getElementById('pu');
+    popUp.style.display = 'block';
+  },
+  setInvisible: function setInvisible() {
+    var popUp = document.getElementById('pu');
+    popUp.style.display = 'none';
+  },
+  handleLogin: function handleLogin(e) {
+    var _this = this;
+
+    e.preventDefault();
+
+    var email = this.refs.email.value;
+    var password = this.refs.password.value;
+
+    _auth2.default.login(email, password, function (loggedIn) {
+      if (!loggedIn) {
+        return _this.setState({ error: true });
+      }
+      var location = _this.props.location;
+
+
+      if (location.state && location.state.nextPathname) {
+        _this.props.router.replace(location.state.nextPathname);
+      } else {
+        _this.props.router.replace('/');
+      }
+    });
+  },
+
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { className: 'loginPage centered' },
+      _react2.default.createElement(
+        'form',
+        { className: 'pure-form pure-form-aligned', onSubmit: this.handleLogin },
+        _react2.default.createElement(
+          'fieldset',
+          null,
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-control-group' },
+            _react2.default.createElement(
+              'label',
+              { htmlFor: 'name', style: labelStyle },
+              'Email'
+            ),
+            _react2.default.createElement('input', { id: 'name', ref: 'email', type: 'text', placeholder: 'Email', className: 'pure-input-rounded' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-control-group' },
+            _react2.default.createElement(
+              'label',
+              { htmlFor: 'password', style: labelStyle },
+              'Password'
+            ),
+            _react2.default.createElement('input', { id: 'password', ref: 'password', type: 'password', placeholder: 'Password', className: 'pure-input-rounded' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-controls', style: buttonStyle },
+            _react2.default.createElement(
+              'button',
+              { type: 'submit', className: 'pure-button pure-button-primary' },
+              'Submit'
+            )
+          )
+        ),
+        _react2.default.createElement(
+          'a',
+          { href: '#', onClick: this.setVisible },
+          'Dont have an account?'
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'popup', id: 'pu', onClick: this.setInvisible },
+        _react2.default.createElement(
+          'div',
+          { className: 'content' },
+          'You can only book rooms in the engineering hub if you are an engineering student or you a in a society related to the engineering department. If this is the case you should have recieved an email with a link to create an account.'
+        )
+      )
+    );
+  }
+}));
+
+},{"../../utils/auth.js":238,"../components/layout.jsx":240,"react":235,"react-router":82}]},{},[239]);

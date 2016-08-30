@@ -19,16 +19,18 @@ class Home extends React.Component {
           <div className="pure-g">
             <div className="pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4 "></div>
             <div className="pure-u-22-24 pure-u-sm-18-24 pure-u-md-1-2">
-              <h2>What?</h2>
-              <p>
-                The engineering hub is a new bookable space only for engineering students and members of societies
-                related to the engineering department. Here engineers are free to do whatever they want, which will 
-                mostly involve lots of maths and programming probably...
-              </p>
-              <h2>Where?</h2>
-              <p>
-                Its hidden away round the back of the church becuase no one else wants to interact with engineers.
-              </p>
+              <div className="card">
+                <h2>What?</h2>
+                <p>
+                  The engineering hub is a new bookable space only for engineering students and members of societies
+                  related to the engineering department. Here engineers are free to do whatever they want, which will 
+                  mostly involve lots of maths and programming probably...
+                </p>
+                <h2>Where?</h2>
+                <p>
+                  Its hidden away round the back of the church becuase no one else wants to interact with engineers.
+                </p>
+              </div>
             </div>
             <div className="pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4"></div>
           </div>

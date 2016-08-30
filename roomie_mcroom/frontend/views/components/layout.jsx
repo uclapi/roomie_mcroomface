@@ -1,14 +1,17 @@
-import React from 'react'
-import { Link } from 'react-router'
-import Sidebar from './sidebar.jsx'
+import React from 'react';
+import { Link } from 'react-router';
+import Sidebar from './sidebar.jsx';
+import auth from '../../utils/auth.js';
 
 module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      loggedIn: false
+      loggedIn: auth.loggedIn()
     };
   },
+
+
 
   handleClick: function(e){
     e.preventDefault();
@@ -34,10 +37,10 @@ module.exports = React.createClass({
     element.className = classes.join(' ');
   },
 
-  toggleLogin: function(e){
+  logout: function(e){
     e.preventDefault();
-    console.log(this.state.loggedIn);
-    this.setState({loggedIn: !this.state.loggedIn}); 
+    auth.logout();
+    this.setState({loggedIn: false}); 
   },
 
   render: function() {
@@ -54,9 +57,9 @@ module.exports = React.createClass({
           </div>
           <div className="pure-u-1-2">
 						{this.state.loggedIn ? (
-              <div className="button" id="top-right" onClick={this.toggleLogin} >Log out</div>
+              <div className="button" id="top-right" onClick={this.logout} >Log out</div>
             ) : (
-							<div className="button" id="top-right" onClick={this.toggleLogin} >Sign In</div>
+              <Link className="button" id="top-right" to="/login" >Sign In</Link>
             )}
           </div>
         </div>

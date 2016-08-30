@@ -16,6 +16,10 @@ html, button, input, select, textarea,
 body{
   color: #555;
   height: 100%;
+
+  @media screen and (min-width: 35.5em) {
+    background-color: #f4f4f4;
+  }
 }
 
 html{
@@ -54,6 +58,34 @@ html{
   }
 }
 
+.card{
+  @media screen and (min-width: 35.5em) {
+    padding: 5px 20px;
+    background-color: white;
+    margin: 20px;
+    .BoxShadowHelper(1);
+    border-radius: 5px;
+  }
+}
+
+.popup{
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.31);
+  
+  .content{
+    background-color: white;
+    margin: 20vw;
+    margin-top: 10vh;
+    padding: 30px;
+    border-radius: 10px;
+  }
+}
+
 h1{
   font-size: 2.5em;
 }
@@ -87,3 +119,5 @@ p{
 @import './components/sidebar.less';
 @import './components/layout.less';
 @import './pages/home.less';
+@import './pages/login.less';
+@import './pages/error.less';

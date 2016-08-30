@@ -4,7 +4,7 @@
   "description": "front end app for Roomie McRoomface",
   "main": "statics/html/index.html",
   "scripts": {
-    "start": "http-server",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Henry Mortimer",
