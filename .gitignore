@@ -2,7 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+api requirements
+api_requirements.txt
 aws_settings.py
+test_txt.txt
+
 # C extensions
 *.so
 

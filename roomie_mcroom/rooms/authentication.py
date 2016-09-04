@@ -1,9 +1,9 @@
 import datetime
-from django.utils.timezone import utc
-from rest_framework.authentication import TokenAuthentication
-from rest_framework import exceptions
-from rest_framework.authtoken.models import Token
 import pytz
+
+from rest_framework import exceptions
+from rest_framework.authentication import TokenAuthentication
+
 
 class ExpiringTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
@@ -25,6 +25,7 @@ class ExpiringTokenAuthentication(TokenAuthentication):
             raise exceptions.AuthenticationFailed('Token has expired')
 
         return (token.user, token)
+
 
 class ValidatingTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):

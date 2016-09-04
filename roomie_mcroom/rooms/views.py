@@ -1,24 +1,23 @@
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from django.contrib.auth.decorators import user_passes_test, permission_required
-from django.contrib.auth.models import Group, Permission
-from django.contrib.auth import authenticate, logout
-from django.template.context_processors import csrf
-from rest_framework.response import Response
-from rest_framework import permissions
-from django.shortcuts import render
-from .models import *
-from .custom_permission import *
 from .authentication import ExpiringTokenAuthentication, ValidatingTokenAuthentication
-from django.utils.timezone import utc
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from django.http import HttpResponse
-import json
-import pytz
-import datetime
+from .custom_permission import *
+from .models import *
 from .mailgun_keys import key, sandbox
+
+import datetime
 import requests
+import pytz
+
+from django.contrib.auth import authenticate, logout
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import Group
+from django.shortcuts import render
+from django.template.context_processors import csrf
+
+from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.response import Response
 
 
 # Create your views here.
@@ -28,7 +27,7 @@ opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
 
 @api_view(['GET', 'POST'])
 def no_access(request):
-    return Response({"error": "you dont have the appropriate permission kiddo"})
+    return Response({"error": "You do not have appropiate permissions."})
 
 
 @api_view(['GET', 'POST'])
@@ -212,7 +211,6 @@ def login(request):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            local_tz = pytz.timezone('Europe/Moscow')
             token, created = Token.objects.get_or_create(user=user)
             token.save()
             return Response({

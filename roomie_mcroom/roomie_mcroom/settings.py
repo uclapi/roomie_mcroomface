@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
 import datetime
+import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -106,7 +106,6 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -146,5 +145,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
-opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
+closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
+opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
