@@ -6,6 +6,7 @@ api requirements
 api_requirements.txt
 aws_settings.py
 test_txt.txt
+mailgun_keys.py
 
 # C extensions
 *.so
