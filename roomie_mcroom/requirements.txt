@@ -10,4 +10,5 @@ future==0.15.2
 kombu==3.0.35
 psycopg2==2.6.2
 pytz==2016.6.1
+requests==2.11.1
 urllib3==1.16
