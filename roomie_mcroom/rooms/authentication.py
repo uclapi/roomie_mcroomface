@@ -25,3 +25,14 @@ class ExpiringTokenAuthentication(TokenAuthentication):
             raise exceptions.AuthenticationFailed('Token has expired')
 
         return (token.user, token)
+
+class ValidatingTokenAuthentication(TokenAuthentication):
+    def authenticate_credentials(self, key):
+        model = self.get_model()
+        print("key:", key)
+        try:
+            token = model.objects.select_related('user').get(key=key)
+        except:
+            raise exceptions.AuthenticationFailed('Invalid token')
+
+        return (token.user, token)

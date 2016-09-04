@@ -9,7 +9,7 @@ from rest_framework import permissions
 from django.shortcuts import render
 from .models import *
 from .custom_permission import *
-from .authentication import ExpiringTokenAuthentication
+from .authentication import ExpiringTokenAuthentication, ValidatingTokenAuthentication
 from django.utils.timezone import utc
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -102,7 +102,7 @@ def forgot_password(request):
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
     print(request.user)
@@ -125,7 +125,7 @@ def get_rooms_list(request):
 
 # permission class needs to include group 4
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_generate_tokens')
 def obtain_expiring_auth_token(request):
@@ -155,7 +155,7 @@ def obtain_expiring_auth_token(request):
 
 
 @api_view(['GET'])
-@authentication_classes((BasicAuthentication, SessionAuthentication))
+@authentication_classes((BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_room_bookings(request):
     # two things have to be implemented here
@@ -212,9 +212,13 @@ def login(request):
         user = authenticate(username=username, password=password)
 
         if user is not None:
+            local_tz = pytz.timezone('Europe/Moscow')
+            token, created = Token.objects.get_or_create(user=user)
+            token.save()
             return Response({
                 "email": user.email,
                 "quota_left": user.user_profile.quota_left,
+                'token': token.key,
                 "societies": [k.user.first_name for k in user.user_profile.associated_society.all()]
             })
         else:
@@ -231,10 +235,12 @@ def password_changed_successfully(request):
 # the method below can't be called logout, django gets confused. So that's
 # why logout_view
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def logout_view(request):
     if request.method == 'GET':
+        token, created = Token.objects.get_or_create(user=request.user)
+        token.delete()
         logout(request)
         return Response({"success": "You've logged out"})
     return Response({"success": False})
@@ -242,7 +248,7 @@ def logout_view(request):
 
 # only people in group 3 and 4 can access this
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication, ExpiringTokenAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication, ExpiringTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_book_society_rooms')
 def book_a_room_society(request):
@@ -277,7 +283,7 @@ def book_a_room_society(request):
 # people in any group can access this
 # -- IMPORTANT -->  Check careers team access before reducing the quota user.groups.exist("careers_team") or something
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required(('rooms.can_book_normal_rooms'))
 def book_a_room_normal(request):
@@ -422,7 +428,7 @@ def checkAvailability(room, date, start_time, end_time):
 
 # parameters are => date: YYYYMMDD
 @api_view(['GET'])
-@authentication_classes((BasicAuthentication, SessionAuthentication))
+@authentication_classes((BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def get_users_booking(request):
     try:
@@ -459,7 +465,7 @@ def get_users_booking(request):
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def delete_booking(request):
     print(request.GET)
@@ -484,7 +490,7 @@ def delete_booking(request):
 
 
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
 def add_user_to_group3(request):
@@ -511,7 +517,7 @@ def add_user_to_group3(request):
 
 
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
 def remove_user_from_group3(request):
