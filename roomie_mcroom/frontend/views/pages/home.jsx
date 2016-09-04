@@ -1,8 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router'
 import Layout from '../components/layout.jsx' 
-class Home extends React.Component {
-  render() {
+
+module.exports = React.createClass({
+  render:function() {
     return (
       <Layout>
         <div className="header">
@@ -38,6 +39,4 @@ class Home extends React.Component {
       </Layout>
     );
   }
-}
-
-export default Home;
+});

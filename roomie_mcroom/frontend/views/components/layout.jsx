@@ -11,8 +11,6 @@ module.exports = React.createClass({
     };
   },
 
-
-
   handleClick: function(e){
     e.preventDefault();
     var container = document.getElementById('app-container');
@@ -64,7 +62,7 @@ module.exports = React.createClass({
           </div>
         </div>
 
-        <div className="content">
+        <div className="content centered">
           {this.props.children}
         </div>
         <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>

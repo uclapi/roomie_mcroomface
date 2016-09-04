@@ -1,18 +1,31 @@
+import 'whatwg-fetch';
 module.exports = {
   login(email, pass, cb) {
     cb = arguments[arguments.length - 1]
-    if (localStorage.token) {
-      if (cb) cb(true)
-      return
-    }
-    pretendRequest(email, pass, (res) => {
-      if (res.authenticated) {
-        localStorage.token = res.token
-        if (cb) cb(true)
-      } else {
-        if (cb) cb(false)
-      }
-    })
+    // if (localStorage.token) {
+    //   if (cb) cb(true)
+    //   return
+    // }
+    fetch("https://c783397b.ngrok.io/login", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        mode: 'cors',
+        body: "username="+email+"&password="+pass
+    }).then(function(res){
+      return res.json().then(function(res){
+        console.log(res);
+        fetch("https://c783397b.ngrok.io/get_room_bookings", {
+          mode: 'cors',
+          credentials: 'include'
+        }).then(function(res){
+          return res.json().then(function(res){
+            console.log(res);
+          })
+        })
+      })
+    });
   },
 
   getToken() {
@@ -41,3 +54,11 @@ function pretendRequest(email, pass, cb) {
     }
   }, 0)
 }
+// pretendRequest(email, pass, (res) => {
+//   if (res.authenticated) {
+//     localStorage.token = res.token
+//     if (cb) cb(true)
+//   } else {
+//     if (cb) cb(false)
+//   }
+// })

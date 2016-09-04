@@ -15,7 +15,7 @@ var buttonStyle = {
 module.exports = withRouter(React.createClass({
   getInitialState: function(){
     return{
-      error: true
+      error: false
     };
   },
   setVisible: function(){
@@ -53,12 +53,17 @@ module.exports = withRouter(React.createClass({
           <fieldset>
             <div className="pure-control-group">
               <label htmlFor="name" style={labelStyle} >Email</label>
-              <input id="name" ref="email" type="text" placeholder="Email" className="pure-input-rounded"/>
+              <input id="name" ref="email" type="text" placeholder="Email" className="pure-input-rounded" required/>
             </div>
             <div className="pure-control-group">
               <label htmlFor="password" style={labelStyle} >Password</label>
-              <input id="password" ref="password" type="password" placeholder="Password" className="pure-input-rounded"/>
+              <input id="password" ref="password" type="password" placeholder="Password" className="pure-input-rounded" required/>
             </div>
+            {this.state.error ? (
+              <div className="warningLabel">Email or password is incorrect</div>
+              ):(
+                <div className="warningLabel"></div>
+              )}
             <div className="pure-controls" style={buttonStyle}>
               <button type="submit" className="pure-button pure-button-primary">Submit</button>
             </div>

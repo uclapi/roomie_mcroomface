@@ -26097,22 +26097,471 @@ module.exports = function (str) {
 },{}],237:[function(require,module,exports){
 arguments[4][46][0].apply(exports,arguments)
 },{"_process":50,"dup":46}],238:[function(require,module,exports){
-'use strict';
+(function(self) {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var list = this.map[name]
+    if (!list) {
+      list = []
+      this.map[name] = list
+    }
+    list.push(value)
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    var values = this.map[normalizeName(name)]
+    return values ? values[0] : null
+  }
+
+  Headers.prototype.getAll = function(name) {
+    return this.map[normalizeName(name)] || []
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = [normalizeValue(value)]
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+      this.map[name].forEach(function(value) {
+        callback.call(thisArg, value, name, this)
+      }, this)
+    }, this)
+  }
+
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    reader.readAsArrayBuffer(blob)
+    return fileReaderReady(reader)
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    reader.readAsText(blob)
+    return fileReaderReady(reader)
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
+      } else if (!body) {
+        this._bodyText = ''
+      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
+        // Only support ArrayBuffers for POST method.
+        // Receiving ArrayBuffers happens via Blobs, instead.
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+        }
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        return this.blob().then(readBlobAsArrayBuffer)
+      }
+
+      this.text = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return readBlobAsText(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as text')
+        } else {
+          return Promise.resolve(this._bodyText)
+        }
+      }
+    } else {
+      this.text = function() {
+        var rejected = consumed(this)
+        return rejected ? rejected : Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+    if (Request.prototype.isPrototypeOf(input)) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = input
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this)
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function headers(xhr) {
+    var head = new Headers()
+    var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
+    pairs.forEach(function(header) {
+      var split = header.trim().split(':')
+      var key = split.shift().trim()
+      var value = split.join(':').trim()
+      head.append(key, value)
+    })
+    return head
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this.type = 'default'
+    this.status = options.status
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = options.statusText
+    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+    this.url = options.url || ''
+    this._initBody(bodyInit)
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request
+      if (Request.prototype.isPrototypeOf(input) && !init) {
+        request = input
+      } else {
+        request = new Request(input, init)
+      }
+
+      var xhr = new XMLHttpRequest()
+
+      function responseURL() {
+        if ('responseURL' in xhr) {
+          return xhr.responseURL
+        }
+
+        // Avoid security warnings on getResponseHeader when not allowed by CORS
+        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+          return xhr.getResponseHeader('X-Request-URL')
+        }
+
+        return
+      }
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: headers(xhr),
+          url: responseURL()
+        }
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})(typeof self !== 'undefined' ? self : this);
+
+},{}],239:[function(require,module,exports){
+"use strict";
+
+require("whatwg-fetch");
 
 module.exports = {
   login: function login(email, pass, cb) {
     cb = arguments[arguments.length - 1];
-    if (localStorage.token) {
-      if (cb) cb(true);
-      return;
-    }
-    pretendRequest(email, pass, function (res) {
-      if (res.authenticated) {
-        localStorage.token = res.token;
-        if (cb) cb(true);
-      } else {
-        if (cb) cb(false);
-      }
+    // if (localStorage.token) {
+    //   if (cb) cb(true)
+    //   return
+    // }
+    fetch("https://c783397b.ngrok.io/login", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      mode: 'cors',
+      body: "username=" + email + "&password=" + pass
+    }).then(function (res) {
+      return res.json().then(function (res) {
+        console.log(res);
+        fetch("https://c783397b.ngrok.io/get_room_bookings", {
+          mode: 'cors',
+          credentials: 'include'
+        }).then(function (res) {
+          return res.json().then(function (res) {
+            console.log(res);
+          });
+        });
+      });
     });
   },
   getToken: function getToken() {
@@ -26139,8 +26588,16 @@ function pretendRequest(email, pass, cb) {
     }
   }, 0);
 }
+// pretendRequest(email, pass, (res) => {
+//   if (res.authenticated) {
+//     localStorage.token = res.token
+//     if (cb) cb(true)
+//   } else {
+//     if (cb) cb(false)
+//   }
+// })
 
-},{}],239:[function(require,module,exports){
+},{"whatwg-fetch":238}],240:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -26164,6 +26621,10 @@ var _login2 = _interopRequireDefault(_login);
 var _error = require('./pages/error.jsx');
 
 var _error2 = _interopRequireDefault(_error);
+
+var _calendar = require('./pages/calendar/calendar.jsx');
+
+var _calendar2 = _interopRequireDefault(_calendar);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26204,12 +26665,12 @@ var Test = function (_React$Component) {
   _reactRouter.Router,
   { history: _reactRouter.browserHistory },
   _react2.default.createElement(_reactRouter.Route, { path: '/', component: _home2.default }),
-  _react2.default.createElement(_reactRouter.Route, { path: '/test', component: Test }),
   _react2.default.createElement(_reactRouter.Route, { path: '/login', component: _login2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/calendar', component: _calendar2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"./pages/error.jsx":242,"./pages/home.jsx":243,"./pages/login.jsx":244,"react":235,"react-dom":52,"react-router":82}],240:[function(require,module,exports){
+},{"./pages/calendar/calendar.jsx":243,"./pages/error.jsx":245,"./pages/home.jsx":246,"./pages/login.jsx":247,"react":235,"react-dom":52,"react-router":82}],241:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26306,7 +26767,7 @@ module.exports = _react2.default.createClass({
         ),
         _react2.default.createElement(
           'div',
-          { className: 'content' },
+          { className: 'content centered' },
           this.props.children
         ),
         _react2.default.createElement(
@@ -26324,7 +26785,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../../utils/auth.js":238,"./sidebar.jsx":241,"react":235,"react-router":82}],241:[function(require,module,exports){
+},{"../../utils/auth.js":239,"./sidebar.jsx":242,"react":235,"react-router":82}],242:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26358,7 +26819,7 @@ module.exports = _react2.default.createClass({
             { className: 'pure-menu-item' },
             _react2.default.createElement(
               _reactRouter.Link,
-              { className: 'pure-menu-link', to: '/test' },
+              { className: 'pure-menu-link', to: '/' },
               'Home'
             )
           ),
@@ -26367,7 +26828,7 @@ module.exports = _react2.default.createClass({
             { className: 'pure-menu-item' },
             _react2.default.createElement(
               _reactRouter.Link,
-              { className: 'pure-menu-link', to: '/login' },
+              { className: 'pure-menu-link', to: '/' },
               'Book a Room'
             )
           ),
@@ -26376,7 +26837,7 @@ module.exports = _react2.default.createClass({
             { className: 'pure-menu-item' },
             _react2.default.createElement(
               _reactRouter.Link,
-              { className: 'pure-menu-link', to: '/' },
+              { className: 'pure-menu-link', to: '/calendar' },
               'Calendar'
             )
           ),
@@ -26404,7 +26865,115 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"react":235,"react-router":82}],242:[function(require,module,exports){
+},{"react":235,"react-router":82}],243:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _layout = require('../../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+var _dayView = require('./dayView.jsx');
+
+var _dayView2 = _interopRequireDefault(_dayView);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+  displayName: 'exports',
+
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      null,
+      _react2.default.createElement(
+        'div',
+        { className: 'pure-g' },
+        _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered' },
+          _react2.default.createElement(
+            'div',
+            { className: 'card' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              'Calendar'
+            ),
+            _react2.default.createElement(_dayView2.default, null)
+          )
+        ),
+        _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
+      )
+    );
+  }
+});
+
+},{"../../components/layout.jsx":241,"./dayView.jsx":244,"react":235,"react-router":82}],244:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Slot = _react2.default.createClass({
+  displayName: 'Slot',
+
+
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { className: "slot " + (this.props.taken ? "taken" : "free") },
+      _react2.default.createElement(
+        'div',
+        { className: 'time' },
+        this.props.time,
+        ':00'
+      )
+    );
+  }
+});
+module.exports = _react2.default.createClass({
+  displayName: 'exports',
+
+  getInitialState: function getInitialState() {
+    return {
+      slots: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+      date: '31/08/16'
+    };
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { className: 'dayView' },
+      _react2.default.createElement(
+        'div',
+        { className: 'date' },
+        this.state.date
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'slots' },
+        this.state.slots.map(function (taken, i) {
+          return _react2.default.createElement(Slot, { key: i, time: i, taken: taken });
+        })
+      ),
+      _react2.default.createElement('div', { className: 'endSlot' })
+    );
+  }
+});
+
+},{"react":235,"react-router":82}],245:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26435,14 +27004,8 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"react":235,"react-router":82}],243:[function(require,module,exports){
+},{"react":235,"react-router":82}],246:[function(require,module,exports){
 'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
 
@@ -26456,99 +27019,80 @@ var _layout2 = _interopRequireDefault(_layout);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+module.exports = _react2.default.createClass({
+  displayName: 'exports',
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Home = function (_React$Component) {
-  _inherits(Home, _React$Component);
-
-  function Home() {
-    _classCallCheck(this, Home);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Home).apply(this, arguments));
-  }
-
-  _createClass(Home, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        _layout2.default,
-        null,
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      null,
+      _react2.default.createElement(
+        'div',
+        { className: 'header' },
         _react2.default.createElement(
           'div',
-          { className: 'header' },
+          { className: 'pure-g' },
+          _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' }),
           _react2.default.createElement(
             'div',
-            { className: 'pure-g' },
-            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' }),
+            { className: 'pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              'Welcome to the Engineering Hub'
+            ),
+            _react2.default.createElement(
+              _reactRouter.Link,
+              { className: 'button', to: '/' },
+              'Book a room now'
+            )
+          ),
+          _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'body' },
+        _react2.default.createElement(
+          'div',
+          { className: 'pure-g' },
+          _react2.default.createElement('div', { className: 'pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4 ' }),
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-u-22-24 pure-u-sm-18-24 pure-u-md-1-2' },
             _react2.default.createElement(
               'div',
-              { className: 'pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered' },
+              { className: 'card' },
               _react2.default.createElement(
-                'h1',
+                'h2',
                 null,
-                'Welcome to the Engineering Hub'
+                'What?'
               ),
               _react2.default.createElement(
-                _reactRouter.Link,
-                { className: 'button', to: '/' },
-                'Book a room now'
-              )
-            ),
-            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'body' },
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-g' },
-            _react2.default.createElement('div', { className: 'pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4 ' }),
-            _react2.default.createElement(
-              'div',
-              { className: 'pure-u-22-24 pure-u-sm-18-24 pure-u-md-1-2' },
+                'p',
+                null,
+                'The engineering hub is a new bookable space only for engineering students and members of societies related to the engineering department. Here engineers are free to do whatever they want, which will mostly involve lots of maths and programming probably...'
+              ),
               _react2.default.createElement(
-                'div',
-                { className: 'card' },
-                _react2.default.createElement(
-                  'h2',
-                  null,
-                  'What?'
-                ),
-                _react2.default.createElement(
-                  'p',
-                  null,
-                  'The engineering hub is a new bookable space only for engineering students and members of societies related to the engineering department. Here engineers are free to do whatever they want, which will mostly involve lots of maths and programming probably...'
-                ),
-                _react2.default.createElement(
-                  'h2',
-                  null,
-                  'Where?'
-                ),
-                _react2.default.createElement(
-                  'p',
-                  null,
-                  'Its hidden away round the back of the church becuase no one else wants to interact with engineers.'
-                )
+                'h2',
+                null,
+                'Where?'
+              ),
+              _react2.default.createElement(
+                'p',
+                null,
+                'Its hidden away round the back of the church becuase no one else wants to interact with engineers.'
               )
-            ),
-            _react2.default.createElement('div', { className: 'pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4' })
-          )
+            )
+          ),
+          _react2.default.createElement('div', { className: 'pure-u-1-24 pure-u-sm-1-8 pure-u-md-1-4' })
         )
-      );
-    }
-  }]);
+      )
+    );
+  }
+});
 
-  return Home;
-}(_react2.default.Component);
-
-exports.default = Home;
-
-},{"../components/layout.jsx":240,"react":235,"react-router":82}],244:[function(require,module,exports){
+},{"../components/layout.jsx":241,"react":235,"react-router":82}],247:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26580,7 +27124,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      error: true
+      error: false
     };
   },
   setVisible: function setVisible() {
@@ -26632,7 +27176,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
               { htmlFor: 'name', style: labelStyle },
               'Email'
             ),
-            _react2.default.createElement('input', { id: 'name', ref: 'email', type: 'text', placeholder: 'Email', className: 'pure-input-rounded' })
+            _react2.default.createElement('input', { id: 'name', ref: 'email', type: 'text', placeholder: 'Email', className: 'pure-input-rounded', required: true })
           ),
           _react2.default.createElement(
             'div',
@@ -26642,8 +27186,13 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
               { htmlFor: 'password', style: labelStyle },
               'Password'
             ),
-            _react2.default.createElement('input', { id: 'password', ref: 'password', type: 'password', placeholder: 'Password', className: 'pure-input-rounded' })
+            _react2.default.createElement('input', { id: 'password', ref: 'password', type: 'password', placeholder: 'Password', className: 'pure-input-rounded', required: true })
           ),
+          this.state.error ? _react2.default.createElement(
+            'div',
+            { className: 'warningLabel' },
+            'Email or password is incorrect'
+          ) : _react2.default.createElement('div', { className: 'warningLabel' }),
           _react2.default.createElement(
             'div',
             { className: 'pure-controls', style: buttonStyle },
@@ -26673,4 +27222,4 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../utils/auth.js":238,"../components/layout.jsx":240,"react":235,"react-router":82}]},{},[239]);
+},{"../../utils/auth.js":239,"../components/layout.jsx":241,"react":235,"react-router":82}]},{},[240]);

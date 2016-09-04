@@ -89,10 +89,10 @@ p {
   font-size: 1.2em;
 }
 .sideBar {
-  padding-top: 60px;
   width: 240px;
   left: -240px;
-  top: 0px;
+  top: 60px;
+  bottom: 0px;
   position: absolute;
   height: 100%;
   background-color: #212121;
@@ -106,6 +106,7 @@ p {
   -o-transition: left 0.4s ease-in-out;
   transition: left 0.4s ease-in-out;
   height: 100%;
+  width: 100%;
 }
 .container .main-content #top-right {
   float: right;
@@ -120,6 +121,7 @@ p {
   height: 60px;
   position: fixed;
   left: 0px;
+  top: 0px;
   width: 100%;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
@@ -167,4 +169,24 @@ p {
   margin: auto;
   max-width: 60em;
   text-align: center;
+}
+.dayView {
+  width: 100%;
+}
+.dayView .date {
+  border-bottom: solid 1px #d5d5d5;
+  padding-bottom: 5px;
+}
+.dayView .slots .slot {
+  padding: 5px;
+  border-bottom: solid 1px #d5d5d5;
+}
+.dayView .slots .taken {
+  color: #d2d2d2;
+}
+.dayView .slots .taken:hover {
+  background-color: rgba(255, 65, 65, 0.84);
+}
+.dayView .endSlot {
+  padding-bottom: 20px;
 }
