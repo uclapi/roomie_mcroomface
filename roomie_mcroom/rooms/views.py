@@ -13,6 +13,8 @@ from rest_framework.authtoken.models import Token
 from django.http import HttpResponse
 import json
 import pytz
+from .mailgun_keys import key, sandbox
+import requests
 from django.contrib.auth.decorators import user_passes_test, permission_required
 from .authentication import ExpiringTokenAuthentication
 from django.shortcuts import render
@@ -57,7 +59,42 @@ def set_password(request):
         # delete the verifier object
         verifier.delete()
 
-        return Response({'success': "You're password has been set"})
+        return Response({'success': "Your password has been set"})
+
+@api_view(['GET'])
+def forgot_password(request):
+    email = request.GET.get('email', '')
+    if not email:
+        return Response({'error': "email not provided"})
+
+    try:
+        us = User.objects.get(email=email)
+    except:
+        return Response({"error": "email not found"})
+
+    # getting the UserProfile object
+    up = us.user_profile
+
+    # creating a temporary verifier
+    verifier = Verifier()
+    verifier.user_id = up.id
+    verifier.save()
+
+    # sending the email
+    password_setting_link = "http://127.0.0.1:8000/set_password?uid={}".format(verifier.param)
+    request = requests.post('https://api.mailgun.net/v3/{}/messages'.format(sandbox), auth=('api', key), data={
+        'from': 'hello@example.com',
+        'to': email,
+        'subject': 'Hello',
+        'text': 'Click on {} to set your password'.format(password_setting_link)
+    })
+
+
+    if request.status_code == 200:
+        return Response({'success': "Check your email"})
+    else:
+        return Response({'error': "Email not sent {}".format(request.text)})
+
 
 
 @api_view(['GET'])
