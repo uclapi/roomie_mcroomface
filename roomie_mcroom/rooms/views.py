@@ -486,7 +486,7 @@ def delete_booking(request):
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
-@permission_required('rooms.can_add_and_remove_people_to_gorup_3')
+@permission_required('rooms.can_add_and_remove_people_to_group_3')
 def add_user_to_group3(request):
     current_user = request.user.user_profile
     print(request.POST)
