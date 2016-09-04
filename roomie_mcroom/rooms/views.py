@@ -29,26 +29,34 @@ def no_access(request):
 @api_view(['GET', 'POST'])
 def set_password(request):
     if request.method == 'GET':
-        user_id = request.GET.get("user_id", '')
-        if not user_id:
+        param = request.GET.get("uid", '')
+        if not param:
             return Response({"error": "user_id or password isn't found"})
-        return render(request, 'set_password.html', {'user_id': user_id, 'csrf_token': csrf(request)['csrf_token']})
+        return render(request, 'set_password.html', {'param': param, 'csrf_token': csrf(request)['csrf_token']})
 
     else:
-        user_id = request.POST.get("user_id", '')
+        # getting the uuid of verifier object
+        param = request.POST.get("uuid", '')
         new_password = request.POST.get("password", '')
 
-        if not user_id or not new_password:
+        if not param or not new_password:
             return Response({"error": "user_id or password isn't found"})
 
         try:
-            user_profile = UserProfile.objects.get(id=user_id)
+            verifier = Verifier.objects.get(param=param)
         except:
-            return Response({"error": "404 user id does not exist"})
+            return Response({"error": "404 verifier object not found"})
+
+        # retrieve the user profile object from the verifier object
+        user_profile = UserProfile.objects.get(id=verifier.user_id)
 
         user_profile.user.set_password(new_password)
         user_profile.user.save()
         user_profile.save()
+
+        # delete the verifier object
+        verifier.delete()
+
         return Response({'success': "You're password has been set"})
 
 

@@ -36,3 +36,8 @@ class BookingSociety(models.Model):
     end = models.TimeField()
     remarks = models.CharField(max_length=150, blank=True)
     society = models.ForeignKey(UserProfile)
+
+class Verifier(models.Model):
+    user_id = models.IntegerField(default = 180)
+    param = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+
