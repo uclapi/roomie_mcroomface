@@ -2,11 +2,34 @@ import React from 'react'
 import { Link } from 'react-router'
 
 var Slot = React.createClass({
+  getInitialState: function(){
+    return{
+      content:this.props.time+":00"
+    }
+  },
+
+  mouseOver: function(e){
+    e.preventDefault();
+    if(this.props.taken){
+      this.setState({content:"Slot not available"});
+    } else {
+      this.setState({content:"Book this slot"});
+    }
+  },
+
+  mouseOut: function(e){
+    e.preventDefault();
+    this.setState({content:this.props.time+":00"});
+  },
 
   render: function(){
-    return <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))}>
-      <div className="time">{this.props.time}:00</div>
-    </div>
+    return (
+      <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))} 
+           onMouseOver={this.mouseOver} 
+           onMouseOut={this.mouseOut}>
+        <div className="time" id={"slot"+this.props.key}>{this.state.content}</div>
+      </div>
+    );
   }
 })
 module.exports = React.createClass({

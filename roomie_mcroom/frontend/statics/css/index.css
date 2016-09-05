@@ -186,6 +186,7 @@ p {
 }
 .dayView .slots .taken:hover {
   background-color: rgba(255, 65, 65, 0.84);
+  color: white;
 }
 .dayView .endSlot {
   padding-bottom: 20px;

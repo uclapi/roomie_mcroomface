@@ -26539,10 +26539,6 @@ require("whatwg-fetch");
 module.exports = {
   login: function login(email, pass, cb) {
     cb = arguments[arguments.length - 1];
-    // if (localStorage.token) {
-    //   if (cb) cb(true)
-    //   return
-    // }
     fetch("https://c783397b.ngrok.io/login", {
       method: "POST",
       headers: {
@@ -26552,15 +26548,13 @@ module.exports = {
       body: "username=" + email + "&password=" + pass
     }).then(function (res) {
       return res.json().then(function (res) {
-        console.log(res);
-        fetch("https://c783397b.ngrok.io/get_room_bookings", {
-          mode: 'cors',
-          credentials: 'include'
-        }).then(function (res) {
-          return res.json().then(function (res) {
-            console.log(res);
-          });
-        });
+        if (res.email) {
+          localStorage.user = email;
+          localStorage.password = pass;
+          cb(true);
+        } else {
+          cb(false);
+        }
       });
     });
   },
@@ -26568,11 +26562,12 @@ module.exports = {
     return localStorage.token;
   },
   logout: function logout(cb) {
-    delete localStorage.token;
+    delete localStorage.user;
+    delete localStorage.password;
     if (cb) cb();
   },
   loggedIn: function loggedIn() {
-    return !!localStorage.token;
+    return !!localStorage.user;
   }
 };
 
@@ -26929,16 +26924,36 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Slot = _react2.default.createClass({
   displayName: 'Slot',
 
+  getInitialState: function getInitialState() {
+    return {
+      content: this.props.time + ":00"
+    };
+  },
+
+  mouseOver: function mouseOver(e) {
+    e.preventDefault();
+    if (this.props.taken) {
+      this.setState({ content: "Slot not available" });
+    } else {
+      this.setState({ content: "Book this slot" });
+    }
+  },
+
+  mouseOut: function mouseOut(e) {
+    e.preventDefault();
+    this.setState({ content: this.props.time + ":00" });
+  },
 
   render: function render() {
     return _react2.default.createElement(
       'div',
-      { className: "slot " + (this.props.taken ? "taken" : "free") },
+      { className: "slot " + (this.props.taken ? "taken" : "free"),
+        onMouseOver: this.mouseOver,
+        onMouseOut: this.mouseOut },
       _react2.default.createElement(
         'div',
-        { className: 'time' },
-        this.props.time,
-        ':00'
+        { className: 'time', id: "slot" + this.props.key },
+        this.state.content
       )
     );
   }

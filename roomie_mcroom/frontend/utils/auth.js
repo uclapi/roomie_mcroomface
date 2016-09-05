@@ -2,10 +2,6 @@ import 'whatwg-fetch';
 module.exports = {
   login(email, pass, cb) {
     cb = arguments[arguments.length - 1]
-    // if (localStorage.token) {
-    //   if (cb) cb(true)
-    //   return
-    // }
     fetch("https://c783397b.ngrok.io/login", {
         method: "POST",
         headers: {
@@ -15,15 +11,13 @@ module.exports = {
         body: "username="+email+"&password="+pass
     }).then(function(res){
       return res.json().then(function(res){
-        console.log(res);
-        fetch("https://c783397b.ngrok.io/get_room_bookings", {
-          mode: 'cors',
-          credentials: 'include'
-        }).then(function(res){
-          return res.json().then(function(res){
-            console.log(res);
-          })
-        })
+        if(res.email){
+          localStorage.user = email;
+          localStorage.password = pass;
+          cb(true);
+        } else {
+          cb(false);
+        }
       })
     });
   },
@@ -33,12 +27,13 @@ module.exports = {
   },
 
   logout(cb) {
-    delete localStorage.token
+    delete localStorage.user;
+    delete localStorage.password;
     if (cb) cb()
   },
 
   loggedIn() {
-    return !!localStorage.token
+    return !!localStorage.user;
   }
 }
 
