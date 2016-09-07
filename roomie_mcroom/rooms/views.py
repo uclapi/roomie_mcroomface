@@ -107,9 +107,9 @@ def get_rooms_list(request):
     print(request.user)
     print(request.auth)
     rooms = Room.objects.all()
-    roomDict = {}
+    room_dict = {}
     for index, room in enumerate(rooms):
-        roomDict[index] = {
+        room_dict[index] = {
             "capacity": room.capacity,
             "coffee": room.coffee,
             "water_fountain": room.water_fountain,
@@ -119,7 +119,7 @@ def get_rooms_list(request):
             "room_id": room.room_id
         }
 
-    return Response(roomDict)
+    return Response(room_dict)
 
 
 # permission class needs to include group 4
@@ -131,16 +131,27 @@ def obtain_expiring_auth_token(request):
     local_tz = pytz.timezone('Europe/Moscow')
     # change this => get user's associated society, and use that to create tokens
     # hopefully one person can only be in one society lmao
-    token, created = Token.objects.get_or_create(
-        user=request.user.user_profile.associated_society.all()[0].user)
+    try:
+        soc_id = request.GET.get("society_id")
+    except:
+        return Response({"error": "society_id couldnt be found"})
+
+    try:
+        society = User.objects.get(username=soc_id)
+    except:
+        return Response({"error":"society id doesnt exist"})
+
+    if society.user_profile not in request.user.user_profile.associated_society.all():
+        return Response({"error": "you dont belong to this society"})
+
+    token, created = Token.objects.get_or_create(user=society)
 
     utc_now = datetime.datetime.utcnow() - datetime.timedelta(days=100)
     utc_now = pytz.utc.localize(utc_now, is_dst=None).astimezone(local_tz)
 
     if not created and token.created < utc_now:
         token.delete()
-        token = Token.objects.create(
-            user=request.user.user_profile.associated_society.all()[0].user)
+        token = Token.objects.create(user=society)
         token.created = datetime.datetime.utcnow()
         token.save()
 
@@ -217,7 +228,8 @@ def login(request):
                 "email": user.email,
                 "quota_left": user.user_profile.quota_left,
                 'token': token.key,
-                "societies": [k.user.first_name for k in user.user_profile.associated_society.all()]
+                "societies": [[k.user.first_name, k.user.username] for k in user.user_profile.associated_society.all()],
+                "groups" : [k.name for k in user.groups.all()]
             })
         else:
             return Response({"success": "username password dont match mate"})
@@ -320,7 +332,6 @@ def book_a_room(request, room, date, start_time,
         return Response({"error": "Invalid time/date given"})
 
     # date validitiy checking
-    # TODO: fix the order of conditions
     days_ahead = (dateOfSearch - datetime.datetime.now().date()).days
     if is_society_booking:
         if days_ahead > 21:
@@ -493,20 +504,30 @@ def delete_booking(request):
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
 def add_user_to_group3(request):
     current_user = request.user.user_profile
-    print(request.POST)
+
     try:
         username = request.POST.get("username")
+        soc_id = request.POST.get("society_id")
     except:
-        return Response({"error": "no username found"})
+        return Response({"error": "parsing data failed"})
+
+    try:
+        society = User.objects.get(username = soc_id)
+    except:
+        return Response({"error":"society id doesnt exist"})
+
+
     try:
         user = User.objects.get(username=username)
     except:
         return Response({"error": "username doesn't exist"})
 
+    if society.user_profile not in current_user.associated_society.all():
+        return Response({"error" : "you dont belong to this society"})
+
     group_3 = Group.objects.get(name='Group_3')
     user.groups.add(group_3)
-    user.user_profile.associated_society.add(
-        current_user.associated_society.all()[0])
+    user.user_profile.associated_society.add(society.user_profile)
     user.user_profile.society_access = True
     user.user_profile.save()
     user.save()
@@ -522,16 +543,24 @@ def remove_user_from_group3(request):
     current_user = request.user
     try:
         username = request.POST.get("username")
+        soc_id = request.POST.get("society_id")
     except:
-        return Response({"error": "no email found"})
+        return Response({"error": "data parsing failed"})
 
     try:
         user = User.objects.get(username=username)
     except:
         return Response({"error": "username doesn't exist"})
 
-    user.user_profile.associated_society.remove(
-        current_user.user_profile.associated_society.all()[0])
+    try:
+        society = User.objects.get(username = soc_id)
+    except:
+        return Response({"error":"society id doesnt exist"})
+
+    if society.user_profile not in current_user.associated_society.all():
+        return Response({"error" : "you dont belong to this society"})
+
+    user.user_profile.associated_society.remove(society.user_profile)
     # assuming president only belongs to one society
     user.user_profile.save()
     user.save()
