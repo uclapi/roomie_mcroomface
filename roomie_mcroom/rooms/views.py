@@ -522,7 +522,7 @@ def add_user_to_group3(request):
     except:
         return Response({"error": "username doesn't exist"})
 
-    if society.user_profile not in current_user.associated_society.all():
+    if society.user_profile not in current_user.user_profile.associated_society.all():
         return Response({"error" : "you dont belong to this society"})
 
     group_3 = Group.objects.get(name='Group_3')
@@ -557,7 +557,7 @@ def remove_user_from_group3(request):
     except:
         return Response({"error":"society id doesnt exist"})
 
-    if society.user_profile not in current_user.associated_society.all():
+    if society.user_profile not in current_user.user_profile.associated_society.all():
         return Response({"error" : "you dont belong to this society"})
 
     user.user_profile.associated_society.remove(society.user_profile)
