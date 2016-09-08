@@ -29,7 +29,11 @@ curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/login
 ```
 
 ```python
-requests.post("http://127.0.0.1:8000/login", params={"username":"wil", "password":"wilpassword"})
+import requests
+
+data = {"username":"wil", "password":"wilpassword"}
+
+requests.post("http://127.0.0.1:8000/login", data = data)
 ```
 
 
@@ -90,7 +94,20 @@ This endpoint returns a list of all the rooms available in the Engineering hub.
 ## Query Parameters 
 
 ```shell
-curl http:127.0.0.1:8000/get_list_of_rooms
+curl http://127.0.0.1:8000/get_list_of_rooms -u wil:wilpassword
+
+#authenticate with token
+curl http://127.0.0.1:8000/get_list_of_rooms -H 'Authorization: Token <auth_token_here>'
+```
+
+```python
+import requests
+#with username and password
+r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", auth=requests.auth.HTTPBasicAuth('wil', 'wilpassword'))
+
+#with token
+r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", headers = {"Authorization":"Token 57087bd9cc3cde97515a
+66bc0b58d29696063fd5"})
 ```
 
 **Restrictions:** `nill`
@@ -140,6 +157,16 @@ curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -u
 
 curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
 ```
+```python
+import requests
+
+params = {"room_id":"RO-PIZZA", "date":"20160808"}
+
+# You can use both methods for authentication here
+r = requests.get("http://127.0.0.1:8000/get_room_bookings", params = params, headers = headers)
+
+```
+
 **Restrictions:** Only authenticated users can make a request  
 
 **Allowed request types:** `GET`
@@ -183,8 +210,29 @@ This end point allows the user to book rooms available to everybody.
 
 ```shell
 curl http://127.0.0.1:8000/book_room_normal
-    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00"
+    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -u rema:remapassword
+
+
+curl http://127.0.0.1:8000/book_room_normal
+    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00notes=this is an event"
+    -H 'Authorization: Token <auth_token_here>'   
+```
+
+```python
+import requests
+
+data = {
+    "room_id" : "RO-POO",
+    "data" : "20160808",
+    "start_time" : "15:00",
+    "end_time" : "17:00",
+    "notes" : "This is an event" 
+}
+
+#You can use both methods for authentication here
+
+r = requests.post(url, data = data, headers = headers)
 ```
 
 Parameter | Type | Description
@@ -235,7 +283,28 @@ This endpoint allows society presidents or authorised members to book special so
 curl http://127.0.0.1:8000/book_room_normal
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -u rema:remapassword
+
+curl http://127.0.0.1:8000/book_room_normal
+    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
+    -H 'Authorization: Token <auth_token_here>' 
 ```
+```python
+import requests
+
+data = {
+    "room_id" : "RO-POO",
+    "data" : "20160808",
+    "start_time" : "15:00",
+    "end_time" : "17:00",
+    "event_name" : "Weekly meeting",
+    "society" : "SOTECHSOC"
+}
+
+#You can use both methods for authentication here
+
+r = requests.post(url, data = data, headers = headers)
+```
+
 Parameter | Type | Description
 --------- | ---------- | -----------
 `room_id` | `String` | The room id (not to be confused with the room name)
@@ -279,6 +348,20 @@ This endpoint shows all the rooms the logged-in user has booked.
 
 ```shell
 curl http://127.0.0.1:8000/get_users_booking?date=20160808 -u rema:remapassword
+
+curl http://127.0.0.1:8000/get_users_booking?date=20160808 -H 'Authorization: Token <auth_token_here>' 
+
+```
+
+```python 
+import requests
+
+params = {"date" : "20160808"}
+
+#You can use both methods for authentication here
+
+r = requests.get(url, params = params)
+
 ```
 
 Parameter | Type | Description
@@ -325,15 +408,27 @@ This endpoint allows a society president to access a token which can be then use
 
 ## Request Parameters
 
-**Parameters**: `nill`
+
+```shell
+curl http://127.0.0.1:8000/token/?society_id-SOTECHSOC -u wil:wilpassword
+
+curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>' 
+```
+
+```python
+import requests
+
+r = requests.get(url, params = {"society_id":"SOTECHSOC"}, headers = header)
+
+```
+Parameter | Type | Description
+--------- | ---------- | -----------
+society_id | `String` | Society-ID eg.`SO-XXXXXX`
 
 **Allowed request type:** GET  
 
 **Restrictions:** Only Group4 Users can access this (Society Predidents) 
 
-```shell
-curl http://127.0.0.1:8000/token/ -u wil:wilpassword
-```
 
 ## Response Parameters
 
@@ -357,7 +452,7 @@ GET FAIZ TO ADD HEADER FOR THE TOKEN LMAO
 
 #Delete a booking
 ### `/delete_booking`
-This allows users to delete a book they have already booked.
+This allows users to delete a booking they have already booked.
 
 ## Request Parameters
 
@@ -368,6 +463,18 @@ This allows users to delete a book they have already booked.
 ```shell
 curl http:127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
     -u rema:remapassword
+
+curl http:127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
+-H 'Authorization: Token <auth_token_here>'     
+```
+
+```python
+import requests
+
+params = {"booking_id" : "XXXX-XXXX-XXXXX"}
+
+r = requests.get(url, params = params, headers = headers)
+
 ```
 Parameter | Type | Description
 --------- | ---------- | -----------
@@ -405,7 +512,20 @@ This endpoint allows society presidents to give access to other students and all
 **Allowed request type:** `POST`  
 
 ```shell
-curl --data "username=rema" http://127.0.0.1:8000/add_user_to_group3 -u wil:wilpassword
+curl --data "username=rema" http://127.0.0.1:8000/add_user_to_group3?society_id=SOTECHSOC -u wil:wilpassword
+
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/add_user_to_group3 -H 'Authorization: Token <auth_token_here>' 
+```
+
+```python 
+import requests
+
+data = {
+    "society_id" : "SOTECHSOC",
+    "username" : "rema"
+}
+
+r = requests.post(url, data = data, headers = headers)
 ```
 
 Parameter | Type | Description
@@ -436,7 +556,21 @@ This endpoint removes user from group3 , denying them society room booking power
 
 
 ```shell
-curl --data "username=rema" http://127.0.0.1:8000/delete_user_from_group3 -u wil:wilpassword
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/delete_user_from_group3?society_id=SOCTECHSOC -u wil:wilpassword
+
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/delete_user_from_group3 'Authorization: Token <auth_token_here>'
+```
+
+```python
+import requests
+
+data = {
+    "society_id" : "SOTECHSOC",
+    "username" : "rema"
+}
+
+r = requests.post(url, data = data, headers = headers)
+
 ```
 Parameter | Type | Description
 --------- | ---------- | -----------
@@ -466,6 +600,15 @@ This end point logs a user out of the API so they can no longer make requests. T
 
 ```shell
 curl http://127.0.0.1:8000/logout -u username:password
+
+curl http://127.0.0.1:8000/logout 'Authorization: Token <auth_token_here>'
+```
+
+```python
+import requests
+
+r = requests.get(url, headers = header)
+
 ```
 
 Parameter | Type | Description
