@@ -119,7 +119,7 @@ No parameters are required as long.
 ```
 
 Field | Type | Description
---------- | -------- | -----------
+--------- | ---------- | -----------
 room_id | `String` | The identifer for the room. This should be used when booking a room. 
 printers | Boolean | Does the room have a printer or not?
 capacity | 10 | The number of people that can fit in the room.
@@ -196,7 +196,6 @@ Parameter | Type | Description
 
 ## Response 
 
-
 > Response
 
 ```json
@@ -223,16 +222,28 @@ or
 After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response. 
 
 # Book a society room
-### `book_room_society`
-## Parameters
+### `/book_room_society`
+This endpoint allows society presidents or authorised members to book special society rooms. 
 
+## Request Parameters
+
+**Restrictions:** Only users in group3 can use this endpoint and token authenticated requests 
+
+**Allowed request type:** `POST`  
 
 ```shell
 curl http://127.0.0.1:8000/book_room_normal
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -u rema:remapassword
 ```
+Parameter | Type | Description
+--------- | ---------- | -----------
+`room_id` | `String` | The room id (not to be confused with the room name)
+`date` | `String`| The date must be entered in _YYYYMMDD_ format.
+`start_time` | `String` | The time booking starts. The format must be HH:MM 
+`end_time` | `String` | The time booking ends. The format must be HH:MM 
 
+## Response
 > Response
 
 ```json
@@ -248,37 +259,33 @@ curl http://127.0.0.1:8000/book_room_normal
     "error": "error message"
 }
 ```
-**Restrictions:** Only users in group3 can use this endpoint and token authenticated requests 
+There are two possible responses: 
 
-**Parameters:**
+`success` -> Booking has been made.
 
-room_id:`String`, 
+or
 
-date:`YYYYMMDD`, 
-
-start_time: `HH:MM`, 
-
-end_time: `HH:MM`, 
-
-society: `String`, 
-
-event_name: `String` 
-
-**Allowed request type:** `POST`  
-
-Only group3 or group4 can book these rooms (this is society presidents and anyone who else group3 access)
-
-All fields must be complete
+`error` -> A message providing a reason will be given.
 
 # Get all bookings from a user
 ###: `/get_users_booking`
-## Parameters: 
 
+This endpoint shows all the rooms the logged-in user has booked.
+## Request Parameters: 
+
+**Restrictions:** Only authenticated users are allowed  
+**Allowed request type:** `GET` 
 
 
 ```shell
 curl http://127.0.0.1:8000/get_users_booking?date=20160808 -u rema:remapassword
 ```
+
+Parameter | Type | Description
+--------- | ---------- | -----------
+date | `String` | The date in _YYYYMMDD_ format
+
+## Response 
 
 > Response
 
@@ -293,7 +300,6 @@ curl http://127.0.0.1:8000/get_users_booking?date=20160808 -u rema:remapassword
     }
 }
 ```
-
 > or appropriate error message
 
 ```json
@@ -301,21 +307,35 @@ curl http://127.0.0.1:8000/get_users_booking?date=20160808 -u rema:remapassword
     "error": "error message"
 }
 ```
-**Restrictions:** Only authenticated users are allowed  
-**Parameters:** date:`YYYYMMDD`  
-**Allowed request type:** `GET` 
+
+Field | Type | Description
+--------- | ---------- | -----------
+username | `String` | The username of the person who booked this.
+notes | `String`| Any notes given regarding the booking.
+start | `String` | Start of booking in HH:MM:SS format
+end | `String` | End of booking in HH:MM:SS format
+booking_id | `String` | The id associated with the booking
+
 
 All bookings on that date by user which is logged in. You cannot see other users data.
 
 # Get token
 ### `/token`
-## Parameters
+This endpoint allows a society president to access a token which can be then used to allow other members of his/her society to book as part of a society.
 
-**Restrictions:** Only Group4 Users can access this (Society 
+## Request Parameters
+
+**Parameters**: `nill`
+
+**Allowed request type:** GET  
+
+**Restrictions:** Only Group4 Users can access this (Society Predidents) 
 
 ```shell
 curl http://127.0.0.1:8000/token/ -u wil:wilpassword
 ```
+
+## Response Parameters
 
 > Response
 
@@ -324,13 +344,10 @@ curl http://127.0.0.1:8000/token/ -u wil:wilpassword
     "token":"token"
 }
 ```
-Predidents) 
+Field| Type | Description
+--------- | ---------- | -----------
+token| `String` | Token to authorise others to book rooms as a society.
 
-**Parameters**: `nill`
-
-**Allowed request type:** GET  
-
-Only presidents can use this endpoint.
 
 This endpoint creates a token on behalf of the society, valid for 100 days. The society leader can regenerates this token at any point causing the previous token to expire. Only 1 token is valid at any time.
 
@@ -340,15 +357,23 @@ GET FAIZ TO ADD HEADER FOR THE TOKEN LMAO
 
 #Delete a booking
 ### `/delete_booking`
-## Parameters
+This allows users to delete a book they have already booked.
 
+## Request Parameters
 
+**Restrictions:** Only object owner can delete the booking and user has to be authenticated  
+
+**Allowed request type:** `GET`  
 
 ```shell
 curl http:127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
     -u rema:remapassword
 ```
-yu have to be the person who booked it. obvs, can only delete ur own bookings 
+Parameter | Type | Description
+--------- | ---------- | -----------
+booking_id| `String` | The booking id associated with the room booking
+
+## Response 
 
 > Response
 
@@ -365,25 +390,30 @@ yu have to be the person who booked it. obvs, can only delete ur own bookings
     "error" : "blah blah"
 }
 ```
-**Restrictions:** Only object owner can delete the booking and user has to be authenticated  
-
-**Parameters:** booking_id:`String` 
-
-**Allowed request type:** `GET`  
 
 Once the booking is deleted, the length of the booking will be added back to the users quota.
  
-
 # Give normal users society access
 ### `/add_user_to_group3`
-## Parameters
 
+This endpoint allows society presidents to give access to other students and allow them to be included in group 3.
 
+## Request Parameters
 
+**Restriction:** Only Group4 users have access to this 
+
+**Allowed request type:** `POST`  
 
 ```shell
 curl --data "username=rema" http://127.0.0.1:8000/add_user_to_group3 -u wil:wilpassword
 ```
+
+Parameter | Type | Description
+--------- | ---------- | -----------
+username | `string` | This will be the user's email address.
+
+
+## Response 
 
 > Response
 
@@ -393,18 +423,27 @@ curl --data "username=rema" http://127.0.0.1:8000/add_user_to_group3 -u wil:wilp
 }
 ```
 
-**Restriction:** Only Group4 users have access to this  
-**Parameters:** username:`String` 
-**Allowed request type:** `POST`  
+
 
 # Remove normal user's society access
 ### `/delete_user_from_group3`
-## Parameters
+This endpoint removes user from group3 , denying them society room booking powers. 
+## Request Parameters
+
+**Restriction:** Only Group4 users have access to this 
+
+**Allowed request type:** `POST`  
 
 
 ```shell
 curl --data "username=rema" http://127.0.0.1:8000/delete_user_from_group3 -u wil:wilpassword
 ```
+Parameter | Type | Description
+--------- | ---------- | -----------
+username | `string` | This will be the user's email address.
+
+
+# Response 
 
 > Response
 
@@ -414,26 +453,26 @@ curl --data "username=rema" http://127.0.0.1:8000/delete_user_from_group3 -u wil
 }
 ```
 
-**Restriction:** Only Group4 users have access to this 
-
-**Parameters:** username:`String`  
-
-**Allowed request type:** `POST`  
-
-The username must be the email address of the person.
-
 
 # Logout a user
 ### `/logout`
-## Parameters
+This end point logs a user out of the API so they can no longer make requests. They must log back in.
 
+## Request Parameters
 
+**Restrictions: `nill`**
 
+**Allowed request types:** `GET`  
 
 ```shell
 curl http://127.0.0.1:8000/logout -u username:password
 ```
 
+Parameter | Type | Description
+--------- | ---------- | -----------
+user | `string` | This will be the user's email address.
+password | `String`| The user's password.
+
 > Response
 
 ```json
@@ -441,10 +480,6 @@ curl http://127.0.0.1:8000/logout -u username:password
     "success": true
 }
 ```
-
-**Restrictions: `nill`**
-
-**Allowed request types:** `GET`  
 
 
 Feel free to make users and test them from admin interface localhost:8000/admin  username: admin, password: adminpassword
