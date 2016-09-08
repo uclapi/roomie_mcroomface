@@ -391,7 +391,7 @@ html, body {
   h3, h4, h5, h6 {
     @extend %header-font;
     font-size: 15px;
-    margin-top: 2.5em;
+    /*margin-top: 2.5em;*/
     margin-bottom: 0.8em;
   }
 
@@ -463,7 +463,7 @@ html, body {
   }
 
   h3> code {
-    font-size:66px;
+    font-size:40px;
   }
 
   pre>code {
