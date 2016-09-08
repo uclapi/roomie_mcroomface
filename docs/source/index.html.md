@@ -16,121 +16,104 @@ includes:
 
 ---
 
-# Introduction
+# Log in a user
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+### To login in a user, use the endpoint `url : localhost:8000/login`
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+### Parameters  
 
-This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
+In the post request, you _must_ include these parameters. 
 
-# Authentication
+**Restrictions:** `nill`
 
-> To authorize, use this code:
+**Parameters:** _username_; `String`, _password_; `String`
 
-```ruby
-require 'kittn'
+**Allowed request type:** `POST`
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+
+```shell
+curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/login
 ```
 
 ```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
+requests.post("http://127.0.0.1:8000/login", params={"username":"wil", "password":"wilpassword"})
 ```
 
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
+> Response
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+{
+    "groups": [
+        "Group_3",
+        "Group_2",
+        "Group_4"
+    ],
+    "email": "wil@wil.com",
+    "token": "57087bd9cc3cde97515a66bc0b58d29696063fd5",
+    "societies": [
+        [
+            "UCLU Technology Society",
+            "SOTECHSOC"
+        ]
+    ],
+    "quota_left": 120
+}
+```
+## Get list of rooms and assoiated meta data
+
+url : localhost:8000/get_list_of_rooms  
+restrictions : Only authenticated users can make a request  
+parameters: nill  
+allowed request types: GET  
+
+```shell
+curl http:127.0.0.1:8000/get_list_of_rooms
 ```
 
-This endpoint retrieves all kittens.
+> Response
 
-### HTTP Request
+```json
+{
+    "0": {
+        "room_id": "RO-PIZZA",
+        "printers": true,
+        "capacity": 10,
+        "room_name": "G01",
+        "individual_access": false,
+        "water_fountain": false,
+        "coffee": false
+    }
+}
+```
 
-`GET http://example.com/api/kittens`
+# Get room bookings on a specific room on a specific date
 
-### Query Parameters
+url: localhost:8000/get_room_bookings  
+restrictions : Only authenticated users can make a request  
+parameters: room_id:String, date:String #YYYYMMDD format  
+allowed request type : GET  
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+```shell
+curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -u wil:wilpassword
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
+```
+
+
+> Response
+
+```json
+{
+    "0": {
+        "username": "emily emily emellee",
+        "notes": "yoyoy -UCLU Technology Society",
+        "end": "13:00:00",
+        "start": "11:00:00"
+    }
+}
+```
+
+
 
 ## Get a Specific Kitten
 

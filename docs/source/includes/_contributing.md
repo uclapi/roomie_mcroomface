@@ -2,24 +2,6 @@
 
 <aside class="notice">So testing time!</aside>
 
-Make sure you have pip installed, and python3.
-
-Clone the repo from [https://github.com/techsoc/roomie_mcroomface](https://github.com/techsoc/roomie_mcroomface)  
-* install virtualenv by typing `pip install virtualenv`  
-* create a env by typing `virtualenv -p python3 env`  
-* activate the source by typing `source env/bin/activate`  
-
-cd to roomie_mcroom/roomie_mcroom
-
-create a file aws_settings.py and add these Data base settings to these variables  
-HOST =  
-PORT =  
-USERNAME =  
-DB_NAME =  
-PASSWORD =  
-dw people, we will change password once its deployed :/  
-
-cd to the main directory and type `pip install -r requirements.txt` to install all the dependencies.
 
 ## Log a user in:
 
@@ -31,7 +13,34 @@ allowed request type : POST
 ```shell
 curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/login
 ```
-> Returns JSON indicating appropriate message.
+
+```python
+requests.post("http://127.0.0.1:8000/login", params={"username":"wil", "password":"wilpassword"})
+
+```
+
+> Response
+
+```json
+{
+    "groups": [
+        "Group_3",
+        "Group_2",
+        "Group_4"
+    ],
+    "email": "wil@wil.com",
+    "token": "57087bd9cc3cde97515a66bc0b58d29696063fd5",
+    "societies": [
+        [
+            "UCLU Technology Society",
+            "SOTECHSOC"
+        ]
+    ],
+    "quota_left": 120
+}
+```
+
+
 
 ## Get list of rooms and assoiated meta data
 
