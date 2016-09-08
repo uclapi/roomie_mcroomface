@@ -18,6 +18,9 @@ includes:
 
 # Log in a user
 ### `/login`
+
+This endpoint allows a user to login to the API. You *must* login to access all other endpoints.
+
 ## Query Parameters 
 
 
@@ -28,6 +31,19 @@ curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/login
 ```python
 requests.post("http://127.0.0.1:8000/login", params={"username":"wil", "password":"wilpassword"})
 ```
+
+
+**Restrictions:** `nill`
+
+**Allowed request type:** `POST`
+
+
+Parameter | Type | Description
+--------- | ---------- | -----------
+user | `string` | This will be the user's email address.
+password | `String`| The user's password.
+
+## Response
 
 > Response
 
@@ -49,11 +65,13 @@ requests.post("http://127.0.0.1:8000/login", params={"username":"wil", "password
     "quota_left": 120
 }
 ```
-**Restrictions:** `nill`
 
-**Parameters:** _username_; `String`, _password_; `String`
-
-**Allowed request type:** `POST`
+Field | Type | Description
+--------- | ---------- | -----------
+groups | `List` | This list contains all the groups the user is a part of.
+email | `String` | The user's email.
+token | `String` | This token is valid until the user logs out. If the user doesn't log out, the token remains valid.
+societies | `List` | Each item in the list contains the society's name along with the identifer code for the society.
 
 Upon successful login, you'll recieve a token in the response which expires if you log out. (If you don't log out, it won't expire).
 
@@ -63,17 +81,26 @@ You'll also be able to see all the groups that you (the user) belong to as well 
 
 Finally, your remaining quota is provided in the response (`quota_left`) too. Every user has 180 minutes per week which is reset at 3am every Monday. The minutes **do not** carry over.
 
-
-
 # Get list of rooms 
 
 ### `/get_list_of_rooms` 
-## Parameters
 
+This endpoint returns a list of all the rooms available in the Engineering hub.
+
+## Query Parameters 
 
 ```shell
 curl http:127.0.0.1:8000/get_list_of_rooms
 ```
+
+**Restrictions:** `nill`
+
+**Allowed request type:** `GET`
+
+
+No parameters are required as long.
+
+## Response
 
 > Response
 
@@ -91,28 +118,38 @@ curl http:127.0.0.1:8000/get_list_of_rooms
 }
 ```
 
-**Restrictions:** Only authenticated users can make a request  
-
-**Parameters:** `nill`
-
-**Allowed request types:** GET  
-
-In the response, if `individual_access` is `false`, this room is only bookable by societies (group3). 
-
+Field | Type | Description
+--------- | -------- | -----------
+room_id | `String` | The identifer for the room. This should be used when booking a room. 
+printers | Boolean | Does the room have a printer or not?
+capacity | 10 | The number of people that can fit in the room.
+room_name | `String` | The actual name of the room.
+individual_access | Boolean | If this is false, this room can only be booked by with society access (group3 / group4).
+water_fountain | Boolean | If you this is true, congratulations, you've found a very rare room in UCL that has a water fountain.
+Coffee | Boolean | Whether or not this room has a coffee machine.
 
 
 # Get timetable for room 
 ### `/get_room_bookings`
+This endpoint returns the timetable for the room on a given day.
+
 ## Parameters
-
-
 
 ```shell
 curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -u wil:wilpassword
 
 curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
 ```
+**Restrictions:** Only authenticated users can make a request  
 
+**Allowed request types:** `GET`
+
+Parameter | Type | Description
+--------- | ---------- | -----------
+`room_id` | `String` | The room id (not to be confused with the room name)
+`date` | `String`| The date must be entered in _YYYYMMDD_ format.
+
+##Response 
 
 > Response
 
@@ -126,28 +163,39 @@ curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -H
     }
 }
 ```
-**Restrictions:** Only authenticated users can make a request  
 
-**Parameters:** room_id:`String`, date:`String` _#YYYYMMDD format_  
-
-**Allowed request types:** `GET`
-
-
-The room ID must be provided for the room in question. (TBC)
-
+Field | Type | Description
+--------- | ---------- | -----------
+username | `String` | The username of the person who booked this.
+notes | `String`| Any notes given regarding the booking.
+start | `String` | Start of booking in HH:MM:SS format
+end | `String` | End of booking in HH:MM:SS format
 
 # Book normal rooms
 
 ### `/book_room_normal`
+This end point allows the user to book rooms available to everybody. 
 ## Parameters
 
+**Restrictions** : Any authenticated user can make room bookings, except for token based authentications, see [REF]
 
+**Allowed request type:** `POST` 
 
 ```shell
 curl http://127.0.0.1:8000/book_room_normal
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00"
     -u rema:remapassword
 ```
+
+Parameter | Type | Description
+--------- | ---------- | -----------
+`room_id` | `String` | The room id (not to be confused with the room name)
+`date` | `String`| The date must be entered in _YYYYMMDD_ format.
+`start_time` | `String` | The time booking starts. The format must be HH:MM 
+`end_time` | `String` | The time booking ends. The format must be HH:MM 
+
+## Response 
+
 
 > Response
 
@@ -164,26 +212,13 @@ curl http://127.0.0.1:8000/book_room_normal
     "error": "error message"
 }
 ```
-**Restrictions** : Any authenticated user can make room bookings, except for token based authentications, see [REF]
+There are two possible responses: 
 
-**Parameters:** 
-room_id;`String`, 
+`success` -> Booking has been made.
 
-date:`YYYYMMDD`,
+or
 
-start_time:`HH:MM`, 
-
-end_time:`HH:MM`, 
-
-notes:`String`
-
-**Allowed request type:** `POST` 
-
-Everyone is able to book rooms, **all** fields must be provided in the **correct** format.
-
-In the `notes`, provide a reason for why you want to book the room.
-
-If something goes wrong, the response will contain an error message.
+`error` -> A message providing a reason will be given.
 
 After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response. 
 
