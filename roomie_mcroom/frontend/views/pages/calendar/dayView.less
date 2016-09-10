@@ -1,6 +1,7 @@
 .dayView{
   width: 100%;
-
+  max-width: 35em;
+  margin:auto;
   .date{
     border-bottom: solid 1px #d5d5d5;
     padding-bottom: 5px;
@@ -9,6 +10,10 @@
     .slot{
       padding: 5px;
       border-bottom: solid 1px #d5d5d5;
+      height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center
     }
     .taken{
       color: #d2d2d2;
@@ -18,6 +23,10 @@
       }
     }
     .free{
+      &:hover{
+        background-color: rgba(50, 255, 133, 0.73);
+        color: white;
+      }
 
     }
   }
@@ -25,4 +34,7 @@
 
     padding-bottom: 20px;
   }
+}
+.rightBorder{
+  border-right: solid 1px #d5d5d5;
 }

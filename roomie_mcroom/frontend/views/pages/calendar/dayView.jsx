@@ -27,7 +27,7 @@ var Slot = React.createClass({
       <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))} 
            onMouseOver={this.mouseOver} 
            onMouseOut={this.mouseOut}>
-        <div className="time" id={"slot"+this.props.key}>{this.state.content}</div>
+        <div className="time" id={"slot"+this.props.time}>{this.state.content}</div>
       </div>
     );
   }
@@ -36,12 +36,11 @@ module.exports = React.createClass({
   getInitialState: function() {
     return {
       slots:[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,1,0,1,1,1,1,1],
-      date:'31/08/16'
     }
   },
   render: function() {
-    return <div className="dayView">
-      <div className="date">{this.state.date}</div>
+    return <div className={this.props.rightBorder ? "dayView rightBorder": "dayView"}>
+      <div className="date">{this.props.date.format('Do MMM')}</div>
       <div className="slots">
         {this.state.slots.map((taken, i) =>{
           return <Slot key={i} time={i} taken={taken}/>

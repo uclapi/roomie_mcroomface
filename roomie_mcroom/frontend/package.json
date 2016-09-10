@@ -10,6 +10,7 @@
   "author": "Henry Mortimer",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.14.1",
     "react": "^15.3.0",
     "react-router": "^2.6.1",
     "whatwg-fetch": "^1.0.0"

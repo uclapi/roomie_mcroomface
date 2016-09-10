@@ -88,6 +88,16 @@ h2 {
 p {
   font-size: 1.2em;
 }
+.pure-u-1-7 {
+  width: 14.2857%;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  vertical-align: top;
+  text-rendering: auto;
+}
 .sideBar {
   width: 240px;
   left: -240px;
@@ -172,6 +182,8 @@ p {
 }
 .dayView {
   width: 100%;
+  max-width: 35em;
+  margin: auto;
 }
 .dayView .date {
   border-bottom: solid 1px #d5d5d5;
@@ -180,6 +192,10 @@ p {
 .dayView .slots .slot {
   padding: 5px;
   border-bottom: solid 1px #d5d5d5;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .dayView .slots .taken {
   color: #d2d2d2;
@@ -188,6 +204,16 @@ p {
   background-color: rgba(255, 65, 65, 0.84);
   color: white;
 }
+.dayView .slots .free:hover {
+  background-color: rgba(50, 255, 133, 0.73);
+  color: white;
+}
 .dayView .endSlot {
   padding-bottom: 20px;
+}
+.rightBorder {
+  border-right: solid 1px #d5d5d5;
+}
+.calendar .pure-button {
+  margin: 5px;
 }
