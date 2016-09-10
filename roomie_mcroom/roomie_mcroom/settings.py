@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
 import datetime
+import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -38,15 +38,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rooms',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
-    ]
+    )
 }
 
 MIDDLEWARE_CLASSES = [
@@ -58,14 +64,18 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'roomie_mcroom.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./frontend'],
+        'DIRS': [os.path.join(BASE_DIR, 'roomie_mcroom', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,11 +93,15 @@ WSGI_APPLICATION = 'roomie_mcroom.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
+from .aws_settings import *
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': USERNAME,
+        'PASSWORD': PASSWORD,
+        'HOST': HOST,
+        'PORT': PORT,
     }
 }
 
@@ -135,5 +149,10 @@ STATICFILE_DIRS = {
 }
 
 
+<<<<<<< HEAD
 closing_time = {"weekend":datetime.time(18, 0), "week":datetime.time(21, 0)}
 opening_time = { "weekend": datetime.time(9, 0), "week":datetime.time(8, 0)}
+=======
+closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
+opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
+>>>>>>> master

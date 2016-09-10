@@ -1,6 +1,6 @@
-from .models import UserProfile, Room, Booking
-from rest_framework import serializers
 from django.contrib.auth.models import User
+from rest_framework import serializers
+
 
 class RoomSerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
@@ -13,10 +13,10 @@ class RoomSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.Serializer):
-    first_name = serializers.CharField(source = 'user.first_name')
-    last_name = serializers.CharField(source = 'user.last_name')
-    email = serializers.EmailField(source = 'user.email')
-    password = serializers.CharField(source = 'user.password')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.EmailField(source='user.email')
+    password = serializers.CharField(source='user.password')
     society_access = serializers.BooleanField()
 
     quota_left = serializers.IntegerField()
