@@ -5,13 +5,13 @@ import Layout from '../components/layout.jsx'
 module.exports = React.createClass({
   render:function() {
     return (
-      <Layout>
+      <Layout title="">
         <div className="header">
           <div className="pure-g">
             <div className="pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3"></div>
             <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered">
               <h1>Welcome to the Engineering Hub</h1>
-              <Link className="button" to="/">Book a room now</Link>
+              <Link className="button" to="/rooms">Book a room now</Link>
             </div>
             <div className="pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3"></div>
           </div>

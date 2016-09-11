@@ -33,10 +33,53 @@ var Slot = React.createClass({
   }
 })
 module.exports = React.createClass({
+  getBookings: function(){
+    var slots = [];
+    for(var i = 0; i < 24; i++){
+      slots[i] = 0;
+    }
+    for(var i = 0; i < 8; i++){
+      slots[i] = 1;
+    }
+    for(var i = 22; i < 24; i++){
+      slots[i] = 1;
+    }
+    var day = this.props.date.format('ddd');
+    if(day === 'Sat' || day === 'Sun'){
+      slots[8] = 1;
+      for(var i = 19; i < 22; i++){
+        slots[i] = 1;
+      }
+    }
+
+    for(var i = 0; i < this.state.bookings.length; i++){
+      var start = parseInt(this.state.bookings[i].start.substring(0,2));
+      var end = parseInt(this.state.bookings[i].end.substring(0,2));
+
+      for(var j = start; j < end; j++){
+        slots[j] = 1;
+      }
+    }
+
+    return slots;
+  },
   getInitialState: function() {
     return {
-      slots:[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,1,0,1,1,1,1,1],
+      slots:[],
+      bookings: [
+        {
+          "username": "emily emily emellee",
+					"notes": "yoyoy -UCLU Technology Society",
+					"end": "13:00:00",
+					"start": "11:00:00" 
+        }
+      ]
     }
+  },
+  componentDidMount: function(){
+    this.setState({
+      slots: this.getBookings()
+    });
   },
   render: function() {
     return <div className={this.props.rightBorder ? "dayView rightBorder": "dayView"}>

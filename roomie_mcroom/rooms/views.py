@@ -573,12 +573,7 @@ def remove_user_from_group3(request):
         except:
             return Response({"error": "user wasn't in Group 3"})
 
-<<<<<<< HEAD
-def web_app(request):
-    return render(request, 'index.html')
-=======
         user.user_profile.society_access = False
         user.user_profile.save()
         user.save()
     return Response({"success": True})
->>>>>>> master

@@ -1,19 +1,18 @@
 import 'whatwg-fetch';
 module.exports = {
-  login(email, pass, cb) {
+  login(user, pass, cb) {
     cb = arguments[arguments.length - 1]
-    fetch("https://c783397b.ngrok.io/login", {
+    fetch("http://localhost:8000/login", {
         method: "POST",
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         mode: 'cors',
-        body: "username="+email+"&password="+pass
+        body: "username="+user+"&password="+pass
     }).then(function(res){
       return res.json().then(function(res){
-        if(res.email){
-          localStorage.user = email;
-          localStorage.password = pass;
+        if(res.token){
+          localStorage.token = res.token;
           cb(true);
         } else {
           cb(false);
@@ -27,13 +26,12 @@ module.exports = {
   },
 
   logout(cb) {
-    delete localStorage.user;
-    delete localStorage.password;
+    delete localStorage.token;
     if (cb) cb()
   },
 
   loggedIn() {
-    return !!localStorage.user;
+    return !!localStorage.token;
   }
 }
 

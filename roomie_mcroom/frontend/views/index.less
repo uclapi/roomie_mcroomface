@@ -26,6 +26,13 @@ html{
   height: 100%;
 }
 
+button{
+  a{
+    text-decoration: none;
+    color: white;
+  }
+}
+
 .button{
   color: white;
   padding: 10px;
@@ -59,12 +66,14 @@ html{
 }
 
 .card{
+  border-bottom: solid 1px #d5d5d5;
   @media screen and (min-width: 35.5em) {
     padding: 5px 20px;
     background-color: white;
     margin: 20px;
     .BoxShadowHelper(1);
     border-radius: 5px;
+    border: none;
   }
 }
 
@@ -126,6 +135,9 @@ p{
 	text-rendering: auto
 }
 
+.noScroll{
+  overflow: hidden;
+}
 @import './components/sidebar.less';
 @import './components/layout.less';
 @import './pages/home.less';

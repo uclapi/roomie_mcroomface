@@ -42,32 +42,36 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return ( <div className="container" id="app-container">
-      <Sidebar />
-      <div className="main-content">
-        <div className="pure-g menu-bar">
-          <div className="pure-u-1-2">
-            <div className="burger-button" id="sidebar-toggle" onClick={this.handleClick}>
-              <span className="bar" id="top"></span>
-              <span className="bar"></span>
-              <span className="bar"></span>
+    return ( 
+      <div className="container" id="app-container">
+        <Sidebar />
+        <div className="main-content">
+          <div className="pure-g menu-bar">
+            <div className="pure-u-1-3">
+              <div className="burger-button" id="sidebar-toggle" onClick={this.handleClick}>
+                <span className="bar" id="top"></span>
+                <span className="bar"></span>
+                <span className="bar"></span>
+              </div>
             </div>
-          </div>
-          <div className="pure-u-1-2">
-						{this.state.loggedIn ? (
-              <div className="button" id="top-right" onClick={this.logout} >Log out</div>
-            ) : (
-              <Link className="button" id="top-right" to="/login" >Sign In</Link>
-            )}
-          </div>
-        </div>
+            <div className="pure-u-1-3 centered">
+              <h1>{this.props.title}</h1>
+            </div>
+            <div className="pure-u-1-3">
+              {this.state.loggedIn ? (
+                <div className="button" id="top-right" onClick={this.logout} >Log out</div>
+                ) : (
+                  <Link className="button" id="top-right" to="/login" >Sign In</Link>
+                  )}
+                </div>
+            </div>
 
-        <div className="content centered">
-          {this.props.children}
-        </div>
-        <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
-        </div>
-    </div>
+            <div className="content centered">
+              {this.props.children}
+            </div>
+            <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
+          </div>
+      </div>
     );
   }
 });

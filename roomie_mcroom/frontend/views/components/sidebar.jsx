@@ -12,9 +12,6 @@ module.exports = React.createClass({
               <Link className="pure-menu-link" to="/">Home</Link>
             </li>
             <li className="pure-menu-item">
-              <Link className="pure-menu-link" to="/calendar">Calendar</Link>
-            </li>
-            <li className="pure-menu-item">
               <Link className="pure-menu-link" to="/rooms">Rooms</Link>
             </li>
           </ul>

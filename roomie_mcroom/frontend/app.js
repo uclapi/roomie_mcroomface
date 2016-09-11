@@ -1,9 +1,11 @@
 var express = require('express');
 var app = express();
+var path = require('path');
 
-app.use(express.static('statics'));
+app.use(express.static(__dirname + '/statics'));
+
 app.get('*', function (req, res) {
-  res.sendfile('statics/html/index.html');
+  res.sendFile(path.resolve(__dirname, 'statics/index.html'));
 });
 
 app.listen(3000, function () {
