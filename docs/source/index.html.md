@@ -361,6 +361,7 @@ xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_nam
 
 // response from the server
 xhr.responseText
+```
 
 Parameter | Type | Description
 --------- | ---------- | -----------
