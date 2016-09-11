@@ -145,8 +145,8 @@ No parameters are required as long.
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "room_id": "RO-PIZZA",
         "printers": true,
         "capacity": 10,
@@ -155,7 +155,7 @@ No parameters are required as long.
         "water_fountain": false,
         "coffee": false
     }
-}
+]
 ```
 
 Field | Type | Description
@@ -216,14 +216,14 @@ Parameter | Type | Description
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "username": "emily emily emellee",
         "notes": "yoyoy -UCLU Technology Society",
         "end": "13:00:00",
         "start": "11:00:00"
     }
-}
+]
 ```
 
 Field | Type | Description
@@ -441,15 +441,15 @@ date | `String` | The date in _YYYYMMDD_ format
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "end": "17:00:00",
         "username": "rema boo",
         "notes": "book",
         "booking_id": "21cf0a17-4b64-4a5f-9a0e-9381d4195af1",
         "start": "15:00:00"
     }
-}
+]
 ```
 > or appropriate error message
 
