@@ -107,9 +107,9 @@ def get_rooms_list(request):
     print(request.user)
     print(request.auth)
     rooms = Room.objects.all()
-    room_dict = {}
-    for index, room in enumerate(rooms):
-        room_dict[index] = {
+    room_dict = []
+    for room in (rooms):
+        room_dict.append({
             "capacity": room.capacity,
             "coffee": room.coffee,
             "water_fountain": room.water_fountain,
@@ -117,7 +117,7 @@ def get_rooms_list(request):
             "individual_access": room.indiv_bookable,
             "printers": room.printers,
             "room_id": room.room_id
-        }
+        })
 
     return Response(room_dict)
 
@@ -197,15 +197,15 @@ def get_room_bookings(request):
         list(BookingSociety.objects.filter(date=dateOfSearch, room=room)))
     # serialize this data {{start, end, duration, booked_person}}
 
-    booking_dict = {}
+    booking_dict = []
 
-    for index, booking in enumerate(bookings):
-        booking_dict[index] = {
+    for booking in (bookings):
+        booking_dict.append({
             "username": (booking.user.user.username + " " + booking.user.user.first_name + " " + booking.user.user.last_name),
             "start": booking.start,
             "end": booking.end,
             "notes": booking.remarks if isinstance(booking, Booking) else booking.remarks + " -" + booking.society.user.first_name
-        }
+        })
 
     return Response(booking_dict)
 
@@ -460,15 +460,15 @@ def get_users_booking(request):
         bookings.extend(
             list(BookingSociety.objects.filter(date=date, user=current_user)))
     # serialize the data and send it back
-    retDict = {}
-    for index, booking in enumerate(bookings):
-        retDict[index] = {
+    retDict = []
+    for booking in bookings:
+        retDict.append({
             "username": booking.user.user.first_name + " " + booking.user.user.last_name,
             "start": booking.start,
             "end": booking.end,
             "booking_id": booking.booking_id,
             "notes": booking.remarks if isinstance(booking, Booking) else booking.remarks + " -" + booking.society.user.first_name
-        }
+        })
 
     return Response(retDict)
 

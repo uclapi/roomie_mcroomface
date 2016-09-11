@@ -33,9 +33,18 @@ import requests
 
 data = {"username":"wil", "password":"wilpassword"}
 
-requests.post("http://127.0.0.1:8000/login", data = data)
+requests.post("http://127.0.0.1:8000/login", data=data)
 ```
 
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://127.0.0.1:8000/login', true);
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send('username=wil&password=wilpassword');
+
+// response from the server
+xhr.responseText;
+```
 
 **Restrictions:** `nill`
 
@@ -110,6 +119,20 @@ r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", headers = {"Authoriz
 66bc0b58d29696063fd5"})
 ```
 
+```javascript
+// username & password
+
+
+// token
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/get_list_of_rooms", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
+```
+
 **Restrictions:** `nill`
 
 **Allowed request type:** `GET`
@@ -122,8 +145,8 @@ No parameters are required as long.
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "room_id": "RO-PIZZA",
         "printers": true,
         "capacity": 10,
@@ -132,7 +155,7 @@ No parameters are required as long.
         "water_fountain": false,
         "coffee": false
     }
-}
+]
 ```
 
 Field | Type | Description
@@ -163,8 +186,20 @@ import requests
 params = {"room_id":"RO-PIZZA", "date":"20160808"}
 
 # You can use both methods for authentication here
-r = requests.get("http://127.0.0.1:8000/get_room_bookings", params = params, headers = headers)
+r = requests.get("http://127.0.0.1:8000/get_room_bookings", params=params, headers=headers)
 
+```
+
+```javascript
+
+// headers
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
 ```
 
 **Restrictions:** Only authenticated users can make a request  
@@ -181,14 +216,14 @@ Parameter | Type | Description
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "username": "emily emily emellee",
         "notes": "yoyoy -UCLU Technology Society",
         "end": "13:00:00",
         "start": "11:00:00"
     }
-}
+]
 ```
 
 Field | Type | Description
@@ -215,7 +250,7 @@ curl http://127.0.0.1:8000/book_room_normal
 
 
 curl http://127.0.0.1:8000/book_room_normal
-    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00notes=this is an event"
+    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -H 'Authorization: Token <auth_token_here>'   
 ```
 
@@ -232,7 +267,19 @@ data = {
 
 #You can use both methods for authentication here
 
-r = requests.post(url, data = data, headers = headers)
+r = requests.post(url, data=data, headers=headers)
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://127.0.0.1:8000/book_room_normal', true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event");
+
+// response from the server
+xhr.responseText
+
 ```
 
 Parameter | Type | Description
@@ -280,11 +327,11 @@ This endpoint allows society presidents or authorised members to book special so
 **Allowed request type:** `POST`  
 
 ```shell
-curl http://127.0.0.1:8000/book_room_normal
+curl http://127.0.0.1:8000/book_room_society
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -u rema:remapassword
 
-curl http://127.0.0.1:8000/book_room_normal
+curl http://127.0.0.1:8000/book_room_society
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -H 'Authorization: Token <auth_token_here>' 
 ```
@@ -302,7 +349,18 @@ data = {
 
 #You can use both methods for authentication here
 
-r = requests.post(url, data = data, headers = headers)
+r = requests.post(url, data=data, headers=headers)
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://127.0.0.1:8000/book_room_society', true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC");
+
+// response from the server
+xhr.responseText
 ```
 
 Parameter | Type | Description
@@ -360,8 +418,18 @@ params = {"date" : "20160808"}
 
 #You can use both methods for authentication here
 
-r = requests.get(url, params = params)
+r = requests.get(url, params=params)
 
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/get_users_booking?date=20160808", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
 ```
 
 Parameter | Type | Description
@@ -373,15 +441,15 @@ date | `String` | The date in _YYYYMMDD_ format
 > Response
 
 ```json
-{
-    "0": {
+[
+    {
         "end": "17:00:00",
         "username": "rema boo",
         "notes": "book",
         "booking_id": "21cf0a17-4b64-4a5f-9a0e-9381d4195af1",
         "start": "15:00:00"
     }
-}
+]
 ```
 > or appropriate error message
 
@@ -410,7 +478,7 @@ This endpoint allows a society president to access a token which can be then use
 
 
 ```shell
-curl http://127.0.0.1:8000/token/?society_id-SOTECHSOC -u wil:wilpassword
+curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -u wil:wilpassword
 
 curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>' 
 ```
@@ -418,9 +486,20 @@ curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -H 'Authorization: Token 
 ```python
 import requests
 
-r = requests.get(url, params = {"society_id":"SOTECHSOC"}, headers = header)
+r = requests.get(url, params={"society_id":"SOTECHSOC"}, headers=headers)
 
 ```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/token?society_id=SOTECHSOC", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
+```
+
 Parameter | Type | Description
 --------- | ---------- | -----------
 society_id | `String` | Society-ID eg.`SO-XXXXXX`
@@ -473,9 +552,20 @@ import requests
 
 params = {"booking_id" : "XXXX-XXXX-XXXXX"}
 
-r = requests.get(url, params = params, headers = headers)
+r = requests.get(url, params=params, headers=headers)
 
 ```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
+```
+
 Parameter | Type | Description
 --------- | ---------- | -----------
 booking_id| `String` | The booking id associated with the room booking
@@ -525,7 +615,18 @@ data = {
     "username" : "rema"
 }
 
-r = requests.post(url, data = data, headers = headers)
+r = requests.post(url, data=data, headers=headers)
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', "http://127.0.0.1:8000/add_user_to_group3", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send("username=rema&society_id=SOTECHSOC");
+
+// response from the server
+xhr.responseText;
 ```
 
 Parameter | Type | Description
@@ -569,8 +670,18 @@ data = {
     "username" : "rema"
 }
 
-r = requests.post(url, data = data, headers = headers)
+r = requests.post(url, data=data, headers=headers)
+```
 
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', "http://127.0.0.1:8000/delete_user_from_group3", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send("username=rema&society_id=SOTECHSOC");
+
+// response from the server
+xhr.responseText;
 ```
 Parameter | Type | Description
 --------- | ---------- | -----------
@@ -607,8 +718,18 @@ curl http://127.0.0.1:8000/logout 'Authorization: Token <auth_token_here>'
 ```python
 import requests
 
-r = requests.get(url, headers = header)
+r = requests.get(url, headers=headers)
 
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', "http://127.0.0.1:8000/logout", true);
+xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
+xhr.send();
+
+// response from the server
+xhr.responseText;
 ```
 
 Parameter | Type | Description
