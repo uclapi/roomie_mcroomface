@@ -1,0 +1,17 @@
+api:
+  restart: always
+  build: ./api
+  expose:
+    - "8000"
+  volumes:
+    - /usr/src/apps
+
+nginx:
+  restart: always
+  build: ./nginx/
+  ports:
+    - "80:80"
+  volumes_from:
+    - api
+  links:
+    - api:api
