@@ -6,11 +6,6 @@ api:
   volumes:
     - /usr/src/apps
 
-docs:
-  image: busybox
-  volumes:
-    - ./docs/build:/var/www/html/docs
-
 nginx:
   restart: always
   build: ./nginx/
@@ -18,6 +13,5 @@ nginx:
     - "80:80"
   volumes_from:
     - api
-    - docs
   links:
     - api:api

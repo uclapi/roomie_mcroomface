@@ -11,9 +11,4 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    location /docs {
-      alias /var/www/html/docs/;
-      index index.html;
-    }
-
 }
