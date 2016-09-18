@@ -210,6 +210,18 @@ def get_room_bookings(request):
     return Response(booking_dict)
 
 
+@api_view(['GET'])
+@authentication_classes((BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
+def get_user_meta_data(request):
+    user = request.user
+    return Response({
+        "email": user.email,
+        "quota_left": user.user_profile.quota_left,
+        "societies": [[k.user.first_name, k.user.username] for k in user.user_profile.associated_society.all()],
+        "groups": [k.name for k in user.groups.all()]
+    })
+
 @api_view(['POST'])
 def login(request):
     if request.method == 'POST':
