@@ -30757,6 +30757,13 @@ module.exports = {
     return localStorage.token;
   },
   logout: function logout(cb) {
+    fetch('http://localhost:8000/logout', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token' + localStorage.token
+      },
+      mode: 'cors'
+    });
     delete localStorage.token;
     if (cb) cb();
   },
@@ -30764,27 +30771,6 @@ module.exports = {
     return !!localStorage.token;
   }
 };
-
-function pretendRequest(email, pass, cb) {
-  setTimeout(function () {
-    if (email === 'joe@example.com' && pass === 'password1') {
-      cb({
-        authenticated: true,
-        token: Math.random().toString(36).substring(7)
-      });
-    } else {
-      cb({ authenticated: false });
-    }
-  }, 0);
-}
-// pretendRequest(email, pass, (res) => {
-//   if (res.authenticated) {
-//     localStorage.token = res.token
-//     if (cb) cb(true)
-//   } else {
-//     if (cb) cb(false)
-//   }
-// })
 
 },{"whatwg-fetch":239}],241:[function(require,module,exports){
 'use strict';
@@ -30822,6 +30808,10 @@ var _calendar2 = _interopRequireDefault(_calendar);
 var _rooms = require('./pages/rooms.jsx');
 
 var _rooms2 = _interopRequireDefault(_rooms);
+
+var _confirmBooking = require('./pages/confirmBooking.jsx');
+
+var _confirmBooking2 = _interopRequireDefault(_confirmBooking);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30872,12 +30862,13 @@ function requireAuth(nextState, replace) {
   { history: _reactRouter.browserHistory },
   _react2.default.createElement(_reactRouter.Route, { path: '/', component: _home2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: '/login', component: _login2.default }),
-  _react2.default.createElement(_reactRouter.Route, { path: '/rooms', component: _rooms2.default }),
-  _react2.default.createElement(_reactRouter.Route, { path: '/schedule/:roomId', component: _calendar2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/rooms', component: _rooms2.default, onEnter: requireAuth }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/schedule/:roomId', component: _calendar2.default, onEnter: requireAuth }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/book/:roomId/:dateTime', component: _confirmBooking2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":240,"./pages/calendar/calendar.jsx":244,"./pages/error.jsx":246,"./pages/home.jsx":247,"./pages/login.jsx":248,"./pages/rooms.jsx":249,"react":236,"react-dom":53,"react-router":83}],242:[function(require,module,exports){
+},{"../utils/auth.js":240,"./pages/calendar/calendar.jsx":244,"./pages/confirmBooking.jsx":246,"./pages/error.jsx":247,"./pages/home.jsx":248,"./pages/login.jsx":249,"./pages/rooms.jsx":250,"react":236,"react-dom":53,"react-router":83}],242:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -30949,7 +30940,7 @@ module.exports = _react2.default.createClass({
           { className: 'pure-g menu-bar' },
           _react2.default.createElement(
             'div',
-            { className: 'pure-u-1-3' },
+            { className: 'pure-u-1-6 pure-u-sm-1-3' },
             _react2.default.createElement(
               'div',
               { className: 'burger-button', id: 'sidebar-toggle', onClick: this.handleClick },
@@ -30960,7 +30951,7 @@ module.exports = _react2.default.createClass({
           ),
           _react2.default.createElement(
             'div',
-            { className: 'pure-u-1-3 centered' },
+            { className: 'pure-u-1-2 pure-u-sm-1-3 centered' },
             _react2.default.createElement(
               'h1',
               null,
@@ -31193,6 +31184,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
+require('whatwg-fetch');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Slot = _react2.default.createClass({
@@ -31227,15 +31220,21 @@ var Slot = _react2.default.createClass({
       _react2.default.createElement(
         'div',
         { className: 'time', id: "slot" + this.props.time },
-        this.state.content
+        this.props.taken ? this.state.content : _react2.default.createElement(
+          _reactRouter.Link,
+          { to: '/book/' + this.props.roomId + '/' + this.props.date + 'T' + ('0' + this.props.time).slice(-2) + ':00:00' },
+          ' ',
+          this.state.content,
+          ' '
+        )
       )
     );
   }
 });
-module.exports = _react2.default.createClass({
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   displayName: 'exports',
 
-  getBookings: function getBookings() {
+  setSlots: function setSlots() {
     var slots = [];
     for (var i = 0; i < 24; i++) {
       slots[i] = 0;
@@ -31262,47 +31261,209 @@ module.exports = _react2.default.createClass({
         slots[j] = 1;
       }
     }
-
     return slots;
+  },
+  getBookings: function getBookings() {
+    var that = this;
+    fetch('http://localhost:8000/get_room_bookings?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          console.log(json);
+          that.setState({
+            bookings: json
+          });
+          that.setState({
+            slots: that.setSlots()
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/rooms' }
+        });
+      }
+    });
   },
   getInitialState: function getInitialState() {
     return {
       slots: [],
-      bookings: [{
-        "username": "emily emily emellee",
-        "notes": "yoyoy -UCLU Technology Society",
-        "end": "13:00:00",
-        "start": "11:00:00"
-      }]
+      bookings: []
     };
   },
   componentDidMount: function componentDidMount() {
-    this.setState({
-      slots: this.getBookings()
-    });
+    this.getBookings();
   },
   render: function render() {
+    var _this = this;
+
     return _react2.default.createElement(
       'div',
       { className: this.props.rightBorder ? "dayView rightBorder" : "dayView" },
       _react2.default.createElement(
         'div',
         { className: 'date' },
-        this.props.date.format('Do MMM')
+        this.props.date.format('dd Do')
       ),
       _react2.default.createElement(
         'div',
         { className: 'slots' },
         this.state.slots.map(function (taken, i) {
-          return _react2.default.createElement(Slot, { key: i, time: i, taken: taken });
+          return _react2.default.createElement(Slot, {
+            key: i,
+            time: i,
+            taken: taken,
+            date: _this.props.date.format('YYYYMMDD'),
+            roomId: _this.props.roomId });
         })
       ),
       _react2.default.createElement('div', { className: 'endSlot' })
     );
   }
-});
+}));
 
-},{"react":236,"react-router":83}],246:[function(require,module,exports){
+},{"react":236,"react-router":83,"whatwg-fetch":239}],246:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _layout = require('../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+require('whatwg-fetch');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
+  displayName: 'exports',
+
+  bookRoom: function bookRoom(e) {
+    e.preventDefault();
+    var that = this;
+    console.log('called');
+    fetch('http://localhost:8000/book_room_normal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors',
+      body: 'room_id=' + this.props.params.roomId + '&date=' + (0, _moment2.default)(this.props.params.dateTime).format('YYYYMMDD') + '&start_time=' + (0, _moment2.default)(this.props.params.dateTime).format('k:mm') + '&end_time=' + (0, _moment2.default)(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0, 1)), 'hour').format('k:mm') + '&notes=' + this.refs.notes.value
+    }).then(function (res) {
+      res.json().then(function (json) {
+        console.log(json);
+        if (json.success) {
+          that.setState({
+            result: 'Room booked successfully'
+          });
+        } else {
+          that.setState({
+            result: json.error
+          });
+        }
+      });
+    });
+  },
+  getInitialState: function getInitialState() {
+    return {
+      result: ''
+    };
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      { title: 'Confirm Booking' },
+      _react2.default.createElement(
+        'div',
+        { className: 'confirmBooking' },
+        _react2.default.createElement(
+          'div',
+          { className: 'pure-g' },
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-u-1 card' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              this.props.params.roomId
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Date: ',
+              (0, _moment2.default)(this.props.params.dateTime).format('dddd Do MMMM')
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Time: ',
+              (0, _moment2.default)(this.props.params.dateTime).format('kk:mm')
+            ),
+            _react2.default.createElement(
+              'form',
+              { className: 'pure-form pure-form-stacked', onSubmit: this.bookRoom },
+              _react2.default.createElement(
+                'fieldset',
+                null,
+                _react2.default.createElement(
+                  'label',
+                  { htmlFor: 'duration' },
+                  'Duration'
+                ),
+                _react2.default.createElement(
+                  'select',
+                  { ref: 'duration', id: 'duration' },
+                  _react2.default.createElement(
+                    'option',
+                    null,
+                    '1 Hour'
+                  ),
+                  _react2.default.createElement(
+                    'option',
+                    null,
+                    '2 Hours'
+                  ),
+                  _react2.default.createElement(
+                    'option',
+                    null,
+                    '3 Hours'
+                  )
+                ),
+                _react2.default.createElement('textarea', { ref: 'notes', placeholder: 'Notes...' }),
+                _react2.default.createElement(
+                  'button',
+                  { type: 'submit', className: 'pure-button pure-button-primary' },
+                  'Book'
+                )
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'result' },
+              this.state.result
+            )
+          )
+        )
+      )
+    );
+  }
+}));
+
+},{"../components/layout.jsx":242,"moment":49,"react":236,"react-router":83,"whatwg-fetch":239}],247:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31333,7 +31494,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"react":236,"react-router":83}],247:[function(require,module,exports){
+},{"react":236,"react-router":83}],248:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31421,7 +31582,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../components/layout.jsx":242,"react":236,"react-router":83}],248:[function(require,module,exports){
+},{"../components/layout.jsx":242,"react":236,"react-router":83}],249:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31453,7 +31614,8 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      error: false
+      error: false,
+      loading: false
     };
   },
   setVisible: function setVisible() {
@@ -31468,13 +31630,18 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     var _this = this;
 
     e.preventDefault();
-
+    this.setState({
+      loading: true
+    });
     var email = this.refs.email.value;
     var password = this.refs.password.value;
 
     _auth2.default.login(email, password, function (loggedIn) {
       if (!loggedIn) {
-        return _this.setState({ error: true });
+        return _this.setState({
+          error: true,
+          loading: false
+        });
       }
       var location = _this.props.location;
 
@@ -31491,6 +31658,11 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     return _react2.default.createElement(
       'div',
       { className: 'loginPage centered' },
+      this.state.loading ? _react2.default.createElement(
+        'div',
+        { className: 'spinnerContainer' },
+        _react2.default.createElement('div', { className: 'spinner' })
+      ) : _react2.default.createElement('div', null),
       _react2.default.createElement(
         'form',
         { className: 'pure-form pure-form-aligned', onSubmit: this.handleLogin },
@@ -31523,13 +31695,9 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
             'Email or password is incorrect'
           ) : _react2.default.createElement('div', { className: 'warningLabel' }),
           _react2.default.createElement(
-            'div',
-            { className: 'pure-controls', style: buttonStyle },
-            _react2.default.createElement(
-              'button',
-              { type: 'submit', className: 'pure-button pure-button-primary' },
-              'Submit'
-            )
+            'button',
+            { type: 'submit', className: 'pure-button pure-button-primary' },
+            'Submit'
           )
         ),
         _react2.default.createElement(
@@ -31551,7 +31719,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../utils/auth.js":240,"../components/layout.jsx":242,"react":236,"react-router":83}],249:[function(require,module,exports){
+},{"../../utils/auth.js":240,"../components/layout.jsx":242,"react":236,"react-router":83}],250:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31564,11 +31732,49 @@ var _layout = require('../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
+require('whatwg-fetch');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = _react2.default.createClass({
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   displayName: 'exports',
 
+  getRoomList: function getRoomList() {
+    var that = this;
+    fetch('http://localhost:8000/get_list_of_rooms', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      that.setState({
+        loading: false
+      });
+      if (res.status === 200) {
+        res.json().then(function (res) {
+          console.log(res);
+          that.setState({
+            rooms: res
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/rooms' }
+        });
+      }
+    });
+  },
+  getInitialState: function getInitialState() {
+    return {
+      rooms: [],
+      loading: true
+    };
+  },
+  componentDidMount: function componentDidMount() {
+    this.getRoomList();
+  },
   render: function render() {
     return _react2.default.createElement(
       _layout2.default,
@@ -31576,473 +31782,71 @@ module.exports = _react2.default.createClass({
       _react2.default.createElement(
         'div',
         { className: 'rooms' },
+        this.state.loading ? _react2.default.createElement(
+          'div',
+          { className: 'spinnerContainer' },
+          _react2.default.createElement('div', { className: 'spinner' })
+        ) : _react2.default.createElement('div', null),
         _react2.default.createElement(
           'div',
           { className: 'pure-g' },
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
+          this.state.rooms.map(function (room, i) {
+            return _react2.default.createElement(
               'div',
-              { className: 'card' },
+              { key: i, className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
               _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
+                'div',
+                { className: 'card' },
                 _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
+                  'h2',
+                  null,
+                  room.room_name
+                ),
+                _react2.default.createElement(
+                  'p',
+                  null,
+                  'Capacity: ',
+                  room.capacity
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'pure-g', style: { height: '21px' } },
                   _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
+                    'div',
+                    { className: 'pure-u-1-3 centered' },
+                    room.coffee ? '☕️' : ''
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'pure-u-1-3 centered' },
+                    room.water_fountain ? '🚰' : ''
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'pure-u-1-3 centered' },
+                    room.printers ? '🖨' : ''
+                  )
+                ),
+                _react2.default.createElement(
+                  'p',
+                  null,
+                  _react2.default.createElement(
+                    'button',
+                    { className: 'pure-button pure-button-primary' },
+                    _react2.default.createElement(
+                      _reactRouter.Link,
+                      { to: '/schedule/' + room.room_id },
+                      'View Schedule'
+                    )
                   )
                 )
               )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO2 - 🍪'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-POO' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO3 - ☕️'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 5'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-SMILEY' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
-            _react2.default.createElement(
-              'div',
-              { className: 'card' },
-              _react2.default.createElement(
-                'h2',
-                null,
-                'GO1 - 🍕'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Capacity: 10'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Coffee: no :( '
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Water fountain: no'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                'Printers: yes'
-              ),
-              _react2.default.createElement(
-                'p',
-                null,
-                _react2.default.createElement(
-                  'button',
-                  { className: 'pure-button pure-button-primary' },
-                  _react2.default.createElement(
-                    _reactRouter.Link,
-                    { to: '/schedule/RO-PIZZA' },
-                    'View Schedule'
-                  )
-                )
-              )
-            )
-          )
+            );
+          })
         )
       )
     );
   }
-});
+}));
 
-},{"../components/layout.jsx":242,"react":236,"react-router":83}]},{},[241]);
+},{"../components/layout.jsx":242,"react":236,"react-router":83,"whatwg-fetch":239}]},{},[241]);

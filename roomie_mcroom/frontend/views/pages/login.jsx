@@ -15,7 +15,8 @@ var buttonStyle = {
 module.exports = withRouter(React.createClass({
   getInitialState: function(){
     return{
-      error: false
+      error: false,
+      loading: false
     };
   },
   setVisible: function(){
@@ -28,13 +29,18 @@ module.exports = withRouter(React.createClass({
   },
   handleLogin: function(e){
     e.preventDefault();
-
+    this.setState({
+      loading:true
+    });
     var email = this.refs.email.value;
     var password = this.refs.password.value;
 
     auth.login(email, password, (loggedIn) => {
       if(!loggedIn){
-        return this.setState({error:true});
+        return this.setState({
+          error:true,
+          loading: false
+        });
       }
 			const {location} = this.props
 
@@ -49,6 +55,11 @@ module.exports = withRouter(React.createClass({
   render: function() {
     return (
       <div className="loginPage centered">
+        {this.state.loading ? (
+          <div className="spinnerContainer">
+            <div className="spinner"></div>
+          </div>
+          ):(<div></div>)}
         <form className="pure-form pure-form-aligned" onSubmit={this.handleLogin}>
           <fieldset>
             <div className="pure-control-group">
@@ -64,9 +75,7 @@ module.exports = withRouter(React.createClass({
               ):(
                 <div className="warningLabel"></div>
               )}
-            <div className="pure-controls" style={buttonStyle}>
-              <button type="submit" className="pure-button pure-button-primary">Submit</button>
-            </div>
+            <button type="submit" className="pure-button pure-button-primary">Submit</button>
           </fieldset>
           <a href="#" onClick={this.setVisible}>Dont have an account?</a>
         </form>

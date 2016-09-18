@@ -24,8 +24,10 @@ body {
 html {
   height: 100%;
 }
-button a {
+a {
   text-decoration: none;
+}
+button a {
   color: white;
 }
 .button {
@@ -109,6 +111,56 @@ p {
 .noScroll {
   overflow: hidden;
 }
+.spinnerContainer {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+.spinnerContainer .spinner {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  border: 3px solid transparent;
+  border-top-color: #ff6597;
+  top: 50%;
+  left: 50%;
+  margin: -30px;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+.spinnerContainer .spinner:before,
+.spinnerContainer .spinner:after {
+  content: '';
+  position: absolute;
+  border: 3px solid transparent;
+  border-radius: 50%;
+}
+.spinnerContainer .spinner:before {
+  border-top-color: #28c6ff;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  animation: spin 3s linear infinite;
+}
+.spinnerContainer .spinner:after {
+  border-top-color: #47f348;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  animation: spin 4s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .sideBar {
   width: 240px;
   left: -240px;
@@ -126,7 +178,7 @@ p {
   -ms-transition: left 0.4s ease-in-out;
   -o-transition: left 0.4s ease-in-out;
   transition: left 0.4s ease-in-out;
-  height: 100%;
+  height: calc(100% - 60px);
   width: 100%;
 }
 .container .main-content #top-right {
@@ -186,6 +238,10 @@ p {
 .loginPage {
   padding: 30px;
 }
+.loginPage .warningLabel {
+  color: red;
+  padding: 10px;
+}
 .error {
   width: 100%;
   padding-top: 30px;
@@ -234,4 +290,17 @@ p {
 }
 .calendar .pure-button {
   margin: 5px;
+}
+.confirmBooking fieldset {
+  min-width: 0px;
+}
+.confirmBooking fieldset select {
+  margin: auto;
+  margin-bottom: 5px;
+}
+.confirmBooking fieldset textarea {
+  margin: auto;
+}
+.confirmBooking fieldset button {
+  margin-top: 5px;
 }

@@ -47,14 +47,14 @@ module.exports = React.createClass({
         <Sidebar />
         <div className="main-content">
           <div className="pure-g menu-bar">
-            <div className="pure-u-1-3">
+            <div className="pure-u-1-6 pure-u-sm-1-3">
               <div className="burger-button" id="sidebar-toggle" onClick={this.handleClick}>
                 <span className="bar" id="top"></span>
                 <span className="bar"></span>
                 <span className="bar"></span>
               </div>
             </div>
-            <div className="pure-u-1-3 centered">
+            <div className="pure-u-1-2 pure-u-sm-1-3 centered">
               <h1>{this.props.title}</h1>
             </div>
             <div className="pure-u-1-3">

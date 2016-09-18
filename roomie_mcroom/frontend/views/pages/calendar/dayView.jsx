@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router'
-
+import { Link , withRouter} from 'react-router'
+import 'whatwg-fetch';
 var Slot = React.createClass({
   getInitialState: function(){
     return{
@@ -21,19 +21,21 @@ var Slot = React.createClass({
     e.preventDefault();
     this.setState({content:this.props.time+":00"});
   },
-
+  
   render: function(){
     return (
       <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))} 
            onMouseOver={this.mouseOver} 
            onMouseOut={this.mouseOut}>
-        <div className="time" id={"slot"+this.props.time}>{this.state.content}</div>
+           <div className="time" id={"slot"+this.props.time}>
+             {this.props.taken ? ( this.state.content ):( <Link to={'/book/'+ this.props.roomId + '/' + this.props.date + 'T' + ('0' + this.props.time).slice(-2) + ':00:00'}> { this.state.content } </Link> )}
+           </div>
       </div>
     );
   }
 })
-module.exports = React.createClass({
-  getBookings: function(){
+module.exports = withRouter(React.createClass({
+  setSlots: function(){
     var slots = [];
     for(var i = 0; i < 24; i++){
       slots[i] = 0;
@@ -60,36 +62,61 @@ module.exports = React.createClass({
         slots[j] = 1;
       }
     }
-
     return slots;
+  },
+  getBookings: function(){
+    var that = this;
+    fetch('http://localhost:8000/get_room_bookings?room_id=' +
+          this.props.roomId +
+          '&date='+ 
+          this.props.date.format('YYYYMMDD'), {
+            method:'GET',
+            headers: {
+              'Authorization': 'Token '+ localStorage.token
+            },
+            mode:'cors'
+          }).then(function(res){
+            if(res.status === 200){
+              res.json().then(function(json){
+                console.log(json);
+                that.setState({
+                  bookings:json
+                });
+                that.setState({
+                  slots:that.setSlots()
+                })
+              })
+            }else{
+              that.props.router.push({
+                pathname: '/login',
+                state: {nextPathname: '/rooms'}
+              });
+            }
+          })
   },
   getInitialState: function() {
     return {
       slots:[],
-      bookings: [
-        {
-          "username": "emily emily emellee",
-					"notes": "yoyoy -UCLU Technology Society",
-					"end": "13:00:00",
-					"start": "11:00:00" 
-        }
-      ]
+      bookings:[]
     }
   },
   componentDidMount: function(){
-    this.setState({
-      slots: this.getBookings()
-    });
+    this.getBookings();
   },
   render: function() {
     return <div className={this.props.rightBorder ? "dayView rightBorder": "dayView"}>
-      <div className="date">{this.props.date.format('Do MMM')}</div>
+      <div className="date">{this.props.date.format('dd Do')}</div>
       <div className="slots">
         {this.state.slots.map((taken, i) =>{
-          return <Slot key={i} time={i} taken={taken}/>
+          return <Slot 
+            key={i} 
+            time={i} 
+            taken={taken} 
+            date={this.props.date.format('YYYYMMDD')}
+            roomId={this.props.roomId}/>
         })}
       </div>
       <div className="endSlot"></div>
     </div>
   }
-})
+}))

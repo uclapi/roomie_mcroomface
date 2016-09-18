@@ -8,6 +8,7 @@ import Login from './pages/login.jsx';
 import ErrorPage from './pages/error.jsx';
 import Calendar from './pages/calendar/calendar.jsx';
 import Rooms from './pages/rooms.jsx';
+import ConfirmBooking from './pages/confirmBooking.jsx';
 
 class Test extends React.Component {
   render() {
@@ -32,8 +33,9 @@ render((
   <Router history={browserHistory}>
     <Route path="/" component={Home}/>
     <Route path="/login" component={Login}/>
-    <Route path="/rooms" component={Rooms}/>
-    <Route path="/schedule/:roomId" component={Calendar}/>
+    <Route path="/rooms" component={Rooms} onEnter={requireAuth}/>
+    <Route path="/schedule/:roomId" component={Calendar} onEnter={requireAuth}/>
+    <Route path="/book/:roomId/:dateTime" component={ConfirmBooking} onEnter={requireAuth}/>
     <Route path="*" component={ErrorPage}/>
   </Router>
 ), document.getElementById('app'));
