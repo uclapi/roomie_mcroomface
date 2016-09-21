@@ -142,11 +142,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/statics/'
-
-STATICFILE_DIRS = {
-    os.path.join(BASE_DIR, '../frontend/statics')
-}
+STATIC_URL = '/api/static/'
 
 
 closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}

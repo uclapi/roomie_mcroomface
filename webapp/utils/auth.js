@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 module.exports = {
   login(user, pass, cb) {
     cb = arguments[arguments.length - 1]
-    fetch("http://localhost:8000/login", {
+    fetch("http://localhost:8000/api/v1/login", {
         method: "POST",
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -26,7 +26,7 @@ module.exports = {
   },
 
   logout(cb) {
-    fetch('http://localhost:8000/logout', {
+    fetch('http://localhost:8000/api/v1/logout', {
       method: 'GET',
       headers: {
         'Authorization': 'Token' + localStorage.token

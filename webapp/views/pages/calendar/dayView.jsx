@@ -21,11 +21,11 @@ var Slot = React.createClass({
     e.preventDefault();
     this.setState({content:this.props.time+":00"});
   },
-  
+
   render: function(){
     return (
-      <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))} 
-           onMouseOver={this.mouseOver} 
+      <div className={"slot " + (this.props.taken ? ( "taken" ) : ( "free" ))}
+           onMouseOver={this.mouseOver}
            onMouseOut={this.mouseOut}>
            <div className="time" id={"slot"+this.props.time}>
              {this.props.taken ? ( this.state.content ):( <Link to={'/book/'+ this.props.roomId + '/' + this.props.date + 'T' + ('0' + this.props.time).slice(-2) + ':00:00'}> { this.state.content } </Link> )}
@@ -66,9 +66,9 @@ module.exports = withRouter(React.createClass({
   },
   getBookings: function(){
     var that = this;
-    fetch('http://localhost:8000/get_room_bookings?room_id=' +
+    fetch('http://localhost:8000/api/v1/get_room_bookings?room_id=' +
           this.props.roomId +
-          '&date='+ 
+          '&date='+
           this.props.date.format('YYYYMMDD'), {
             method:'GET',
             headers: {
@@ -108,10 +108,10 @@ module.exports = withRouter(React.createClass({
       <div className="date">{this.props.date.format('dd Do')}</div>
       <div className="slots">
         {this.state.slots.map((taken, i) =>{
-          return <Slot 
-            key={i} 
-            time={i} 
-            taken={taken} 
+          return <Slot
+            key={i}
+            time={i}
+            taken={taken}
             date={this.props.date.format('YYYYMMDD')}
             roomId={this.props.roomId}/>
         })}
