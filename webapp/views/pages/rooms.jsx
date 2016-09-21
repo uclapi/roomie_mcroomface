@@ -6,7 +6,7 @@ import 'whatwg-fetch';
 module.exports = withRouter(React.createClass({
   getRoomList:function(){
     var that = this;
-    fetch('http://localhost:8000/get_list_of_rooms', {
+    fetch('http://localhost:8000/api/v1/get_list_of_rooms', {
       method: 'GET',
       headers: {
         'Authorization': 'Token '+ localStorage.token
@@ -41,7 +41,7 @@ module.exports = withRouter(React.createClass({
     this.getRoomList();
   },
   render: function(){
-    return ( <Layout title="Rooms"> 
+    return ( <Layout title="Rooms">
       <div className="rooms">
         {this.state.loading ? (
           <div className="spinnerContainer">
@@ -65,7 +65,7 @@ module.exports = withRouter(React.createClass({
                 </div>
               </div>
               );
-            })}  
+            })}
           </div>
         </div>
       </Layout>);
