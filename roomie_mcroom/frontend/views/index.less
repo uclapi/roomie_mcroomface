@@ -1,0 +1,203 @@
+@import './constants.less';
+
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.centered{
+  text-align:center;
+}
+
+#app{
+  height: 100%;
+}
+
+body{
+  color: #555;
+  height: 100%;
+
+  @media screen and (min-width: 35.5em) {
+    background-color: #f4f4f4;
+  }
+}
+
+html{
+  height: 100%;
+}
+a{
+  text-decoration: none;
+}
+
+button{
+  a{
+    color: white;
+  }
+}
+
+.button{
+  color: white;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 10em;
+  width: 10em;
+  margin: auto;
+  text-decoration: none;
+  &:hover{
+    background-color:white;
+    color: #EA1E59;
+  }
+}
+.burger-button{
+  height: @buttonSize;
+  width: @buttonSize;
+  margin: @buttonMargin;
+  float: left;
+
+  .bar {
+    background-color: white;
+    height: 3px;
+    border-radius: 1px;
+    width: 20px;
+    display: block;
+    margin: 4px 5px 0px 5px;
+  }
+  #top{
+    margin-top: 6px;
+  }
+}
+
+.card{
+  border-bottom: solid 1px #d5d5d5;
+  @media screen and (min-width: 35.5em) {
+    padding: 5px 20px;
+    background-color: white;
+    margin: 20px;
+    .BoxShadowHelper(1);
+    border-radius: 5px;
+    border: none;
+  }
+}
+
+.popup{
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.31);
+  
+  .content{
+    background-color: white;
+    margin: 20vw;
+    margin-top: 10vh;
+    padding: 30px;
+    border-radius: 10px;
+  }
+}
+
+h1{
+  font-size: 2.5em;
+}
+
+h2{
+  font-size: 2em;
+}
+
+p{
+  font-size: 1.2em;
+}
+
+.BoxShadowHelper(@level: 1){
+    & when (@level = 1) {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+    & when (@level = 2) {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+    & when (@level = 3) {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+    & when (@level = 4) {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    }
+    & when (@level = 5) {
+        box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    }
+}
+.pure-u-1-7{
+  width: 14.2857%;
+	display: inline-block;*
+	display: inline;
+	zoom: 1;
+	letter-spacing: normal;
+	word-spacing: normal;
+	vertical-align: top;
+	text-rendering: auto
+}
+
+.noScroll{
+  overflow: hidden;
+}
+
+.spinnerContainer{
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+
+  .spinner{
+    @spinnerSize: 60px;
+    position: absolute;
+    height: @spinnerSize;
+    width: @spinnerSize;
+    border: 3px solid transparent;
+    border-top-color: #ff6597;
+    top: 50%;
+    left: 50%;
+    margin: -30px;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+    
+    &:before, &:after{
+      content:'';
+      position: absolute;
+      border: 3px solid transparent;
+      border-radius: 50%;
+    }
+    
+    &:before{
+      border-top-color: #28c6ff;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      animation: spin 3s linear infinite;
+    }
+    
+    &:after{
+      border-top-color: #47f348;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;  
+      animation: spin 4s linear infinite;
+    }
+  }
+
+}
+
+@keyframes spin{
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+@import './components/sidebar.less';
+@import './components/layout.less';
+@import './pages/home.less';
+@import './pages/login.less';
+@import './pages/error.less';
+@import './pages/calendar/dayView.less';
+@import './pages/calendar/calendar.less';
+@import './pages/confirmBooking.less';

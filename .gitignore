@@ -94,3 +94,10 @@ ENV/
 # Rope project settings
 .ropeproject
 .DS_Store
+
+#vim files
+*~
+*.sw*
+
+#node stuff
+node_modules/
