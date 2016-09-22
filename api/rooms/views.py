@@ -393,6 +393,10 @@ def book_a_room(request, room, date, start_time,
 
     # Only allow block bookings, start time should be HH:01 and end should be
     # HH:00
+    if not (start_time[3:] == "01" and end_time[3:] == "00"):
+        return Response({
+            "error": "Time block should be in the format HH:01 and HH:00"
+        })
 
     current_user = request.user.user_profile
 
