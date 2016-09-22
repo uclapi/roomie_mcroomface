@@ -401,7 +401,7 @@ def book_a_room(request, room, date, start_time,
     current_user = request.user.user_profile
 
     def convert_time(x):
-        datetime.datetime.strptime(x, '%H:%M').time()
+        return datetime.datetime.strptime(x, '%H:%M').time()
 
     try:
         start_time = convert_time(start_time)
