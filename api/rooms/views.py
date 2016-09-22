@@ -144,7 +144,7 @@ def get_rooms_list(request):
     (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
-@permission_required('rooms.can_generate_tokens')
+@permission_required('rooms.can_generate_tokens', raise_exception=True)
 def obtain_expiring_auth_token(request):
     local_tz = pytz.timezone('Europe/Moscow')
     # change this => get user's associated society and
@@ -311,7 +311,7 @@ def logout_view(request):
         ExpiringTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
-@permission_required('rooms.can_book_society_rooms')
+@permission_required('rooms.can_book_society_rooms', raise_exception=True)
 def book_a_room_society(request):
     if request.method == 'POST':
         try:
@@ -601,7 +601,7 @@ def delete_booking(request):
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
 def add_user_to_group3(request):
-    current_user = request.user.user_profile
+    current_user = request.user
 
     try:
         username = request.POST.get("username")
