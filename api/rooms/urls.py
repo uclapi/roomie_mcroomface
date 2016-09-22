@@ -18,3 +18,4 @@ urlpatterns = [
     url(r'^v1/forgot_password', views.forgot_password),
     url(r'^v1/get_user_meta_data$', views.get_user_meta_data)
 ]
+
