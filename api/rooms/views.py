@@ -536,26 +536,17 @@ def checkAvailability(room, date, start_time, end_time):
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_users_booking(request):
-    try:
-        date = request.GET.get("date")
-    except:
-        return Response({"error": "No parameters found"})
-
-    try:
-        date = datetime.datetime.strptime(date, "%Y%m%d").date()
-    except:
-        return Response({"error": "invalid dates given"})
 
     current_user = request.user.user_profile
 
-    bookings = list(Booking.objects.filter(date=date, user=current_user))
+    bookings = list(Booking.objects.filter(user=current_user))
 
     # ---IMPORTANT -- change this to access
     # permissions once the persmission groups are created
     # add booking id to the field
     if current_user.society_access:
         bookings.extend(
-            list(BookingSociety.objects.filter(date=date, user=current_user)))
+            list(BookingSociety.objects.filter(user=current_user)))
     # serialize the data and send it back
     retDict = []
     for booking in bookings:
@@ -564,6 +555,7 @@ def get_users_booking(request):
             "start": booking.start,
             "end": booking.end,
             "booking_id": booking.booking_id,
+            "date": booking.date,
             "notes": booking.remarks if isinstance(booking, Booking) else
             booking.remarks + " -" + booking.society.user.first_name
         })
