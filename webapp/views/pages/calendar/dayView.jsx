@@ -66,7 +66,7 @@ module.exports = withRouter(React.createClass({
   },
   getBookings: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_room_bookings?room_id=' +
+    fetch('http://localhost:8000/api/v1/rooms.bookings?room_id=' +
           this.props.roomId +
           '&date='+
           this.props.date.format('YYYYMMDD'), {
