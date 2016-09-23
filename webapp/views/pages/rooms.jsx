@@ -6,7 +6,7 @@ import 'whatwg-fetch';
 module.exports = withRouter(React.createClass({
   getRoomList:function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_list_of_rooms', {
+    fetch('http://localhost:8000/api/v1/rooms.list', {
       method: 'GET',
       headers: {
         'Authorization': 'Token '+ localStorage.token
