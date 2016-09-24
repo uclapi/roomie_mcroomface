@@ -30886,6 +30886,10 @@ var _confirmBooking = require('./pages/confirmBooking.jsx');
 
 var _confirmBooking2 = _interopRequireDefault(_confirmBooking);
 
+var _profile = require('./pages/profile.jsx');
+
+var _profile2 = _interopRequireDefault(_profile);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30938,10 +30942,11 @@ function requireAuth(nextState, replace) {
   _react2.default.createElement(_reactRouter.Route, { path: '/rooms', component: _rooms2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/schedule/:roomId', component: _calendar2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/book/:roomId/:dateTime', component: _confirmBooking2.default, onEnter: requireAuth }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/profile', component: _profile2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking.jsx":243,"./pages/error.jsx":244,"./pages/home.jsx":245,"./pages/login.jsx":246,"./pages/rooms.jsx":247,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
+},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking.jsx":243,"./pages/error.jsx":244,"./pages/home.jsx":245,"./pages/login.jsx":246,"./pages/profile.jsx":247,"./pages/rooms.jsx":248,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31664,10 +31669,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
-
-var _layout2 = _interopRequireDefault(_layout);
-
 var _auth = require('../../utils/auth.js');
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -31676,10 +31677,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var labelStyle = {
   width: '4em'
-};
-
-var buttonStyle = {
-  marginLeft: '5em'
 };
 
 module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
@@ -31792,7 +31789,199 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../utils/auth.js":237,"../components/layout.jsx":239,"react":233,"react-router":82}],247:[function(require,module,exports){
+},{"../../utils/auth.js":237,"react":233,"react-router":82}],247:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _layout = require('../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+require('whatwg-fetch');
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
+  displayName: 'exports',
+
+  getInitialState: function getInitialState() {
+    return {
+      loading: 0,
+      profile: {},
+      bookings: []
+    };
+  },
+  getUserInfo: function getUserInfo() {
+    var that = this;
+    fetch('http://localhost:8000/api/v1/get_user_meta_data', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      that.setState({
+        loading: that.state.loading + 1
+      });
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          console.log(json);
+          that.setState({
+            profile: json
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/profile' }
+        });
+      }
+    });
+  },
+  getBookings: function getBookings() {
+    var that = this;
+    fetch('http://localhost:8000/api/v1/get_users_booking', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      that.setState({
+        loading: that.state.loading + 1
+      });
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          that.setState({
+            bookings: json
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/profile' }
+        });
+      }
+    });
+  },
+  componentDidMount: function componentDidMount() {
+    this.getUserInfo();
+    this.getBookings();
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      { title: 'Profile' },
+      _react2.default.createElement(
+        'div',
+        { className: 'profile' },
+        this.state.loading < 2 ? _react2.default.createElement(
+          'div',
+          { className: 'spinnerContainer' },
+          _react2.default.createElement('div', { className: 'spinner' })
+        ) : _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-g panel' },
+            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered' },
+              _react2.default.createElement(
+                'h2',
+                null,
+                this.state.profile.email
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Time left this week: ',
+                this.state.profile.quota_left,
+                ' minutes'
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Societies you belong to'
+              ),
+              _react2.default.createElement(
+                'ul',
+                null,
+                this.state.profile.societies[0].map(function (society, i) {
+                  return _react2.default.createElement(
+                    'li',
+                    { key: i },
+                    society
+                  );
+                })
+              )
+            ),
+            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-g' },
+            _react2.default.createElement(
+              'div',
+              { className: 'pure-u-1' },
+              _react2.default.createElement(
+                'h1',
+                null,
+                'Your bookings'
+              )
+            ),
+            this.state.bookings.map(function (booking, i) {
+              return _react2.default.createElement(
+                'div',
+                { key: i, className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'card centered' },
+                  _react2.default.createElement(
+                    'h2',
+                    null,
+                    (0, _moment2.default)(booking.date).format('ddd do MMM')
+                  ),
+                  _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Start time: ',
+                    booking.start
+                  ),
+                  _react2.default.createElement(
+                    'h3',
+                    null,
+                    'End time: ',
+                    booking.end
+                  ),
+                  _react2.default.createElement(
+                    'h4',
+                    null,
+                    'Notes: ',
+                    booking.notes
+                  )
+                )
+              );
+            })
+          )
+        )
+      )
+    );
+  }
+}));
+
+},{"../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],248:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
