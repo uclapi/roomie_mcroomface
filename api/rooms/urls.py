@@ -20,3 +20,4 @@ urlpatterns = [
     url(r'^v1/accounts/login/$', views.no_access, name='no permission'),
     url(r'^v1/set_password/$', views.set_password),
 ]
+
