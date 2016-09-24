@@ -30808,7 +30808,7 @@ require("whatwg-fetch");
 module.exports = {
   login: function login(user, pass, cb) {
     cb = arguments[arguments.length - 1];
-    fetch("http://localhost:8000/api/v1/login", {
+    fetch("http://localhost:8000/api/v1/user.login/", {
       method: "POST",
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -30830,7 +30830,7 @@ module.exports = {
     return localStorage.token;
   },
   logout: function logout(cb) {
-    fetch('http://localhost:8000/api/v1/logout', {
+    fetch('http://localhost:8000/api/v1/user.logout/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token' + localStorage.token
@@ -31338,7 +31338,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   },
   getBookings: function getBookings() {
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_room_bookings?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
+    fetch('http://localhost:8000/api/v1/rooms.bookings/?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
@@ -31428,7 +31428,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     e.preventDefault();
     var that = this;
     console.log('called');
-    fetch('http://localhost:8000/api/v1/book_room_normal', {
+    fetch('http://localhost:8000/api/v1/rooms.book/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -31814,7 +31814,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
   getRoomList: function getRoomList() {
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_list_of_rooms', {
+    fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
