@@ -311,9 +311,9 @@ def logout_view(request):
         ExpiringTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
-@permission_required('rooms.can_book_society_rooms', raise_exception=True)
-def book_a_room_society(request):
-    if request.method == 'POST':
+def book_room(request):
+    if (request.POST.get("society_booking") == "True"
+        and request.user.groups.filter(name='Group_3').exists()):
         try:
             room_id = request.POST["room_id"]
             date = request.POST["date"]  # YYYYMMDD
@@ -353,22 +353,10 @@ def book_a_room_society(request):
                 "event_name": event_name,
                 "society": soc.user_profile
             })
-
-
-# people in any group can access this
-# -- IMPORTANT -->  Check careers team access before reducing
-# the quota user.groups.exist("careers_team") or something
-@api_view(['POST'])
-@authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
-)
-@permission_classes((permissions.IsAuthenticated,))
-@permission_required(('rooms.can_book_normal_rooms'))
-def book_a_room_normal(request):
-    if request.method == 'POST':
+    elif request.POST.get("society_booking") == "False":
         try:
             room_id = request.POST["room_id"]
-            date = request.POST.get("date")  # YYYYMMDD
+            date = request.POST["date"] # YYYYMMDD
             start_time = request.POST["start_time"]  # HH:MM
             end_time = request.POST["end_time"]
             notes = request.POST["notes"]
@@ -386,6 +374,8 @@ def book_a_room_normal(request):
         return book_a_room(request, room, date, start_time, end_time,
                            is_society_booking=False, meta_data={"notes": notes}
                            )
+    else:
+        return Response({"error": "You don't have permission to book this room"})
 
 
 def book_a_room(request, room, date, start_time,
