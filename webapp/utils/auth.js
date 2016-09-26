@@ -12,6 +12,9 @@ module.exports = {
     }).then(function(res){
       return res.json().then(function(res){
         if(res.token){
+          if(res.groups.indexOf('Group_3')>-1){
+            localStorage.society = true;
+          }
           localStorage.token = res.token;
           cb(true);
         } else {
@@ -29,11 +32,12 @@ module.exports = {
     fetch('http://localhost:8000/api/v1/logout', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + localStorage.token
+        'Authorization': 'Token ' + localStorage.token
       },
       mode: 'cors'
     });
     delete localStorage.token;
+    delete localStorage.society;
     if (cb) cb()
   },
 

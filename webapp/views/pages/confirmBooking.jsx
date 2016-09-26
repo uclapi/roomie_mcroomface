@@ -18,7 +18,7 @@ module.exports = withRouter(React.createClass({
       mode: 'cors',
       body: 'room_id='+ this.props.params.roomId +
         '&date='+ moment(this.props.params.dateTime).format('YYYYMMDD')+
-        '&start_time='+ moment(this.props.params.dateTime).format('k:mm')+
+        '&start_time='+ moment(this.props.params.dateTime).add(1, 'minute').format('k:mm')+
         '&end_time='+ moment(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0,1)), 'hour').format('k:mm')+
         '&notes='+ this.refs.notes.value
     }).then(function(res){
@@ -42,7 +42,7 @@ module.exports = withRouter(React.createClass({
     };
   },
   render: function(){
-    return <Layout title="Confirm Booking">
+    return <Layout title="Book">
       <div className="confirmBooking">
         <div className="pure-g">
           <div className="pure-u-1 card">

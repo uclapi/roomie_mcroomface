@@ -37,19 +37,13 @@ var Slot = React.createClass({
 module.exports = withRouter(React.createClass({
   setSlots: function(){
     var slots = [];
-    for(var i = 0; i < 24; i++){
+    for(var i = 0; i < 14; i++){
       slots[i] = 0;
-    }
-    for(var i = 0; i < 8; i++){
-      slots[i] = 1;
-    }
-    for(var i = 22; i < 24; i++){
-      slots[i] = 1;
     }
     var day = this.props.date.format('ddd');
     if(day === 'Sat' || day === 'Sun'){
-      slots[8] = 1;
-      for(var i = 19; i < 22; i++){
+      slots[0] = 1;
+      for(var i = 11; i < 14; i++){
         slots[i] = 1;
       }
     }
@@ -59,7 +53,7 @@ module.exports = withRouter(React.createClass({
       var end = parseInt(this.state.bookings[i].end.substring(0,2));
 
       for(var j = start; j < end; j++){
-        slots[j] = 1;
+        slots[j - 8] = 1;
       }
     }
     return slots;
@@ -77,6 +71,7 @@ module.exports = withRouter(React.createClass({
             mode:'cors'
           }).then(function(res){
             if(res.status === 200){
+              that.props.callback();
               res.json().then(function(json){
                 console.log(json);
                 that.setState({
@@ -110,7 +105,7 @@ module.exports = withRouter(React.createClass({
         {this.state.slots.map((taken, i) =>{
           return <Slot
             key={i}
-            time={i}
+            time={i + 8}
             taken={taken}
             date={this.props.date.format('YYYYMMDD')}
             roomId={this.props.roomId}/>
