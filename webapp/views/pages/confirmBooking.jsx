@@ -9,7 +9,7 @@ module.exports = withRouter(React.createClass({
     e.preventDefault();
     var that = this;
     console.log('called');
-    fetch('http://localhost:8000/api/v1/book_room_normal', {
+    fetch('http://localhost:8000/api/v1/rooms.book/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

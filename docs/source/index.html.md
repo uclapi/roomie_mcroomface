@@ -15,17 +15,20 @@ includes:
   - contributing
 
 ---
+# Introduction
+
+The base url is `https://enghub.io/api/v1`
 
 # Log in a user
-### `/login`
+### `/user.login/`
 
 This endpoint allows a user to login to the API. You *must* login to access all other endpoints.
 
-## Query Parameters 
+## Query Parameters
 
 
 ```shell
-curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/login
+curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/user.login/
 ```
 
 ```python
@@ -33,12 +36,12 @@ import requests
 
 data = {"username":"wil", "password":"wilpassword"}
 
-requests.post("http://127.0.0.1:8000/login", data=data)
+requests.post("http://127.0.0.1:8000/user.login/", data=data)
 ```
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'http://127.0.0.1:8000/login', true);
+xhr.open('POST', 'http://127.0.0.1:8000/user.login/', true);
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send('username=wil&password=wilpassword');
 
@@ -94,28 +97,28 @@ You'll also be able to see all the groups that you (the user) belong to as well 
 
 Finally, your remaining quota is provided in the response (`quota_left`) too. Every user has 180 minutes per week which is reset at 3am every Monday. The minutes **do not** carry over.
 
-# Get list of rooms 
+# Get list of rooms
 
-### `/get_list_of_rooms` 
+### `/rooms.list/`
 
 This endpoint returns a list of all the rooms available in the Engineering hub.
 
-## Query Parameters 
+## Query Parameters
 
 ```shell
-curl http://127.0.0.1:8000/get_list_of_rooms -u wil:wilpassword
+curl http://127.0.0.1:8000/rooms.list/ -u wil:wilpassword
 
 #authenticate with token
-curl http://127.0.0.1:8000/get_list_of_rooms -H 'Authorization: Token <auth_token_here>'
+curl http://127.0.0.1:8000/rooms.list/ -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
 import requests
 #with username and password
-r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", auth=requests.auth.HTTPBasicAuth('wil', 'wilpassword'))
+r = requests.get("http://127.0.0.1:8000/rooms.list/", auth=requests.auth.HTTPBasicAuth('wil', 'wilpassword'))
 
 #with token
-r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", headers = {"Authorization":"Token 57087bd9cc3cde97515a
+r = requests.get("http://127.0.0.1:8000/rooms.list/", headers = {"Authorization":"Token 57087bd9cc3cde97515a
 66bc0b58d29696063fd5"})
 ```
 
@@ -125,7 +128,7 @@ r = requests.get("http://127.0.0.1:8000/get_list_of_rooms", headers = {"Authoriz
 
 // token
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/get_list_of_rooms", true);
+xhr.open('GET', "http://127.0.0.1:8000/rooms.list/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -160,7 +163,7 @@ No parameters are required as long.
 
 Field | Type | Description
 --------- | ---------- | -----------
-room_id | `String` | The identifer for the room. This should be used when booking a room. 
+room_id | `String` | The identifer for the room. This should be used when booking a room.
 printers | Boolean | Does the room have a printer or not?
 capacity | 10 | The number of people that can fit in the room.
 room_name | `String` | The actual name of the room.
@@ -169,16 +172,16 @@ water_fountain | Boolean | If you this is true, congratulations, you've found a 
 Coffee | Boolean | Whether or not this room has a coffee machine.
 
 
-# Get timetable for room 
-### `/get_room_bookings`
+# Get timetable for room
+### `/rooms.bookings/`
 This endpoint returns the timetable for the room on a given day.
 
 ## Parameters
 
 ```shell
-curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -u wil:wilpassword
+curl "http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -u wil:wilpassword
 
-curl "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
+curl "http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
 ```
 ```python
 import requests
@@ -186,7 +189,7 @@ import requests
 params = {"room_id":"RO-PIZZA", "date":"20160808"}
 
 # You can use both methods for authentication here
-r = requests.get("http://127.0.0.1:8000/get_room_bookings", params=params, headers=headers)
+r = requests.get("http://127.0.0.1:8000/rooms.bookings/", params=params, headers=headers)
 
 ```
 
@@ -194,7 +197,7 @@ r = requests.get("http://127.0.0.1:8000/get_room_bookings", params=params, heade
 
 // headers
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&date=20160808", true);
+xhr.open('GET', "http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&date=20160808", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -211,7 +214,7 @@ Parameter | Type | Description
 `room_id` | `String` | The room id (not to be confused with the room name)
 `date` | `String`| The date must be entered in _YYYYMMDD_ format.
 
-##Response 
+##Response
 
 > Response
 
@@ -235,21 +238,21 @@ end | `String` | End of booking in HH:MM:SS format
 
 # Book normal rooms
 
-### `/book_room_normal`
-This end point allows the user to book rooms available to everybody. 
+### `/rooms.book/`
+This end point allows the user to book rooms available to everybody.
 ## Parameters
 
 **Restrictions** : Any authenticated user can make room bookings, except for token based authentications, see [REF]
 
-**Allowed request type:** `POST` 
+**Allowed request type:** `POST`
 
 ```shell
-curl http://127.0.0.1:8000/book_room_normal
+curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -u rema:remapassword
 
 
-curl http://127.0.0.1:8000/book_room_normal
+curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -H 'Authorization: Token <auth_token_here>'   
 ```
@@ -262,7 +265,7 @@ data = {
     "data" : "20160808",
     "start_time" : "15:00",
     "end_time" : "17:00",
-    "notes" : "This is an event" 
+    "notes" : "This is an event"
 }
 
 #You can use both methods for authentication here
@@ -272,7 +275,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'http://127.0.0.1:8000/book_room_normal', true);
+xhr.open('POST', 'http://127.0.0.1:8000/rooms.book/', true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event");
@@ -286,10 +289,10 @@ Parameter | Type | Description
 --------- | ---------- | -----------
 `room_id` | `String` | The room id (not to be confused with the room name)
 `date` | `String`| The date must be entered in _YYYYMMDD_ format.
-`start_time` | `String` | The time booking starts. The format must be HH:MM 
-`end_time` | `String` | The time booking ends. The format must be HH:MM 
+`start_time` | `String` | The time booking starts. The format must be HH:MM
+`end_time` | `String` | The time booking ends. The format must be HH:MM
 
-## Response 
+## Response
 
 > Response
 
@@ -306,7 +309,7 @@ Parameter | Type | Description
     "error": "error message"
 }
 ```
-There are two possible responses: 
+There are two possible responses:
 
 `success` -> Booking has been made.
 
@@ -314,26 +317,26 @@ or
 
 `error` -> A message providing a reason will be given.
 
-After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response. 
+After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response.
 
 # Book a society room
-### `/book_room_society`
-This endpoint allows society presidents or authorised members to book special society rooms. 
+### `/rooms.book/`
+This endpoint allows society presidents or authorised members to book special society rooms.
 
 ## Request Parameters
 
-**Restrictions:** Only users in group3 can use this endpoint and token authenticated requests 
+**Restrictions:** Only users in group3 can use this endpoint and token authenticated requests
 
 **Allowed request type:** `POST`  
 
 ```shell
-curl http://127.0.0.1:8000/book_room_society
+curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -u rema:remapassword
 
-curl http://127.0.0.1:8000/book_room_society
+curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
-    -H 'Authorization: Token <auth_token_here>' 
+    -H 'Authorization: Token <auth_token_here>'
 ```
 ```python
 import requests
@@ -354,7 +357,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'http://127.0.0.1:8000/book_room_society', true);
+xhr.open('POST', 'http://127.0.0.1:8000/rooms.book/', true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC");
@@ -367,8 +370,8 @@ Parameter | Type | Description
 --------- | ---------- | -----------
 `room_id` | `String` | The room id (not to be confused with the room name)
 `date` | `String`| The date must be entered in _YYYYMMDD_ format.
-`start_time` | `String` | The time booking starts. The format must be HH:MM 
-`end_time` | `String` | The time booking ends. The format must be HH:MM 
+`start_time` | `String` | The time booking starts. The format must be HH:MM
+`end_time` | `String` | The time booking ends. The format must be HH:MM
 
 ## Response
 > Response
@@ -386,7 +389,7 @@ Parameter | Type | Description
     "error": "error message"
 }
 ```
-There are two possible responses: 
+There are two possible responses:
 
 `success` -> Booking has been made.
 
@@ -395,23 +398,23 @@ or
 `error` -> A message providing a reason will be given.
 
 # Get all bookings from a user
-###: `/get_users_booking`
+### `/user.bookings/`
 
 This endpoint shows all the rooms the logged-in user has booked.
-## Request Parameters: 
+## Request Parameters:
 
 **Restrictions:** Only authenticated users are allowed  
-**Allowed request type:** `GET` 
+**Allowed request type:** `GET`
 
 
 ```shell
-curl http://127.0.0.1:8000/get_users_booking?date=20160808 -u rema:remapassword
+curl http://127.0.0.1:8000/user.bookings/?date=20160808 -u rema:remapassword
 
-curl http://127.0.0.1:8000/get_users_booking?date=20160808 -H 'Authorization: Token <auth_token_here>' 
+curl http://127.0.0.1:8000/user.bookings/?date=20160808 -H 'Authorization: Token <auth_token_here>'
 
 ```
 
-```python 
+```python
 import requests
 
 params = {"date" : "20160808"}
@@ -424,7 +427,7 @@ r = requests.get(url, params=params)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/get_users_booking?date=20160808", true);
+xhr.open('GET', "http://127.0.0.1:8000/user.bookings/?date=20160808", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -436,7 +439,7 @@ Parameter | Type | Description
 --------- | ---------- | -----------
 date | `String` | The date in _YYYYMMDD_ format
 
-## Response 
+## Response
 
 > Response
 
@@ -471,16 +474,16 @@ booking_id | `String` | The id associated with the booking
 All bookings on that date by user which is logged in. You cannot see other users data.
 
 # Get token
-### `/token`
+### `/society.token/`
 This endpoint allows a society president to access a token which can be then used to allow other members of his/her society to book as part of a society.
 
 ## Request Parameters
 
 
 ```shell
-curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -u wil:wilpassword
+curl http://127.0.0.1:8000/society.token/?society_id=SOTECHSOC -u wil:wilpassword
 
-curl http://127.0.0.1:8000/token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>' 
+curl http://127.0.0.1:8000/society.token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -492,7 +495,7 @@ r = requests.get(url, params={"society_id":"SOTECHSOC"}, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/token?society_id=SOTECHSOC", true);
+xhr.open('GET', "http://127.0.0.1:8000/society.token?society_id=SOTECHSOC", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -506,7 +509,7 @@ society_id | `String` | Society-ID eg.`SO-XXXXXX`
 
 **Allowed request type:** GET  
 
-**Restrictions:** Only Group4 Users can access this (Society Predidents) 
+**Restrictions:** Only Group4 Users can access this (Society Predidents)
 
 
 ## Response Parameters
@@ -530,7 +533,7 @@ This code can be given to anybody and can be used to book society rooms.
 GET FAIZ TO ADD HEADER FOR THE TOKEN LMAO
 
 #Delete a booking
-### `/delete_booking`
+### `/rooms.deleteBooking/`
 This allows users to delete a booking they have already booked.
 
 ## Request Parameters
@@ -540,10 +543,10 @@ This allows users to delete a booking they have already booked.
 **Allowed request type:** `GET`  
 
 ```shell
-curl http:127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
+curl http:127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
     -u rema:remapassword
 
-curl http:127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
+curl http:127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
 -H 'Authorization: Token <auth_token_here>'     
 ```
 
@@ -558,7 +561,7 @@ r = requests.get(url, params=params, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1", true);
+xhr.open('GET', "http://127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -570,7 +573,7 @@ Parameter | Type | Description
 --------- | ---------- | -----------
 booking_id| `String` | The booking id associated with the room booking
 
-## Response 
+## Response
 
 > Response
 
@@ -589,25 +592,25 @@ booking_id| `String` | The booking id associated with the room booking
 ```
 
 Once the booking is deleted, the length of the booking will be added back to the users quota.
- 
+
 # Give normal users society access
-### `/add_user_to_group3`
+### `/society.addUser/`
 
 This endpoint allows society presidents to give access to other students and allow them to be included in group 3.
 
 ## Request Parameters
 
-**Restriction:** Only Group4 users have access to this 
+**Restriction:** Only Group4 users have access to this
 
 **Allowed request type:** `POST`  
 
 ```shell
-curl --data "username=rema" http://127.0.0.1:8000/add_user_to_group3?society_id=SOTECHSOC -u wil:wilpassword
+curl --data "username=rema" http://127.0.0.1:8000/society.addUser/?society_id=SOTECHSOC -u wil:wilpassword
 
-curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/add_user_to_group3 -H 'Authorization: Token <auth_token_here>' 
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.addUser/ -H 'Authorization: Token <auth_token_here>'
 ```
 
-```python 
+```python
 import requests
 
 data = {
@@ -620,7 +623,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', "http://127.0.0.1:8000/add_user_to_group3", true);
+xhr.open('POST', "http://127.0.0.1:8000/society.addUser/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("username=rema&society_id=SOTECHSOC");
@@ -634,7 +637,7 @@ Parameter | Type | Description
 username | `string` | This will be the user's email address.
 
 
-## Response 
+## Response
 
 > Response
 
@@ -647,19 +650,19 @@ username | `string` | This will be the user's email address.
 
 
 # Remove normal user's society access
-### `/delete_user_from_group3`
-This endpoint removes user from group3 , denying them society room booking powers. 
+### `/society.deleteUser/`
+This endpoint removes user from group3 , denying them society room booking powers.
 ## Request Parameters
 
-**Restriction:** Only Group4 users have access to this 
+**Restriction:** Only Group4 users have access to this
 
 **Allowed request type:** `POST`  
 
 
 ```shell
-curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/delete_user_from_group3?society_id=SOCTECHSOC -u wil:wilpassword
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.deleteUser/?society_id=SOCTECHSOC -u wil:wilpassword
 
-curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/delete_user_from_group3 'Authorization: Token <auth_token_here>'
+curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.deleteUser/ 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -675,7 +678,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', "http://127.0.0.1:8000/delete_user_from_group3", true);
+xhr.open('POST', "http://127.0.0.1:8000/society.deleteUser/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("username=rema&society_id=SOTECHSOC");
@@ -688,7 +691,7 @@ Parameter | Type | Description
 username | `string` | This will be the user's email address.
 
 
-# Response 
+# Response
 
 > Response
 
@@ -700,7 +703,7 @@ username | `string` | This will be the user's email address.
 
 
 # Logout a user
-### `/logout`
+### `/user.logout/`
 This end point logs a user out of the API so they can no longer make requests. They must log back in.
 
 ## Request Parameters
@@ -710,9 +713,9 @@ This end point logs a user out of the API so they can no longer make requests. T
 **Allowed request types:** `GET`  
 
 ```shell
-curl http://127.0.0.1:8000/logout -u username:password
+curl http://127.0.0.1:8000/user.logout/ -u username:password
 
-curl http://127.0.0.1:8000/logout 'Authorization: Token <auth_token_here>'
+curl http://127.0.0.1:8000/user.logout/ 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -724,7 +727,7 @@ r = requests.get(url, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "http://127.0.0.1:8000/logout", true);
+xhr.open('GET', "http://127.0.0.1:8000/user.logout/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -746,7 +749,7 @@ password | `String`| The user's password.
 ```
 
 
-Feel free to make users and test them from admin interface localhost:8000/admin  username: admin, password: adminpassword
+Feel free to make users and test them from admin interface localhost:8000/api/admin  username: admin, password: adminpassword
 
 
 Some test users I made:
@@ -756,5 +759,3 @@ Some test users I made:
     emily, emilypassword -> Group2 only
     matt, mattpassword -> Group2
     vicky, vickypassword -> Group2
-
-
