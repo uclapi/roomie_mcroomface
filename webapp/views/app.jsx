@@ -9,6 +9,7 @@ import ErrorPage from './pages/error.jsx';
 import Calendar from './pages/calendar/calendar.jsx';
 import Rooms from './pages/rooms.jsx';
 import ConfirmBooking from './pages/confirmBooking.jsx';
+import Profile from './pages/profile.jsx';
 
 class Test extends React.Component {
   render() {
@@ -36,6 +37,7 @@ render((
     <Route path="/rooms" component={Rooms} onEnter={requireAuth}/>
     <Route path="/schedule/:roomId" component={Calendar} onEnter={requireAuth}/>
     <Route path="/book/:roomId/:dateTime" component={ConfirmBooking} onEnter={requireAuth}/>
+    <Route path="/profile" component={Profile} onEnter={requireAuth}/>
     <Route path="*" component={ErrorPage}/>
   </Router>
 ), document.getElementById('app'));

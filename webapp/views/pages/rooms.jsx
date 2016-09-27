@@ -6,7 +6,7 @@ import 'whatwg-fetch';
 module.exports = withRouter(React.createClass({
   getRoomList:function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_list_of_rooms', {
+    fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token '+ localStorage.token
@@ -18,9 +18,20 @@ module.exports = withRouter(React.createClass({
       });
       if(res.status === 200){
         res.json().then(function(res){
-          console.log(res);
+          console.log(JSON.stringify( res ));
+          var rooms = [];
+          for(var room of res){
+            if(!room.individual_access){
+              if(localStorage.society){
+                rooms.push(room);
+              }
+            }else{
+              rooms.push(room);
+            }
+          }
+          console.log(rooms);
           that.setState({
-            rooms: res
+            rooms: rooms
           });
         });
       } else {
@@ -50,7 +61,8 @@ module.exports = withRouter(React.createClass({
           ):(<div></div>)}
           <div className="pure-g">
             {this.state.rooms.map((room, i) =>{
-              return ( <div key={i} className="pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5">
+              return ( 
+                <div key={i} className="pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5">
                 <div className="card">
                   <h2>{room.room_name}</h2>
                   <p>Capacity: {room.capacity}</p>

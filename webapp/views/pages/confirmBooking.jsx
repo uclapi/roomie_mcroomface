@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
 import Layout from '../components/layout.jsx';
 import moment from 'moment';
 import 'whatwg-fetch';
@@ -8,8 +8,7 @@ module.exports = withRouter(React.createClass({
   bookRoom: function(e){
     e.preventDefault();
     var that = this;
-    console.log('called');
-    fetch('http://localhost:8000/api/v1/book_room_normal', {
+    fetch('http://localhost:8000/api/v1/rooms.book/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -18,12 +17,12 @@ module.exports = withRouter(React.createClass({
       mode: 'cors',
       body: 'room_id='+ this.props.params.roomId +
         '&date='+ moment(this.props.params.dateTime).format('YYYYMMDD')+
-        '&start_time='+ moment(this.props.params.dateTime).format('k:mm')+
+        '&start_time='+ moment(this.props.params.dateTime).add(1, 'minute').format('k:mm')+
         '&end_time='+ moment(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0,1)), 'hour').format('k:mm')+
-        '&notes='+ this.refs.notes.value
+        '&notes='+
+        '&society_booking=False'
     }).then(function(res){
       res.json().then(function(json){
-        console.log(json);
         if(json.success){
           that.setState({
             result: 'Room booked successfully'
@@ -42,7 +41,7 @@ module.exports = withRouter(React.createClass({
     };
   },
   render: function(){
-    return <Layout title="Confirm Booking">
+    return <Layout title="Book">
       <div className="confirmBooking">
         <div className="pure-g">
           <div className="pure-u-1 card">
@@ -57,7 +56,6 @@ module.exports = withRouter(React.createClass({
                   <option>2 Hours</option>
                   <option>3 Hours</option>
                 </select>
-                <textarea ref="notes" placeholder="Notes..."></textarea>
                 <button type="submit" className="pure-button pure-button-primary">Book</button>
               </fieldset>
             </form>
