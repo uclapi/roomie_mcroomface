@@ -14,7 +14,7 @@ module.exports = withRouter(React.createClass({
   },
   getUserInfo: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_user_meta_data', {
+    fetch('http://localhost:8000/api/v1/user.info/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
@@ -41,7 +41,7 @@ module.exports = withRouter(React.createClass({
   },
   getBookings: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_users_booking', {
+    fetch('http://localhost:8000/api/v1/user.bookings/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
