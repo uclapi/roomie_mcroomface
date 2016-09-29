@@ -1,7 +1,6 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
 from .models import Booking, BookingSociety, UserProfile, Room, Verifier
-from .mailgun_keys import key, sandbox
 
 import datetime
 import requests
@@ -102,8 +101,10 @@ def forgot_password(request):
         )
     }
     request = requests.post(
-        'https://api.mailgun.net/v3/{}/messages'.format(sandbox),
-        auth=('api', key),
+        'https://api.mailgun.net/v3/{}/messages'.format(
+            os.environ.get("sandbox")
+        ),
+        auth=('api', os.environ.get("key")),
         data=data_dictionary
     )
 
