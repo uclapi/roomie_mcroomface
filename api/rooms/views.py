@@ -1,7 +1,6 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
 from .models import Booking, BookingSociety, UserProfile, Room, Verifier
-from .mailgun_keys import key, sandbox
 
 import datetime
 import requests
@@ -14,8 +13,7 @@ from django.shortcuts import render
 from django.template.context_processors import csrf
 
 from rest_framework import permissions
-from rest_framework.authentication import SessionAuthentication,\
-    BasicAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes, \
     authentication_classes
@@ -103,8 +101,10 @@ def forgot_password(request):
         )
     }
     request = requests.post(
-        'https://api.mailgun.net/v3/{}/messages'.format(sandbox),
-        auth=('api', key),
+        'https://api.mailgun.net/v3/{}/messages'.format(
+            os.environ.get("sandbox")
+        ),
+        auth=('api', os.environ.get("key")),
         data=data_dictionary
     )
 
@@ -116,7 +116,7 @@ def forgot_password(request):
 
 @api_view(['GET'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
@@ -141,7 +141,7 @@ def get_rooms_list(request):
 # permission class needs to include group 4
 @api_view(['GET'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_generate_tokens', raise_exception=True)
@@ -188,7 +188,7 @@ def obtain_expiring_auth_token(request):
 
 @api_view(['GET'])
 @authentication_classes(
-    (BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_room_bookings(request):
@@ -237,7 +237,7 @@ def get_room_bookings(request):
 
 @api_view(['GET'])
 @authentication_classes(
-    (BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_user_meta_data(request):
@@ -292,7 +292,7 @@ def password_changed_successfully(request):
 # why logout_view
 @api_view(['GET'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def logout_view(request):
@@ -307,8 +307,8 @@ def logout_view(request):
 # only people in group 3 and 4 can access this
 @api_view(['POST'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication,
-        ExpiringTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication,
+     ExpiringTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def book_room(request):
@@ -522,7 +522,7 @@ def checkAvailability(room, date, start_time, end_time):
 # parameters are => date: YYYYMMDD
 @api_view(['GET'])
 @authentication_classes(
-    (BasicAuthentication, SessionAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_users_booking(request):
@@ -555,7 +555,7 @@ def get_users_booking(request):
 
 @api_view(['GET'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 def delete_booking(request):
@@ -582,7 +582,7 @@ def delete_booking(request):
 
 @api_view(['POST'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
@@ -621,7 +621,7 @@ def add_user_to_group3(request):
 
 @api_view(['POST'])
 @authentication_classes(
-    (SessionAuthentication, BasicAuthentication, ValidatingTokenAuthentication)
+    (SessionAuthentication, ValidatingTokenAuthentication)
 )
 @permission_classes((permissions.IsAuthenticated,))
 @permission_required('rooms.can_add_and_remove_people_to_group_3')
