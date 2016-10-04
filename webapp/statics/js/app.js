@@ -30852,8 +30852,6 @@ module.exports = {
 },{"whatwg-fetch":236}],238:[function(require,module,exports){
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -30866,15 +30864,15 @@ var _auth = require('../utils/auth.js');
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _home = require('./pages/home.jsx');
+var _home = require('./pages/home/home.jsx');
 
 var _home2 = _interopRequireDefault(_home);
 
-var _login = require('./pages/login.jsx');
+var _login = require('./pages/login/login.jsx');
 
 var _login2 = _interopRequireDefault(_login);
 
-var _error = require('./pages/error.jsx');
+var _error = require('./pages/error/error.jsx');
 
 var _error2 = _interopRequireDefault(_error);
 
@@ -30882,52 +30880,19 @@ var _calendar = require('./pages/calendar/calendar.jsx');
 
 var _calendar2 = _interopRequireDefault(_calendar);
 
-var _rooms = require('./pages/rooms.jsx');
+var _rooms = require('./pages/rooms/rooms.jsx');
 
 var _rooms2 = _interopRequireDefault(_rooms);
 
-var _confirmBooking = require('./pages/confirmBooking.jsx');
+var _confirmBooking = require('./pages/confirmBooking/confirmBooking.jsx');
 
 var _confirmBooking2 = _interopRequireDefault(_confirmBooking);
 
-var _profile = require('./pages/profile.jsx');
+var _profile = require('./pages/profile/profile.jsx');
 
 var _profile2 = _interopRequireDefault(_profile);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Test = function (_React$Component) {
-  _inherits(Test, _React$Component);
-
-  function Test() {
-    _classCallCheck(this, Test);
-
-    return _possibleConstructorReturn(this, (Test.__proto__ || Object.getPrototypeOf(Test)).apply(this, arguments));
-  }
-
-  _createClass(Test, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'test' },
-        _react2.default.createElement(
-          'h1',
-          null,
-          'Hello Test'
-        )
-      );
-    }
-  }]);
-
-  return Test;
-}(_react2.default.Component);
 
 function requireAuth(nextState, replace) {
   if (!_auth2.default.loggedIn()) {
@@ -30950,7 +30915,7 @@ function requireAuth(nextState, replace) {
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking.jsx":243,"./pages/error.jsx":244,"./pages/home.jsx":245,"./pages/login.jsx":246,"./pages/profile.jsx":247,"./pages/rooms.jsx":248,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
+},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking/confirmBooking.jsx":243,"./pages/error/error.jsx":244,"./pages/home/home.jsx":245,"./pages/login/login.jsx":246,"./pages/profile/profile.jsx":247,"./pages/rooms/rooms.jsx":248,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31442,7 +31407,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
+var _layout = require('../../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
@@ -31566,7 +31531,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],244:[function(require,module,exports){
+},{"../../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],244:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31606,7 +31571,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
+var _layout = require('../../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
@@ -31685,7 +31650,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../components/layout.jsx":239,"react":233,"react-router":82}],246:[function(require,module,exports){
+},{"../../components/layout.jsx":239,"react":233,"react-router":82}],246:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31694,7 +31659,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _auth = require('../../utils/auth.js');
+var _auth = require('../../../utils/auth.js');
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -31814,7 +31779,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../utils/auth.js":237,"react":233,"react-router":82}],247:[function(require,module,exports){
+},{"../../../utils/auth.js":237,"react":233,"react-router":82}],247:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31823,7 +31788,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
+var _layout = require('../../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
@@ -32006,7 +31971,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],248:[function(require,module,exports){
+},{"../../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],248:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32015,7 +31980,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
+var _layout = require('../../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
@@ -32169,4 +32134,4 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../components/layout.jsx":239,"react":233,"react-router":82,"whatwg-fetch":236}]},{},[238]);
+},{"../../components/layout.jsx":239,"react":233,"react-router":82,"whatwg-fetch":236}]},{},[238]);
