@@ -30808,7 +30808,7 @@ require("whatwg-fetch");
 module.exports = {
   login: function login(user, pass, cb) {
     cb = arguments[arguments.length - 1];
-    fetch("http://localhost:8000/api/v1/login", {
+    fetch("http://localhost:8000/api/v1/user.login/", {
       method: "POST",
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -30818,6 +30818,9 @@ module.exports = {
     }).then(function (res) {
       return res.json().then(function (res) {
         if (res.token) {
+          if (res.groups.indexOf('Group_3') > -1) {
+            localStorage.society = true;
+          }
           localStorage.token = res.token;
           cb(true);
         } else {
@@ -30830,14 +30833,15 @@ module.exports = {
     return localStorage.token;
   },
   logout: function logout(cb) {
-    fetch('http://localhost:8000/api/v1/logout', {
+    fetch('http://localhost:8000/api/v1/user.logout/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token' + localStorage.token
+        'Authorization': 'Token ' + localStorage.token
       },
       mode: 'cors'
     });
     delete localStorage.token;
+    delete localStorage.society;
     if (cb) cb();
   },
   loggedIn: function loggedIn() {
@@ -30885,6 +30889,10 @@ var _rooms2 = _interopRequireDefault(_rooms);
 var _confirmBooking = require('./pages/confirmBooking.jsx');
 
 var _confirmBooking2 = _interopRequireDefault(_confirmBooking);
+
+var _profile = require('./pages/profile.jsx');
+
+var _profile2 = _interopRequireDefault(_profile);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30938,10 +30946,11 @@ function requireAuth(nextState, replace) {
   _react2.default.createElement(_reactRouter.Route, { path: '/rooms', component: _rooms2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/schedule/:roomId', component: _calendar2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/book/:roomId/:dateTime', component: _confirmBooking2.default, onEnter: requireAuth }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/profile', component: _profile2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking.jsx":243,"./pages/error.jsx":244,"./pages/home.jsx":245,"./pages/login.jsx":246,"./pages/rooms.jsx":247,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
+},{"../utils/auth.js":237,"./pages/calendar/calendar.jsx":241,"./pages/confirmBooking.jsx":243,"./pages/error.jsx":244,"./pages/home.jsx":245,"./pages/login.jsx":246,"./pages/profile.jsx":247,"./pages/rooms.jsx":248,"react":233,"react-dom":52,"react-router":82}],239:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31111,6 +31120,15 @@ module.exports = _react2.default.createClass({
               { className: 'pure-menu-link', to: '/rooms' },
               'Rooms'
             )
+          ),
+          _react2.default.createElement(
+            'li',
+            { className: 'pure-menu-item' },
+            _react2.default.createElement(
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: '/profile' },
+              'Profile'
+            )
           )
         )
       )
@@ -31146,8 +31164,14 @@ module.exports = _react2.default.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      date: (0, _moment2.default)()
+      date: (0, _moment2.default)(),
+      loading: 0
     };
+  },
+  updateLoading: function updateLoading() {
+    this.setState({
+      loading: this.state.loading + 1
+    });
   },
   addDay: function addDay(e) {
     e.preventDefault();
@@ -31171,9 +31195,14 @@ module.exports = _react2.default.createClass({
     return _react2.default.createElement(
       _layout2.default,
       { title: 'Calendar' },
+      this.state.loading < 7 ? _react2.default.createElement(
+        'div',
+        { className: 'spinnerContainer' },
+        _react2.default.createElement('div', { className: 'spinner' })
+      ) : _react2.default.createElement('div', null),
       _react2.default.createElement(
         'div',
-        { className: 'pure-g calendar' },
+        { className: 'pure-g calendar', hidden: this.state.loading < 7 ? true : false },
         _react2.default.createElement('div', { className: 'pure-u-sm-1-12' }),
         _react2.default.createElement(
           'div',
@@ -31185,6 +31214,15 @@ module.exports = _react2.default.createClass({
               'h1',
               null,
               this.props.params.roomId
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Opening times:',
+              _react2.default.createElement('br', null),
+              'Mon - Fri: 8:00 - 22:00',
+              _react2.default.createElement('br', null),
+              'Sat - Sun: 9:00 - 19:00'
             ),
             _react2.default.createElement(
               'div',
@@ -31207,37 +31245,37 @@ module.exports = _react2.default.createClass({
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date, rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date, rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(1, 'day'), rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(1, 'day'), rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(2, 'day'), rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(2, 'day'), rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(3, 'day'), rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(3, 'day'), rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(4, 'day'), rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(4, 'day'), rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(5, 'day'), rightBorder: true, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(5, 'day'), rightBorder: true, roomId: this.props.params.roomId, callback: this.updateLoading })
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'pure-u-1-7' },
-                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(6, 'day'), rightBorder: false, roomId: this.props.params.roomId })
+                _react2.default.createElement(_dayView2.default, { date: this.state.date.clone().add(6, 'day'), rightBorder: false, roomId: this.props.params.roomId, callback: this.updateLoading })
               )
             )
           )
@@ -31309,19 +31347,13 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
   setSlots: function setSlots() {
     var slots = [];
-    for (var i = 0; i < 24; i++) {
+    for (var i = 0; i < 14; i++) {
       slots[i] = 0;
-    }
-    for (var i = 0; i < 8; i++) {
-      slots[i] = 1;
-    }
-    for (var i = 22; i < 24; i++) {
-      slots[i] = 1;
     }
     var day = this.props.date.format('ddd');
     if (day === 'Sat' || day === 'Sun') {
-      slots[8] = 1;
-      for (var i = 19; i < 22; i++) {
+      slots[0] = 1;
+      for (var i = 11; i < 14; i++) {
         slots[i] = 1;
       }
     }
@@ -31331,14 +31363,14 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       var end = parseInt(this.state.bookings[i].end.substring(0, 2));
 
       for (var j = start; j < end; j++) {
-        slots[j] = 1;
+        slots[j - 8] = 1;
       }
     }
     return slots;
   },
   getBookings: function getBookings() {
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_room_bookings?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
+    fetch('http://localhost:8000/api/v1/rooms.bookings/?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
@@ -31346,6 +31378,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       mode: 'cors'
     }).then(function (res) {
       if (res.status === 200) {
+        that.props.callback();
         res.json().then(function (json) {
           console.log(json);
           that.setState({
@@ -31389,7 +31422,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
         this.state.slots.map(function (taken, i) {
           return _react2.default.createElement(Slot, {
             key: i,
-            time: i,
+            time: i + 8,
             taken: taken,
             date: _this.props.date.format('YYYYMMDD'),
             roomId: _this.props.roomId });
@@ -31427,18 +31460,16 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   bookRoom: function bookRoom(e) {
     e.preventDefault();
     var that = this;
-    console.log('called');
-    fetch('http://localhost:8000/api/v1/book_room_normal', {
+    fetch('http://localhost:8000/api/v1/rooms.book/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Token ' + localStorage.token
       },
       mode: 'cors',
-      body: 'room_id=' + this.props.params.roomId + '&date=' + (0, _moment2.default)(this.props.params.dateTime).format('YYYYMMDD') + '&start_time=' + (0, _moment2.default)(this.props.params.dateTime).format('k:mm') + '&end_time=' + (0, _moment2.default)(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0, 1)), 'hour').format('k:mm') + '&notes=' + this.refs.notes.value
+      body: 'room_id=' + this.props.params.roomId + '&date=' + (0, _moment2.default)(this.props.params.dateTime).format('YYYYMMDD') + '&start_time=' + (0, _moment2.default)(this.props.params.dateTime).add(1, 'minute').format('k:mm') + '&end_time=' + (0, _moment2.default)(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0, 1)), 'hour').format('k:mm') + '&notes=' + '&society_booking=False'
     }).then(function (res) {
       res.json().then(function (json) {
-        console.log(json);
         if (json.success) {
           that.setState({
             result: 'Room booked successfully'
@@ -31459,7 +31490,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   render: function render() {
     return _react2.default.createElement(
       _layout2.default,
-      { title: 'Confirm Booking' },
+      { title: 'Book' },
       _react2.default.createElement(
         'div',
         { className: 'confirmBooking' },
@@ -31516,7 +31547,6 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
                     '3 Hours'
                   )
                 ),
-                _react2.default.createElement('textarea', { ref: 'notes', placeholder: 'Notes...' }),
                 _react2.default.createElement(
                   'button',
                   { type: 'submit', className: 'pure-button pure-button-primary' },
@@ -31664,10 +31694,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = require('react-router');
 
-var _layout = require('../components/layout.jsx');
-
-var _layout2 = _interopRequireDefault(_layout);
-
 var _auth = require('../../utils/auth.js');
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -31676,10 +31702,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var labelStyle = {
   width: '4em'
-};
-
-var buttonStyle = {
-  marginLeft: '5em'
 };
 
 module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
@@ -31792,7 +31814,199 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../utils/auth.js":237,"../components/layout.jsx":239,"react":233,"react-router":82}],247:[function(require,module,exports){
+},{"../../utils/auth.js":237,"react":233,"react-router":82}],247:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _layout = require('../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+require('whatwg-fetch');
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
+  displayName: 'exports',
+
+  getInitialState: function getInitialState() {
+    return {
+      loading: 0,
+      profile: {},
+      bookings: []
+    };
+  },
+  getUserInfo: function getUserInfo() {
+    var that = this;
+    fetch('http://localhost:8000/api/v1/user.info/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      that.setState({
+        loading: that.state.loading + 1
+      });
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          console.log(json);
+          that.setState({
+            profile: json
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/profile' }
+        });
+      }
+    });
+  },
+  getBookings: function getBookings() {
+    var that = this;
+    fetch('http://localhost:8000/api/v1/user.bookings/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      that.setState({
+        loading: that.state.loading + 1
+      });
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          that.setState({
+            bookings: json
+          });
+        });
+      } else {
+        that.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: '/profile' }
+        });
+      }
+    });
+  },
+  componentDidMount: function componentDidMount() {
+    this.getUserInfo();
+    this.getBookings();
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      { title: 'Profile' },
+      _react2.default.createElement(
+        'div',
+        { className: 'profile' },
+        this.state.loading < 2 ? _react2.default.createElement(
+          'div',
+          { className: 'spinnerContainer' },
+          _react2.default.createElement('div', { className: 'spinner' })
+        ) : _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-g panel' },
+            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered' },
+              _react2.default.createElement(
+                'h2',
+                null,
+                this.state.profile.email
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Time left this week: ',
+                this.state.profile.quota_left,
+                ' minutes'
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Societies you belong to'
+              ),
+              _react2.default.createElement(
+                'ul',
+                null,
+                this.state.profile.societies[0].map(function (society, i) {
+                  return _react2.default.createElement(
+                    'li',
+                    { key: i },
+                    society
+                  );
+                })
+              )
+            ),
+            _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-g' },
+            _react2.default.createElement(
+              'div',
+              { className: 'pure-u-1' },
+              _react2.default.createElement(
+                'h1',
+                null,
+                'Your bookings'
+              )
+            ),
+            this.state.bookings.map(function (booking, i) {
+              return _react2.default.createElement(
+                'div',
+                { key: i, className: 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'card centered' },
+                  _react2.default.createElement(
+                    'h2',
+                    null,
+                    (0, _moment2.default)(booking.date).format('ddd do MMM')
+                  ),
+                  _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Start time: ',
+                    booking.start
+                  ),
+                  _react2.default.createElement(
+                    'h3',
+                    null,
+                    'End time: ',
+                    booking.end
+                  ),
+                  _react2.default.createElement(
+                    'h4',
+                    null,
+                    'Notes: ',
+                    booking.notes
+                  )
+                )
+              );
+            })
+          )
+        )
+      )
+    );
+  }
+}));
+
+},{"../components/layout.jsx":239,"moment":48,"react":233,"react-router":82,"whatwg-fetch":236}],248:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31814,7 +32028,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
   getRoomList: function getRoomList() {
     var that = this;
-    fetch('http://localhost:8000/api/v1/get_list_of_rooms', {
+    fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + localStorage.token
@@ -31826,9 +32040,42 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       });
       if (res.status === 200) {
         res.json().then(function (res) {
-          console.log(res);
+          console.log(JSON.stringify(res));
+          var rooms = [];
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = res[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var room = _step.value;
+
+              if (!room.individual_access) {
+                if (localStorage.society) {
+                  rooms.push(room);
+                }
+              } else {
+                rooms.push(room);
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+
+          console.log(rooms);
           that.setState({
-            rooms: res
+            rooms: rooms
           });
         });
       } else {

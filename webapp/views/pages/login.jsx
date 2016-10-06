@@ -1,15 +1,10 @@
 import React from 'react';
-import {Link, withRouter} from 'react-router';
-import Layout from '../components/layout.jsx';
+import {withRouter} from 'react-router';
 
 import auth from '../../utils/auth.js';
 
 var labelStyle = {
-   width: '4em'
-};
-
-var buttonStyle = {
-   marginLeft : '5em'
+  width: '4em'
 };
 
 module.exports = withRouter(React.createClass({
@@ -42,14 +37,14 @@ module.exports = withRouter(React.createClass({
           loading: false
         });
       }
-			const {location} = this.props
+      const {location} = this.props;
 
-        if (location.state && location.state.nextPathname) {
-          this.props.router.replace(location.state.nextPathname)
-        } else {
-          this.props.router.replace('/')
-        }
-    })
+      if (location.state && location.state.nextPathname) {
+        this.props.router.replace(location.state.nextPathname);
+      } else {
+        this.props.router.replace('/');
+      }
+    });
   },
 
   render: function() {
@@ -87,6 +82,6 @@ module.exports = withRouter(React.createClass({
           </div>
         </div>
       </div>
-    )
+    );
   }
 }));

@@ -93,15 +93,14 @@ WSGI_APPLICATION = 'roomie_mcroom.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-from .aws_settings import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': USERNAME,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT,
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("USERNAME"),
+        'PASSWORD': os.environ.get("PASSWORD"),
+        'HOST': os.environ.get("HOST"),
+        'PORT': os.environ.get("PORT"),
     }
 }
 
