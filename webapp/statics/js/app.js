@@ -31966,6 +31966,15 @@ module.exports = _react2.default.createClass({
               { className: 'pure-menu-link', to: '/profile' },
               'Profile'
             )
+          ),
+          _react2.default.createElement(
+            'li',
+            { className: 'pure-menu-item' },
+            _react2.default.createElement(
+              _reactRouter.Link,
+              { className: 'pure-menu-link', to: 'https://roomie.uservoice.com/' },
+              'Feedback'
+            )
           )
         )
       )
@@ -32366,8 +32375,6 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       mode: 'cors'
     }).then(function (res) {
       res.json().then(function (json) {
-        console.log(json);
-        console.log(that.props.params.roomId);
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -32376,11 +32383,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
           for (var _iterator = json[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var room = _step.value;
 
-            console.log(room);
-            console.log(room.room_id);
-            console.log(room.room_id === that.props.params.roomId);
             if (room.room_id === that.props.params.roomId) {
-              console.log('here');
               that.setState({
                 societyRoom: !room.individual_access,
                 loading: false

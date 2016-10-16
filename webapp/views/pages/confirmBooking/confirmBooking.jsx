@@ -79,14 +79,8 @@ module.exports = withRouter(React.createClass({
       mode: 'cors'
     }).then(function(res){
       res.json().then(function(json){
-        console.log(json);
-        console.log(that.props.params.roomId);
         for(var room of json){
-          console.log(room);
-          console.log(room.room_id);
-          console.log(room.room_id === that.props.params.roomId);
           if(room.room_id === that.props.params.roomId){
-            console.log('here');
             that.setState({
               societyRoom: !room.individual_access,
               loading: false
