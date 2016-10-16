@@ -104,8 +104,7 @@ p {
 }
 .pure-u-1-7 {
   width: 14.2857%;
-  display: inline-block;
-  *display: inline;
+  display: inline;
   zoom: 1;
   letter-spacing: normal;
   word-spacing: normal;
@@ -311,4 +310,7 @@ p {
 .profile ul {
   list-style: none;
   padding: 0;
+}
+#eventName {
+  margin: auto;
 }

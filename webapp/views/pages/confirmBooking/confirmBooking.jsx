@@ -2,11 +2,20 @@ import React from 'react';
 import {withRouter} from 'react-router';
 import Layout from '../../components/layout.jsx';
 import moment from 'moment';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'whatwg-fetch';
+import IndividualForm from './individualForm.jsx';
+import SocietyForm from './societyForm.jsx';
 
 module.exports = withRouter(React.createClass({
-  bookRoom: function(e){
-    e.preventDefault();
+  displayName: 'Confirm Booking',
+  propTypes:{
+    params: React.PropTypes.object,
+    roomId: React.PropTypes.string,
+    dateTime: React.PropTypes.string
+
+  },
+  bookRoom: function(society_booking){
     var that = this;
     fetch('http://localhost:8000/api/v1/rooms.book/', {
       method: 'POST',
@@ -17,12 +26,18 @@ module.exports = withRouter(React.createClass({
       mode: 'cors',
       body: 'room_id='+ this.props.params.roomId +
         '&date='+ moment(this.props.params.dateTime).format('YYYYMMDD')+
-        '&start_time='+ moment(this.props.params.dateTime).add(1, 'minute').format('k:mm')+
-        '&end_time='+ moment(this.props.params.dateTime).add(parseInt(this.refs.duration.value.substr(0,1)), 'hour').format('k:mm')+
-        '&notes='+
-        '&society_booking=False'
+        '&start_time='+ moment(this.props.params.dateTime).add(1, 'minute').format('kk:mm')+
+        '&end_time='+ moment(this.props.params.dateTime).add(this.state.duration, 'hour').format('kk:mm')+
+        (this.state.notes?'&notes='+this.state.notes:'')+ 
+        '&society_booking=' + society_booking +
+        (this.state.society?'&society='+this.state.society:'')+
+        (this.state.eventName?'&event_name='+this.state.eventName:'')
+      
     }).then(function(res){
       res.json().then(function(json){
+        that.setState({
+          loading: false
+        });
         if(json.success){
           that.setState({
             result: 'Room booked successfully'
@@ -37,34 +52,111 @@ module.exports = withRouter(React.createClass({
   },
   getInitialState:function(){
     return {
-      result: ''
+      result: '',
+      duration: 0,
+      societyRoom:false,
+      loading: true
     };
+  },
+  sendFormData: function(duration, notes, society_booking, society, eventName){
+    this.setState({
+      duration: duration,
+      notes:notes,
+      society:society,
+      eventName:eventName,
+      loading: true
+    },function(){
+      this.bookRoom(society_booking);
+    });
+  },
+  getRoomInfo: function(){
+    var that = this;
+    fetch('http://localhost:8000/api/v1/rooms.list/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + localStorage.token
+      },
+      mode: 'cors'
+    }).then(function(res){
+      res.json().then(function(json){
+        console.log(json);
+        console.log(that.props.params.roomId);
+        for(var room of json){
+          console.log(room);
+          console.log(room.room_id);
+          console.log(room.room_id === that.props.params.roomId);
+          if(room.room_id === that.props.params.roomId){
+            console.log('here');
+            that.setState({
+              societyRoom: !room.individual_access,
+              loading: false
+            });
+          }
+        }
+      });
+    });
+  },
+  componentDidMount:function(){
+    this.getRoomInfo();
   },
   render: function(){
     return <Layout title="Book">
       <div className="confirmBooking">
-        <div className="pure-g">
-          <div className="pure-u-1 card">
-            <h1>{this.props.params.roomId}</h1>
-            <p>Date: {moment(this.props.params.dateTime).format('dddd Do MMMM')}</p>
-            <p>Time: {moment(this.props.params.dateTime).format('kk:mm')}</p>
-            <form className="pure-form pure-form-stacked" onSubmit={this.bookRoom}>
-              <fieldset>
-                <label htmlFor="duration">Duration</label>
-                <select ref="duration" id="duration">
-                  <option>1 Hour</option>
-                  <option>2 Hours</option>
-                  <option>3 Hours</option>
-                </select>
-                <button type="submit" className="pure-button pure-button-primary">Book</button>
-              </fieldset>
-            </form>
-            <div className="result">
-              {this.state.result}
+      {this.state.loading ? (
+        <div className="spinnerContainer">
+          <div className="spinner"></div>
+        </div>
+        ):(
+          <div className="pure-g">
+            <div className="pure-u-1 card">
+              {localStorage.society ? (
+                this.state.societyRoom ? (
+                  <SocietyForm 
+                    dateTime={this.props.params.dateTime} 
+                    roomId={this.props.params.roomId}
+                    callBack={this.sendFormData}
+                  />
+                ):(
+                  <Tabs>
+                    <TabList>
+                      <Tab>
+                        Individual Booking
+                      </Tab>
+                      <Tab>
+                        Society Booking
+                      </Tab>
+                    </TabList>
+                    <TabPanel>
+                      <IndividualForm
+                        dateTime={this.props.params.dateTime} 
+                        roomId={this.props.params.roomId}
+                        callBack={this.sendFormData}
+                      /> 
+                    </TabPanel>
+                    <TabPanel>
+                      <SocietyForm 
+                        dateTime={this.props.params.dateTime} 
+                        roomId={this.props.params.roomId}
+                        callBack={this.sendFormData}
+                      />
+                    </TabPanel>
+                  </Tabs>
+                )
+              ):(
+                <IndividualForm
+                  dateTime={this.props.params.dateTime} 
+                  roomId={this.props.params.roomId}
+                  callBack={this.sendFormData}
+                /> 
+              )}
+              
+              <div className="result">
+                {this.state.result}
+              </div>
             </div>
           </div>
-        </div>
-        </div>
+        )}
+      </div>
     </Layout>;
   }
 }));
