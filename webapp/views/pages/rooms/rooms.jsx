@@ -2,6 +2,7 @@ import React from 'react';
 import {Link, withRouter} from 'react-router';
 import Layout from '../../components/layout.jsx';
 import 'whatwg-fetch';
+import utils from '../../../utils/utils.js';
 
 module.exports = withRouter(React.createClass({
   getRoomList:function(){
@@ -9,7 +10,7 @@ module.exports = withRouter(React.createClass({
     fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token '+ localStorage.token
+        'Authorization': 'Token '+ utils.getCookie('token')
       },
       mode: 'cors'
     }).then(function(res){
@@ -60,6 +61,11 @@ module.exports = withRouter(React.createClass({
           </div>
           ):(<div></div>)}
           <div className="pure-g">
+            <div className="pure-u-1">
+              <div className="card">
+                <img className="pure-img" src="/img/blueprint.png"/>
+              </div>
+            </div>
             {this.state.rooms.map((room, i) =>{
               return ( 
                 <div key={i} className="pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5">

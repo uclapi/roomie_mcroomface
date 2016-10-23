@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { Router } from 'react-router';
+import utils from '../../../utils/utils.js';
 
 module.exports = React.createClass({
   displayName: 'Society Form',
@@ -23,7 +24,7 @@ module.exports = React.createClass({
     fetch('http://localhost:8000/api/v1/user.info/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + utils.getCookie('token')
       },
       mode: 'cors'
     }).then(function(res){

@@ -14,7 +14,9 @@ module.exports = React.createClass({
   handleClick: function(e){
     e.preventDefault();
     var container = document.getElementById('app-container');
+    var app = document.getElementById('app');
     this.toggleClass(container, 'sidebar-open');
+    this.toggleClass(app, 'noScroll');
   },
   
   toggleClass: function(element, className) {

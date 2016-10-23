@@ -6,6 +6,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'whatwg-fetch';
 import IndividualForm from './individualForm.jsx';
 import SocietyForm from './societyForm.jsx';
+import utils from '../../../utils/utils.js';
 
 module.exports = withRouter(React.createClass({
   displayName: 'Confirm Booking',
@@ -21,7 +22,7 @@ module.exports = withRouter(React.createClass({
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + utils.getCookie('token')
       },
       mode: 'cors',
       body: 'room_id='+ this.props.params.roomId +
@@ -74,7 +75,7 @@ module.exports = withRouter(React.createClass({
     fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + utils.getCookie('token')
       },
       mode: 'cors'
     }).then(function(res){

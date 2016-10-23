@@ -31673,27 +31673,33 @@ arguments[4][46][0].apply(exports,arguments)
 })(typeof self !== 'undefined' ? self : this);
 
 },{}],247:[function(require,module,exports){
-"use strict";
+'use strict';
 
-require("whatwg-fetch");
+require('whatwg-fetch');
+
+var _utils = require('./utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = {
   login: function login(user, pass, cb) {
     cb = arguments[arguments.length - 1];
-    fetch("http://localhost:8000/api/v1/user.login/", {
-      method: "POST",
+    fetch('http://localhost:8000/api/v1/user.login/', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       mode: 'cors',
-      body: "username=" + user + "&password=" + pass
+      body: 'username=' + user + '&password=' + pass
     }).then(function (res) {
       return res.json().then(function (res) {
         if (res.token) {
           if (res.groups.indexOf('Group_3') > -1) {
             localStorage.society = true;
           }
-          localStorage.token = res.token;
+          _utils2.default.setCookie('token', res.token, 7);
           cb(true);
         } else {
           cb(false);
@@ -31702,7 +31708,7 @@ module.exports = {
     });
   },
   getToken: function getToken() {
-    return localStorage.token;
+    return _utils2.default.getCookie('token');
   },
   logout: function logout(cb) {
     fetch('http://localhost:8000/api/v1/user.logout/', {
@@ -31712,16 +31718,44 @@ module.exports = {
       },
       mode: 'cors'
     });
-    delete localStorage.token;
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
     delete localStorage.society;
     if (cb) cb();
   },
   loggedIn: function loggedIn() {
-    return !!localStorage.token;
+    return !!_utils2.default.getCookie('token');
   }
 };
 
-},{"whatwg-fetch":246}],248:[function(require,module,exports){
+},{"./utils.js":248,"whatwg-fetch":246}],248:[function(require,module,exports){
+'use strict';
+
+var _exports = {
+  setCookie: function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    var expires = 'expires=' + d.toUTCString();
+    document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+  },
+  getCookie: function getCookie(cname) {
+    var name = cname + '=';
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return '';
+  }
+};
+
+module.exports = _exports;
+
+},{}],249:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31787,7 +31821,7 @@ function requireAuth(nextState, replace) {
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":247,"./pages/calendar/calendar.jsx":251,"./pages/confirmBooking/confirmBooking.jsx":253,"./pages/error/error.jsx":256,"./pages/home/home.jsx":257,"./pages/login/login.jsx":258,"./pages/profile/profile.jsx":259,"./pages/rooms/rooms.jsx":260,"react":243,"react-dom":54,"react-router":84}],249:[function(require,module,exports){
+},{"../utils/auth.js":247,"./pages/calendar/calendar.jsx":252,"./pages/confirmBooking/confirmBooking.jsx":254,"./pages/error/error.jsx":257,"./pages/home/home.jsx":258,"./pages/login/login.jsx":259,"./pages/profile/profile.jsx":260,"./pages/rooms/rooms.jsx":261,"react":243,"react-dom":54,"react-router":84}],250:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31819,7 +31853,9 @@ module.exports = _react2.default.createClass({
   handleClick: function handleClick(e) {
     e.preventDefault();
     var container = document.getElementById('app-container');
+    var app = document.getElementById('app');
     this.toggleClass(container, 'sidebar-open');
+    this.toggleClass(app, 'noScroll');
   },
 
   toggleClass: function toggleClass(element, className) {
@@ -31911,7 +31947,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../../utils/auth.js":247,"./sidebar.jsx":250,"react":243,"react-router":84}],250:[function(require,module,exports){
+},{"../../utils/auth.js":247,"./sidebar.jsx":251,"react":243,"react-router":84}],251:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31923,8 +31959,7 @@ var _reactRouter = require('react-router');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
-  displayName: 'exports',
-
+  displayName: 'Sidebar',
   render: function render() {
     return _react2.default.createElement(
       'div',
@@ -31982,7 +32017,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"react":243,"react-router":84}],251:[function(require,module,exports){
+},{"react":243,"react-router":84}],252:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32132,7 +32167,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../../components/layout.jsx":249,"./dayView.jsx":252,"moment":50,"react":243,"react-router":84}],252:[function(require,module,exports){
+},{"../../components/layout.jsx":250,"./dayView.jsx":253,"moment":50,"react":243,"react-router":84}],253:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32142,6 +32177,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRouter = require('react-router');
 
 require('whatwg-fetch');
+
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32219,7 +32258,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     fetch('http://localhost:8000/api/v1/rooms.bookings/?room_id=' + this.props.roomId + '&date=' + this.props.date.format('YYYYMMDD'), {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -32279,7 +32318,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"react":243,"react-router":84,"whatwg-fetch":246}],253:[function(require,module,exports){
+},{"../../../utils/utils.js":248,"react":243,"react-router":84,"whatwg-fetch":246}],254:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32308,6 +32347,10 @@ var _societyForm = require('./societyForm.jsx');
 
 var _societyForm2 = _interopRequireDefault(_societyForm);
 
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
@@ -32324,7 +32367,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors',
       body: 'room_id=' + this.props.params.roomId + '&date=' + (0, _moment2.default)(this.props.params.dateTime).format('YYYYMMDD') + '&start_time=' + (0, _moment2.default)(this.props.params.dateTime).add(1, 'minute').format('kk:mm') + '&end_time=' + (0, _moment2.default)(this.props.params.dateTime).add(this.state.duration, 'hour').format('kk:mm') + (this.state.notes ? '&notes=' + this.state.notes : '') + '&society_booking=' + society_booking + (this.state.society ? '&society=' + this.state.society : '') + (this.state.eventName ? '&event_name=' + this.state.eventName : '')
@@ -32370,7 +32413,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -32483,7 +32526,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../components/layout.jsx":249,"./individualForm.jsx":254,"./societyForm.jsx":255,"moment":50,"react":243,"react-router":84,"react-tabs":100,"whatwg-fetch":246}],254:[function(require,module,exports){
+},{"../../../utils/utils.js":248,"../../components/layout.jsx":250,"./individualForm.jsx":255,"./societyForm.jsx":256,"moment":50,"react":243,"react-router":84,"react-tabs":100,"whatwg-fetch":246}],255:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32571,7 +32614,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"moment":50,"react":243}],255:[function(require,module,exports){
+},{"moment":50,"react":243}],256:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32583,6 +32626,10 @@ var _moment = require('moment');
 var _moment2 = _interopRequireDefault(_moment);
 
 var _reactRouter = require('react-router');
+
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32607,7 +32654,7 @@ module.exports = _react2.default.createClass({
     fetch('http://localhost:8000/api/v1/user.info/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -32729,7 +32776,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"moment":50,"react":243,"react-router":84}],256:[function(require,module,exports){
+},{"../../../utils/utils.js":248,"moment":50,"react":243,"react-router":84}],257:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32760,7 +32807,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"react":243,"react-router":84}],257:[function(require,module,exports){
+},{"react":243,"react-router":84}],258:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32848,7 +32895,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../../components/layout.jsx":249,"react":243,"react-router":84}],258:[function(require,module,exports){
+},{"../../components/layout.jsx":250,"react":243,"react-router":84}],259:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32977,7 +33024,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../../utils/auth.js":247,"react":243,"react-router":84}],259:[function(require,module,exports){
+},{"../../../utils/auth.js":247,"react":243,"react-router":84}],260:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -32996,6 +33043,10 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
@@ -33013,7 +33064,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     fetch('http://localhost:8000/api/v1/user.info/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -33040,7 +33091,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     fetch('http://localhost:8000/api/v1/user.bookings/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -33169,7 +33220,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../components/layout.jsx":249,"moment":50,"react":243,"react-router":84,"whatwg-fetch":246}],260:[function(require,module,exports){
+},{"../../../utils/utils.js":248,"../../components/layout.jsx":250,"moment":50,"react":243,"react-router":84,"whatwg-fetch":246}],261:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -33184,6 +33235,10 @@ var _layout2 = _interopRequireDefault(_layout);
 
 require('whatwg-fetch');
 
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
@@ -33194,7 +33249,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     fetch('http://localhost:8000/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
       },
       mode: 'cors'
     }).then(function (res) {
@@ -33273,6 +33328,15 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
         _react2.default.createElement(
           'div',
           { className: 'pure-g' },
+          _react2.default.createElement(
+            'div',
+            { className: 'pure-u-1' },
+            _react2.default.createElement(
+              'div',
+              { className: 'card' },
+              _react2.default.createElement('img', { className: 'pure-img', src: '/img/blueprint.png' })
+            )
+          ),
           this.state.rooms.map(function (room, i) {
             return _react2.default.createElement(
               'div',
@@ -33332,4 +33396,4 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-},{"../../components/layout.jsx":249,"react":243,"react-router":84,"whatwg-fetch":246}]},{},[248]);
+},{"../../../utils/utils.js":248,"../../components/layout.jsx":250,"react":243,"react-router":84,"whatwg-fetch":246}]},{},[249]);

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link , withRouter} from 'react-router'
 import 'whatwg-fetch';
+import utils from '../../../utils/utils.js';
 var Slot = React.createClass({
   getInitialState: function(){
     return{
@@ -66,7 +67,7 @@ module.exports = withRouter(React.createClass({
           this.props.date.format('YYYYMMDD'), {
             method:'GET',
             headers: {
-              'Authorization': 'Token '+ localStorage.token
+              'Authorization': 'Token '+ utils.getCookie('token')
             },
             mode:'cors'
           }).then(function(res){
