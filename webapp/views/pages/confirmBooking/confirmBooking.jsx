@@ -7,6 +7,7 @@ import 'whatwg-fetch';
 import IndividualForm from './individualForm.jsx';
 import SocietyForm from './societyForm.jsx';
 import utils from '../../../utils/utils.js';
+import config from '../../../config.js';
 
 module.exports = withRouter(React.createClass({
   displayName: 'Confirm Booking',
@@ -18,7 +19,7 @@ module.exports = withRouter(React.createClass({
   },
   bookRoom: function(society_booking){
     var that = this;
-    fetch('http://localhost:8000/api/v1/rooms.book/', {
+    fetch(config.domain + '/api/v1/rooms.book/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -72,7 +73,7 @@ module.exports = withRouter(React.createClass({
   },
   getRoomInfo: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/rooms.list/', {
+    fetch(config.domain + '/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + utils.getCookie('token')

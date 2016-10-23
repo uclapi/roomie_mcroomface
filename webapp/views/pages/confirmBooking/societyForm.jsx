@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { Router } from 'react-router';
 import utils from '../../../utils/utils.js';
+import config from '../../../config.js';
 
 module.exports = React.createClass({
   displayName: 'Society Form',
@@ -21,7 +22,7 @@ module.exports = React.createClass({
   },
   getSocieties: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/user.info/', {
+    fetch(config.domain + '/api/v1/user.info/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + utils.getCookie('token')

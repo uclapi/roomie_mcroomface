@@ -1,14 +1,14 @@
-'use strict';
 var browserify = require('browserify');
 var gulp = require('gulp');
-var source = require('vinyl-source-stream');
 var uglify = require('gulp-uglify');
+var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
+var less = require('gulp-less');
+var cleanCSS = require('gulp-clean-css');
 
-
-module.exports = function() {
+module.exports = function(){
   var b = browserify({
     entries: './views/app.jsx',
     debug: true
@@ -20,6 +20,9 @@ module.exports = function() {
       // Add transformation tasks to the pipeline here.
       .pipe(uglify())
       .on('error', gutil.log)
-    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./statics/js/'));
+  gulp.src('./views/index.less')
+    .pipe(less())
+    .pipe(cleanCSS())
+    .pipe(gulp.dest('./statics/css/'));
 };

@@ -3,11 +3,12 @@ import {Link, withRouter} from 'react-router';
 import Layout from '../../components/layout.jsx';
 import 'whatwg-fetch';
 import utils from '../../../utils/utils.js';
+import config from '../../../config.js';
 
 module.exports = withRouter(React.createClass({
   getRoomList:function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/rooms.list/', {
+    fetch(config.domain + '/api/v1/rooms.list/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token '+ utils.getCookie('token')

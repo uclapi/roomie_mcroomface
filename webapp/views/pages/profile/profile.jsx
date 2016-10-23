@@ -4,6 +4,7 @@ import Layout from '../../components/layout.jsx';
 import 'whatwg-fetch';
 import moment from 'moment';
 import utils from '../../../utils/utils.js';
+import config from '../../../config.js';
 
 module.exports = withRouter(React.createClass({
   getInitialState: function(){
@@ -15,7 +16,7 @@ module.exports = withRouter(React.createClass({
   },
   getUserInfo: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/user.info/', {
+    fetch(config.domain + '/api/v1/user.info/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + utils.getCookie('token')
@@ -42,7 +43,7 @@ module.exports = withRouter(React.createClass({
   },
   getBookings: function(){
     var that = this;
-    fetch('http://localhost:8000/api/v1/user.bookings/', {
+    fetch(config.domain + '/api/v1/user.bookings/', {
       method: 'GET',
       headers: {
         'Authorization': 'Token ' + utils.getCookie('token')
@@ -69,6 +70,8 @@ module.exports = withRouter(React.createClass({
   componentDidMount: function(){
     this.getUserInfo();
     this.getBookings();
+    console.log(config.domain);
+    console.log(process.env.NODE_ENV);
   },
   render: function() {
     return (

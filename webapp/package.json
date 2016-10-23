@@ -5,7 +5,8 @@
   "main": "statics/html/index.html",
   "scripts": {
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prodBuild": "NODE_ENV=production gulp production"
   },
   "author": "Henry Mortimer",
   "license": "ISC",
@@ -23,15 +24,22 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
+    "envify": "^3.4.1",
     "eslint": "^3.5.0",
     "eslint-plugin-react": "^6.2.2",
     "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.13",
     "gulp-less": "^3.1.0",
+    "gulp-sourcemaps": "^2.1.1",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "browserify": {
     "transform": [
-      "babelify"
+      "babelify",
+      "envify"
     ]
   }
 }
