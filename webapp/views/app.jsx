@@ -1,32 +1,22 @@
-import React from 'react'
-import { render } from 'react-dom'
-import { Router, Route, browserHistory } from 'react-router'
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, browserHistory } from 'react-router';
 import Auth from '../utils/auth.js';
 
-import Home from './pages/home.jsx';
-import Login from './pages/login.jsx'; 
-import ErrorPage from './pages/error.jsx';
+import Home from './pages/home/home.jsx';
+import Login from './pages/login/login.jsx'; 
+import ErrorPage from './pages/error/error.jsx';
 import Calendar from './pages/calendar/calendar.jsx';
-import Rooms from './pages/rooms.jsx';
-import ConfirmBooking from './pages/confirmBooking.jsx';
-import Profile from './pages/profile.jsx';
-
-class Test extends React.Component {
-  render() {
-    return (
-      <div className='test'>
-        <h1>Hello Test</h1>
-      </div>
-    );
-  }
-}
+import Rooms from './pages/rooms/rooms.jsx';
+import ConfirmBooking from './pages/confirmBooking/confirmBooking.jsx';
+import Profile from './pages/profile/profile.jsx';
 
 function requireAuth(nextState, replace) {
   if (!Auth.loggedIn()) {
     replace({
       pathname: '/login',
       state: { nextPathname: nextState.location.pathname }
-    })
+    });
   }
 }
 

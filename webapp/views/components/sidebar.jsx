@@ -1,7 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router'
+import React from 'react';
+import { Link } from 'react-router';
 
 module.exports = React.createClass({
+  displayName: 'Sidebar',
   render:function () {
     return (
       <div className="sideBar">
@@ -17,9 +18,12 @@ module.exports = React.createClass({
             <li className="pure-menu-item">
               <Link className="pure-menu-link" to="/profile">Profile</Link>
             </li>
+            <li className="pure-menu-item">
+              <Link className="pure-menu-link" to="https://roomie.uservoice.com/">Feedback</Link>
+            </li>
           </ul>
         </div>
       </div>
-    )
+    );
   }
 });
