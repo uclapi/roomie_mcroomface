@@ -6,7 +6,6 @@ import config from '../../../config.js';
 
 module.exports = React.createClass({
   displayName: 'Society Form',
-  mixins: [ Router.State ],
   propTypes: {
     roomId: React.PropTypes.string,
     dateTime: React.PropTypes.string,

@@ -2,7 +2,11 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
-app.use(express.static(__dirname + '/statics'));
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static(__dirname + '/dist'));
+} else {
+  app.use(express.static(__dirname + '/statics'));
+}
 
 app.get('*', function (req, res) {
   res.sendFile(path.resolve(__dirname, 'statics/index.html'));

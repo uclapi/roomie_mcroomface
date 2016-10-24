@@ -1,1 +1,316 @@
-#app,body,html{height:100%}.popup,.spinnerContainer{position:fixed;top:0;left:0}.button,a{text-decoration:none}.centered,.error .content{text-align:center}.pure-g [class*=pure-u],button,html,input,select,textarea{font-family:Ubuntu,sans-serif}body{color:#555}.button,button a{color:#fff}@media screen and (min-width:35.5em){body{background-color:#f4f4f4}}.burger-button .bar,.button:hover,.panel{background-color:#fff}.panel{box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}.button{padding:10px;border:2px solid #fff;border-radius:10em;width:10em;margin:auto}.button:hover{color:#EA1E59}.burger-button{height:30px;width:30px;margin:15px;float:left}.burger-button .bar{height:3px;border-radius:1px;width:20px;display:block;margin:4px 5px 0}.burger-button #top{margin-top:6px}.card{border-bottom:solid 1px #d5d5d5}@media screen and (min-width:35.5em){.card{padding:5px 20px;background-color:#fff;margin:20px;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);border-radius:5px;border:none}}.popup{display:none;width:100%;height:100%;background-color:rgba(0,0,0,.31)}.popup .content{background-color:#fff;margin:10vh 20vw 20vw;padding:30px;border-radius:10px}h1{font-size:2.5em}h2{font-size:2em}p{font-size:1.2em}.pure-u-1-7{width:14.2857%;display:inline;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.noScroll{overflow:hidden}.spinnerContainer{width:100%;height:100vh}.spinnerContainer .spinner{position:absolute;height:60px;width:60px;border:3px solid transparent;border-top-color:#ff6597;top:50%;left:50%;margin:-30px;border-radius:50%;animation:spin 2s linear infinite}.spinnerContainer .spinner:after,.spinnerContainer .spinner:before{content:'';position:absolute;border:3px solid transparent;border-radius:50%}.spinnerContainer .spinner:before{border-top-color:#28c6ff;top:-12px;left:-12px;right:-12px;bottom:-12px;animation:spin 3s linear infinite}.spinnerContainer .spinner:after{border-top-color:#47f348;top:6px;left:6px;right:6px;bottom:6px;animation:spin 4s linear infinite}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.sideBar{width:240px;left:-240px;top:60px;bottom:0;position:absolute;height:100%;background-color:#212121}.container{position:relative;left:0;-webkit-transition:left .4s ease-in-out;-moz-transition:left .4s ease-in-out;-ms-transition:left .4s ease-in-out;-o-transition:left .4s ease-in-out;transition:left .4s ease-in-out;height:calc(100% - 60px);width:100%}.container .main-content #top-right{float:right;margin:8px;padding-left:14px;padding-right:14px;text-align:center;width:auto}.container .main-content .menu-bar{background-color:#EA1E59;height:60px;position:fixed;left:0;top:0;width:100%;box-shadow:0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)}.container .main-content .menu-bar h1{margin:.17em 0;color:#fff}.container .main-content .love{display:none;position:fixed;bottom:10px;right:10px}@media screen and (min-width:35.5em){.container .main-content .love{display:block}}.container .main-content .love a{color:#EA1E59;text-decoration:none}.container .content{padding-top:60px}.sidebar-open{left:240px}.header{padding:5vw 2em 6vw;background-color:#353A47;color:#fff}.header h1{margin-top:0}.header .button{margin-top:4vw;display:block}.loginPage{padding:30px}.loginPage .warningLabel{color:red;padding:10px}.error{width:100%;padding-top:30px}.error .content{margin:auto;max-width:60em}.dayView{width:100%;max-width:35em;margin:auto}.dayView .date{border-bottom:solid 1px #d5d5d5;padding-bottom:5px}.dayView .slots .slot{padding:5px;border-bottom:solid 1px #d5d5d5;height:36px;display:flex;align-items:center;justify-content:center}.dayView .slots .taken{color:#d2d2d2}.dayView .slots .taken:hover{background-color:rgba(255,65,65,.84);color:#fff}.dayView .slots .free:hover{background-color:rgba(50,255,133,.73);color:#fff}.dayView .endSlot{padding-bottom:20px}.rightBorder{border-right:solid 1px #d5d5d5}.calendar{padding-top:20px}.calendar .pure-button{margin:5px}.confirmBooking fieldset{min-width:0}.confirmBooking fieldset select{margin:auto auto 5px}.confirmBooking fieldset textarea{margin:auto}.confirmBooking fieldset button{margin-top:5px}.profile ul{list-style:none;padding:0}#eventName{margin:auto}
+html,
+button,
+input,
+select,
+textarea,
+.pure-g [class*="pure-u"] {
+  font-family: 'Ubuntu', sans-serif;
+}
+.centered {
+  text-align: center;
+}
+#app {
+  height: 100%;
+}
+body {
+  color: #555;
+  height: 100%;
+}
+@media screen and (min-width: 35.5em) {
+  body {
+    background-color: #f4f4f4;
+  }
+}
+html {
+  height: 100%;
+}
+a {
+  text-decoration: none;
+}
+button a {
+  color: white;
+}
+.panel {
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.button {
+  color: white;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 10em;
+  width: 10em;
+  margin: auto;
+  text-decoration: none;
+}
+.button:hover {
+  background-color: white;
+  color: #EA1E59;
+}
+.burger-button {
+  height: 30px;
+  width: 30px;
+  margin: 15px;
+  float: left;
+}
+.burger-button .bar {
+  background-color: white;
+  height: 3px;
+  border-radius: 1px;
+  width: 20px;
+  display: block;
+  margin: 4px 5px 0px 5px;
+}
+.burger-button #top {
+  margin-top: 6px;
+}
+.card {
+  border-bottom: solid 1px #d5d5d5;
+}
+@media screen and (min-width: 35.5em) {
+  .card {
+    padding: 5px 20px;
+    background-color: white;
+    margin: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    border-radius: 5px;
+    border: none;
+  }
+}
+.popup {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.31);
+}
+.popup .content {
+  background-color: white;
+  margin: 20vw;
+  margin-top: 10vh;
+  padding: 30px;
+  border-radius: 10px;
+}
+h1 {
+  font-size: 2.5em;
+}
+h2 {
+  font-size: 2em;
+}
+p {
+  font-size: 1.2em;
+}
+.pure-u-1-7 {
+  width: 14.2857%;
+  display: inline;
+  zoom: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  vertical-align: top;
+  text-rendering: auto;
+}
+.noScroll {
+  overflow: hidden;
+}
+.spinnerContainer {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+.spinnerContainer .spinner {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  border: 3px solid transparent;
+  border-top-color: #ff6597;
+  top: 50%;
+  left: 50%;
+  margin: -30px;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+.spinnerContainer .spinner:before,
+.spinnerContainer .spinner:after {
+  content: '';
+  position: absolute;
+  border: 3px solid transparent;
+  border-radius: 50%;
+}
+.spinnerContainer .spinner:before {
+  border-top-color: #28c6ff;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  animation: spin 3s linear infinite;
+}
+.spinnerContainer .spinner:after {
+  border-top-color: #47f348;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  animation: spin 4s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.sideBar {
+  width: 240px;
+  left: -240px;
+  top: 60px;
+  bottom: 0px;
+  position: absolute;
+  height: 100%;
+  background-color: #212121;
+}
+.container {
+  position: relative;
+  left: 0px;
+  -webkit-transition: left 0.4s ease-in-out;
+  -moz-transition: left 0.4s ease-in-out;
+  -ms-transition: left 0.4s ease-in-out;
+  -o-transition: left 0.4s ease-in-out;
+  transition: left 0.4s ease-in-out;
+  height: calc(100% - 60px);
+  width: 100%;
+}
+.container .main-content #top-right {
+  float: right;
+  margin: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  text-align: center;
+  width: auto;
+}
+.container .main-content .menu-bar {
+  background-color: #EA1E59;
+  height: 60px;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.container .main-content .menu-bar h1 {
+  margin: .17em 0;
+  color: white;
+}
+.container .main-content .love {
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
+@media screen and (min-width: 35.5em) {
+  .container .main-content .love {
+    display: block;
+  }
+}
+.container .main-content .love a {
+  color: #EA1E59;
+  text-decoration: none;
+}
+.container .content {
+  padding-top: 60px;
+}
+.sidebar-open {
+  left: 240px;
+}
+.header {
+  padding: 5vw 2em 6vw 2em;
+  background-color: #353A47;
+  color: white;
+}
+.header h1 {
+  margin-top: 0px;
+}
+.header .button {
+  margin-top: 4vw;
+  display: block;
+}
+.loginPage {
+  padding: 30px;
+}
+.loginPage .warningLabel {
+  color: red;
+  padding: 10px;
+}
+.error {
+  width: 100%;
+  padding-top: 30px;
+}
+.error .content {
+  margin: auto;
+  max-width: 60em;
+  text-align: center;
+}
+.dayView {
+  width: 100%;
+  max-width: 35em;
+  margin: auto;
+}
+.dayView .date {
+  border-bottom: solid 1px #d5d5d5;
+  padding-bottom: 5px;
+}
+.dayView .slots .slot {
+  padding: 5px;
+  border-bottom: solid 1px #d5d5d5;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dayView .slots .taken {
+  color: #d2d2d2;
+}
+.dayView .slots .taken:hover {
+  background-color: rgba(255, 65, 65, 0.84);
+  color: white;
+}
+.dayView .slots .free:hover {
+  background-color: rgba(50, 255, 133, 0.73);
+  color: white;
+}
+.dayView .endSlot {
+  padding-bottom: 20px;
+}
+.rightBorder {
+  border-right: solid 1px #d5d5d5;
+}
+.calendar {
+  padding-top: 20px;
+}
+.calendar .pure-button {
+  margin: 5px;
+}
+.confirmBooking fieldset {
+  min-width: 0px;
+}
+.confirmBooking fieldset select {
+  margin: auto;
+  margin-bottom: 5px;
+}
+.confirmBooking fieldset textarea {
+  margin: auto;
+}
+.confirmBooking fieldset button {
+  margin-top: 5px;
+}
+.profile ul {
+  list-style: none;
+  padding: 0;
+}
+#eventName {
+  margin: auto;
+}

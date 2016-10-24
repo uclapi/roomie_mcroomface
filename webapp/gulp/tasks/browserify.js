@@ -2,7 +2,6 @@
 var browserify = require('browserify');
 var gulp = require('gulp');
 var source = require('vinyl-source-stream');
-var uglify = require('gulp-uglify');
 var buffer = require('vinyl-buffer');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
@@ -17,9 +16,8 @@ module.exports = function() {
     .pipe(source('app.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
-      // Add transformation tasks to the pipeline here.
-      .pipe(uglify())
-      .on('error', gutil.log)
+    // Add transformation tasks to the pipeline here.
+    .on('error', gutil.log)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./statics/js/'));
 };

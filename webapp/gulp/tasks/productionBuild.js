@@ -3,10 +3,10 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
 var less = require('gulp-less');
 var cleanCSS = require('gulp-clean-css');
+var stripDebug = require('gulp-strip-debug');
 
 module.exports = function(){
   var b = browserify({
@@ -16,13 +16,12 @@ module.exports = function(){
   b.bundle()
     .pipe(source('app.js'))
     .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-      // Add transformation tasks to the pipeline here.
-      .pipe(uglify())
-      .on('error', gutil.log)
-    .pipe(gulp.dest('./statics/js/'));
+    .pipe(stripDebug())
+    .pipe(uglify())
+    .on('error', gutil.log)
+    .pipe(gulp.dest('./dist/js/'));
   gulp.src('./views/index.less')
     .pipe(less())
     .pipe(cleanCSS())
-    .pipe(gulp.dest('./statics/css/'));
+    .pipe(gulp.dest('./dist/css/'));
 };
