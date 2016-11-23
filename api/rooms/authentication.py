@@ -8,7 +8,6 @@ from rest_framework.authentication import TokenAuthentication
 class ExpiringTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         model = self.get_model()
-        print("key:", key)
         try:
             token = model.objects.select_related('user').get(key=key)
         except:
@@ -30,7 +29,6 @@ class ExpiringTokenAuthentication(TokenAuthentication):
 class ValidatingTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         model = self.get_model()
-        print("key:", key)
         try:
             token = model.objects.select_related('user').get(key=key)
         except:

@@ -1,4 +1,5 @@
 from . import views
+
 from django.conf.urls import url
 
 urlpatterns = [
@@ -10,7 +11,7 @@ urlpatterns = [
 
     url(r'^v1/rooms.list/$', views.get_rooms_list),
     url(r'^v1/rooms.bookings/$', views.get_room_bookings),
-    url(r'^v1/rooms.book/$', views.book_room),  # work needed here to merge book_room_norma and book_room_society
+    url(r'^v1/rooms.book/$', views.book_room),
     url(r'^v1/rooms.deleteBooking/$', views.delete_booking),
 
     url(r'^v1/society.token/$', views.obtain_expiring_auth_token),

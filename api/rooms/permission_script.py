@@ -1,6 +1,7 @@
+from .models import *
+
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import *
 
 new_group, created = Group.objects.get_or_create(name='Group_3')
 booking_society = ContentType.objects.get_for_model(BookingSociety)
