@@ -215,8 +215,8 @@ def book_room(request):
             request.user.groups.filter(name='Group_3').exists()):
         try:
             room_id = request.POST["room_id"]
-            date = request.POST["date"]  # YYYYMMDD
-            start_time = request.POST["start_time"]  # HH:MM
+            date = request.POST["date"]
+            start_time = request.POST["start_time"]
             end_time = request.POST["end_time"]
             # TODO: change to society ID
             society = request.POST["society"]
@@ -256,8 +256,8 @@ def book_room(request):
     elif request.POST.get("society_booking") == "False":
         try:
             room_id = request.POST["room_id"]
-            date = request.POST["date"]  # YYYYMMDD
-            start_time = request.POST["start_time"]  # HH:MM
+            date = request.POST["date"]
+            start_time = request.POST["start_time"]
             end_time = request.POST["end_time"]
             notes = request.POST["notes"]
         except:
@@ -358,7 +358,6 @@ def _book_room(current_user, room, dateOfSearch, start_time,
             remarks=meta_data["event_name"]
         )
         instance.save()
-        return Response({"success": True})
     else:
         instance = Booking(
             user=current_user,
@@ -369,12 +368,13 @@ def _book_room(current_user, room, dateOfSearch, start_time,
             remarks=meta_data["notes"]
         )
         instance.save()
-        return Response({"success": True})
+
+    return Response({"success": True})
 
 
 def is_time_valid(date, start_time, end_time):
     if end_time <= start_time:
-        return {"success": False, "error": {"error": "Invalid times given"}}
+        return {"success": False, "error": {"error": "Invalid times given."}}
 
     dayMode = weekOrWeekend(date)
 
