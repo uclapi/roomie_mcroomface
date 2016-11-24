@@ -283,7 +283,7 @@ def login_callback(request):
         except:
             print("Error updating token in database")
 
-        url = STREAM_PUBLISH_URL + "/" + sid
+        url = STREAM_PUBLISH_URL + "/?id=" + sid
         data = urllib.parse.urlencode(login_response)
         try:
             r = requests.post(url, json=data)
