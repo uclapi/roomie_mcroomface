@@ -358,7 +358,7 @@ def login_callback(request):
         if User.objects.filter(email=eppn).exists():
             user = User.objects.get(email=eppn)
         else:
-            User.objects.createuser(
+            User.objects.create_user(
                 username=eppn,
                 email=eppn,
                 password=random_string(128),
