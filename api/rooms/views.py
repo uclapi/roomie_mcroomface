@@ -3,10 +3,10 @@ from .authentication import ExpiringTokenAuthentication, \
 from .models import Booking, BookingSociety, UserProfile, Room, Verifier, ShibLoginToken
 
 import datetime
-import requests
 import pytz
 import json
 
+import requests
 
 import urllib.parse
 import urllib.request
@@ -282,13 +282,20 @@ def login_callback(request):
             "groups": [k.name for k in user.groups.all()]
         }
 
+        try:
+            token = ShibLoginToken.objects.get(sid=sid)
+            token.status = 1
+            token.save()
+        except:
+            print("Error updating token in database")
+
         url = STREAM_PUBLISH_URL + "/" + sid
         data = urllib.parse.urlencode(login_response)
-        data = data.encode('ascii')
-        req = urllib.request.Request(url, data)
-        with urllib.request.urlopen(req) as response:
-            content = response.read()
-            print("Received " + content + " from publish URL")
+        try:
+            r = requests.post(url, json=data)
+            print(r.text)
+        except:
+            print("Error sending the data to stream backend")
 
     return Response(login_response)
 
