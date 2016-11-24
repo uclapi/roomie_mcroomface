@@ -261,7 +261,7 @@ def login_callback(request):
             User.objects.create_user(
                 username=eppn,
                 email=eppn,
-                password=random_string(128),
+                password=utils.random_string(128),
                 first_name=cn,
                 last_name=cn
             )
