@@ -234,9 +234,6 @@ def login_status(request):
 
 
 def login_callback(request):
-    print(request.body)
-    print(request.META)
-    print(request.GET)
     try:
         sid = request.GET['sid']
     except:
