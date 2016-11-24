@@ -228,11 +228,18 @@ def login_status(request):
 
 
 def login_callback(request):
+    print(request.body)
+    print(request.META)
+    print(request.GET)
+    try:
+        sid = request.GET['sid']
+    except:
+        return HttpResponse('No sid supplied, so login cannot continue.')
+
     try:
         eppn = request.META['eppn']
         groups = request.META['uclIntranetGroups']
         cn = request.META['cn']
-        sid = request.GET['sid']
     except:
         return HttpResponse('No Shibboleth data. This page should not be accessed directly!')
 
