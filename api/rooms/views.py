@@ -34,8 +34,6 @@ def no_access(request):
 )
 @permission_classes((permissions.IsAuthenticated,))
 def get_rooms_list(request):
-    print(request.user)
-    print(request.auth)
     rooms = Room.objects.all()
     room_dict = []
     for room in (rooms):
