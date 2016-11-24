@@ -284,14 +284,15 @@ def login_callback(request):
             print("Error updating token in database")
 
         url = STREAM_PUBLISH_URL + "/?id=" + sid
-        data = urllib.parse.urlencode(login_response)
         try:
-            r = requests.post(url, json=data)
+            r = requests.post(url, json=login_response)
             print(r.text)
         except:
             print("Error sending the data to stream backend")
 
-    return Response(login_response)
+    response = HttpResponse(mimetype="text/html")
+    response.write(login_response)
+    return response
 
 
 @api_view(['GET'])
