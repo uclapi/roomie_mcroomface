@@ -296,7 +296,7 @@ def login_callback(request):
         except:
             print("Error sending the data to stream backend")
 
-    response = HttpResponse(mimetype="text/html")
+    response = HttpResponse(content_type="text/html")
     response.write(login_response)
     return response
 
