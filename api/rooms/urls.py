@@ -3,9 +3,9 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r'^v1/user.login/$', views.login),
-    url(r'^v1/user.login.getToken', views.login_get_token),
-    url(r'^v1/user.login.callback', views.login_callback),
-    url(r'^v1/user.login.status', views.login_status),
+    url(r'^v1/user.login.getToken/$', views.login_get_token),
+    url(r'^v1/user.login.callback/$', views.login_callback),
+    url(r'^v1/user.login.status/$', views.login_status),
     url(r'^v1/user.logout/$', views.logout_view),
     url(r'^v1/user.bookings/$', views.get_users_booking),
     url(r'^v1/user.forgotPassword/$', views.forgot_password),
