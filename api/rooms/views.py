@@ -237,9 +237,9 @@ def login_callback(request):
         return HttpResponse('No sid supplied, so login cannot continue.')
 
     try:
-        eppn = request.META['eppn']
-        groups = request.META['uclIntranetGroups']
-        cn = request.META['cn']
+        eppn = request.META['HTTP_EPPN']
+        groups = request.META['HTTP_UCLINTRANETGROUPS']
+        cn = request.META['HTTP_CN']
     except:
         return HttpResponse('No Shibboleth data. This page should not be accessed directly!')
 
