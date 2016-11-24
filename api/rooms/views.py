@@ -442,7 +442,6 @@ def get_users_booking(request):
 )
 @permission_classes((permissions.IsAuthenticated,))
 def delete_booking(request):
-    print(request.GET)
     try:
         id = request.GET.get("booking_id")
     except:
