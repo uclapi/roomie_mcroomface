@@ -222,7 +222,17 @@ def login_status(request):
     if sid_data.status == 0:
         return Response({"success": "OK", "status": "NOT_LOGGED_IN"})
     elif sid_data.status == 1:
-        return Response({"success": "OK", "status": "LOGGED_IN"})
+        user_data = {
+            "email": sid_data.user.email,
+            "quota_left": sid_data.user.user_profile.quota_left,
+            'token': sid_data.token.key,
+            "societies": [
+                [k.user.first_name, k.user.username] for k in
+                sid_data.user.user_profile.associated_society.all()
+                ],
+            "groups": [k.name for k in sid_data.user.groups.all()]
+        }
+        return Response({"success": "OK", "status": "LOGGED_IN", "user_data": user_data})
     else:
         return Response({"success": "OK", "status": "LOGIN_ERROR"})
 
@@ -279,6 +289,7 @@ def login_callback(request):
         try:
             token = ShibLoginToken.objects.get(sid=sid)
             token.status = 1
+            token.user = user
             token.save()
         except:
             print("Error updating token in database")

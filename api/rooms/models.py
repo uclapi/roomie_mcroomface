@@ -63,3 +63,4 @@ class ShibLoginToken(models.Model):
     sid = models.CharField(max_length=64, primary_key=True)
     status = models.IntegerField(default=0)
     timestamp = models.DateTimeField(default=datetime.now)
+    user = UserProfile(blank=True)
