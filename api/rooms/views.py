@@ -1,6 +1,7 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
-from .models import Booking, BookingSociety, UserProfile, Room, Verifier, ShibLoginToken
+from .models import Booking, BookingSociety, UserProfile, Room, Verifier, \
+    ShibLoginToken
 
 import datetime
 import pytz
@@ -29,7 +30,9 @@ from constants import *
 
 from . import utils
 
-#from models import Room, UserProfile, Booking, BookingSociety, Verifier, ShibLoginToken
+
+# from models import Room, UserProfile, Booking, BookingSociety, Verifier,
+# ShibLoginToken
 
 # Create your views here.
 closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
@@ -298,17 +301,18 @@ def login(request):
 def login_get_token(request):
     sid = "shib" + utils.random_string(60)
 
-    login_token = ShibLoginToken(sid=sid, user=None)
+    login_token = ShibLoginToken(sid=sid)
     login_token.save()
 
     callback_url = ROOT_URL + 'user.login.callback?sid=' + sid
 
     return Response({
-        "loginUrl":             SHIB_URL + "Login?target=" + urllib.parse.quote_plus(callback_url),
-        "callbackUrl":          callback_url,
-        "sid":                  sid,
-        "stream_sub_url":       STREAM_SUBSCRIBE_URL + sid,
-        "stream_sub_lp_url":    STREAM_SUBSCRIBE_LP_URL + sid
+        "loginUrl": SHIB_URL + "Login?target=" +
+        urllib.parse.quote_plus(callback_url),
+        "callbackUrl": callback_url,
+        "sid": sid,
+        "stream_sub_url": STREAM_SUBSCRIBE_URL + sid,
+        "stream_sub_lp_url": STREAM_SUBSCRIBE_LP_URL + sid
     })
 
 
@@ -338,7 +342,12 @@ def login_status(request):
                 ],
             "groups": [k.name for k in sid_data.user.groups.all()]
         }
-        return Response({"success": "OK", "status": "LOGGED_IN", "user_data": user_data})
+        return Response(
+            {
+                "success": "OK",
+                "status": "LOGGED_IN",
+                "user_data": user_data
+            })
     else:
         return Response({"success": "OK", "status": "LOGIN_ERROR"})
 
@@ -354,12 +363,14 @@ def login_callback(request):
         groups = request.META['HTTP_UCLINTRANETGROUPS']
         cn = request.META['HTTP_CN']
     except:
-        return HttpResponse('No Shibboleth data. This page should not be accessed directly!')
+        return HttpResponse(
+            'No Shibboleth data. This page should not be accessed directly!')
 
     if "engscifac-ug" not in groups.split(';'):
         login_response = {
             "result": "failure",
-            "message": "This system is available only to members of the engineering faculty."
+            "message": ("This system is available only"
+                        " to members of the engineering faculty.")
             }
     else:
         if User.objects.filter(email=eppn).exists():
@@ -441,8 +452,8 @@ def logout_view(request):
 )
 @permission_classes((permissions.IsAuthenticated,))
 def book_room(request):
-    if (request.POST.get("society_booking") == "True"
-        and request.user.groups.filter(name='Group_3').exists()):
+    if (request.POST.get("society_booking") == "True" and
+            request.user.groups.filter(name='Group_3').exists()):
         try:
             room_id = request.POST["room_id"]
             date = request.POST["date"]  # YYYYMMDD
@@ -485,7 +496,7 @@ def book_room(request):
     elif request.POST.get("society_booking") == "False":
         try:
             room_id = request.POST["room_id"]
-            date = request.POST["date"] # YYYYMMDD
+            date = request.POST["date"]  # YYYYMMDD
             start_time = request.POST["start_time"]  # HH:MM
             end_time = request.POST["end_time"]
             notes = request.POST["notes"]
@@ -504,7 +515,8 @@ def book_room(request):
                            is_society_booking=False, meta_data={"notes": notes}
                            )
     else:
-        return Response({"error": "You don't have permission to book this room"})
+        return Response(
+            {"error": "You don't have permission to book this room"})
 
 
 def book_a_room(request, room, date, start_time,
