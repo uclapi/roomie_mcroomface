@@ -54,13 +54,16 @@ class Verifier(models.Model):
 class ShibLoginToken(models.Model):
     """
         Class to store temporary Shibboleth login tokens.
-        The sid: Session ID. Basically a random key generated to track authentication and push
+        The sid: Session ID. Basically a random key generated
+        to track authentication and push
         streaming
-        Status: An integer that's either 0 (not logged in yet), 1 (logged in) or 2
+        Status: An integer that's either 0 (not logged in yet),
+        1 (logged in) or 2
             (cancelled / error). More could be added, I guess...
-        Timestamp: when the request was made so that we can expire old ones after, say, 10 minutes.
+        Timestamp: when the request was made so that we can expire
+        old ones after, say, 10 minutes.
     """
     sid = models.CharField(max_length=64, primary_key=True)
     status = models.IntegerField(default=0)
     timestamp = models.DateTimeField(default=datetime.now)
-    user = UserProfile(blank=True)
+    user = models.OneToOneField(UserProfile, related_name='shib_login_token')
