@@ -298,7 +298,7 @@ def login(request):
 def login_get_token(request):
     sid = "shib" + utils.random_string(60)
 
-    login_token = ShibLoginToken(sid=sid)
+    login_token = ShibLoginToken(sid=sid, user=None)
     login_token.save()
 
     callback_url = ROOT_URL + 'user.login.callback?sid=' + sid
