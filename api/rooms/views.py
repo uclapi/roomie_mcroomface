@@ -252,6 +252,11 @@ def login_callback(request):
         return HttpResponse('No sid supplied, so login cannot continue.')
 
     try:
+        sid_data = ShibLoginToken.objects.get(sid=sid)
+    except ShibLoginToken.DoesNotExist:
+        return HttpResponse('Invalid sid. Please try logging in again.')
+
+    try:
         eppn = request.META['HTTP_EPPN']
         groups = request.META['HTTP_UCLINTRANETGROUPS']
         cn = request.META['HTTP_CN']
