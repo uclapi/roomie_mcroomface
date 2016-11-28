@@ -789,9 +789,7 @@ password | `String`| The user's password.
 > Response
 
 ```json
-{
-    "success": true
-}
+{"success": true}
 ```
 
 # Streaming API
