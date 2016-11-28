@@ -31912,7 +31912,8 @@ module.exports = {
       mode: 'cors'
     });
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
-    delete localStorage.society;
+    delete localStorage.g3;
+    delete localStorage.g4;
     if (cb) cb();
   },
   loggedIn: function loggedIn() {
@@ -31922,6 +31923,12 @@ module.exports = {
 
 },{"../config.js":1,"./utils.js":249,"whatwg-fetch":247}],249:[function(require,module,exports){
 'use strict';
+
+var _config = require('../config.js');
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _exports = {
   setCookie: function setCookie(cname, cvalue, exdays) {
@@ -31943,12 +31950,30 @@ var _exports = {
       }
     }
     return '';
+  },
+  authenticatedRequest: function authenticatedRequest(url, method, context) {
+    fetch(_config2.default.domain + url, {
+      method: method,
+      headers: {
+        'Authorization': 'Token ' + this.getCookie('token')
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        context.props.router.push({
+          pathname: '/login',
+          state: { nextPathname: context.props.location.pathname }
+        });
+      }
+    });
   }
 };
 
 module.exports = _exports;
 
-},{}],250:[function(require,module,exports){
+},{"../config.js":1}],250:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -31991,6 +32016,10 @@ var _profile = require('./pages/profile/profile.jsx');
 
 var _profile2 = _interopRequireDefault(_profile);
 
+var _newLogin = require('./pages/login/newLogin.jsx');
+
+var _newLogin2 = _interopRequireDefault(_newLogin);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function requireAuth(nextState, replace) {
@@ -32006,7 +32035,8 @@ function requireAuth(nextState, replace) {
   _reactRouter.Router,
   { history: _reactRouter.browserHistory },
   _react2.default.createElement(_reactRouter.Route, { path: '/', component: _home2.default }),
-  _react2.default.createElement(_reactRouter.Route, { path: '/login', component: _login2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/login', component: _newLogin2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/newLogin', component: _newLogin2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: '/rooms', component: _rooms2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/schedule/:roomId', component: _calendar2.default, onEnter: requireAuth }),
   _react2.default.createElement(_reactRouter.Route, { path: '/book/:roomId/:dateTime', component: _confirmBooking2.default, onEnter: requireAuth }),
@@ -32014,7 +32044,7 @@ function requireAuth(nextState, replace) {
   _react2.default.createElement(_reactRouter.Route, { path: '*', component: _error2.default })
 ), document.getElementById('app'));
 
-},{"../utils/auth.js":248,"./pages/calendar/calendar.jsx":253,"./pages/confirmBooking/confirmBooking.jsx":255,"./pages/error/error.jsx":258,"./pages/home/home.jsx":259,"./pages/login/login.jsx":260,"./pages/profile/profile.jsx":261,"./pages/rooms/rooms.jsx":262,"react":244,"react-dom":55,"react-router":85}],251:[function(require,module,exports){
+},{"../utils/auth.js":248,"./pages/calendar/calendar.jsx":253,"./pages/confirmBooking/confirmBooking.jsx":255,"./pages/error/error.jsx":258,"./pages/home/home.jsx":259,"./pages/login/login.jsx":260,"./pages/login/newLogin.jsx":261,"./pages/profile/profile.jsx":262,"./pages/rooms/rooms.jsx":263,"react":244,"react-dom":55,"react-router":85}],251:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -33263,6 +33293,148 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 }));
 
 },{"../../../utils/auth.js":248,"react":244,"react-router":85}],261:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+require('whatwg-fetch');
+
+var _layout = require('../../components/layout.jsx');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+var _auth = require('../../../utils/auth.js');
+
+var _auth2 = _interopRequireDefault(_auth);
+
+var _utils = require('../../../utils/utils.js');
+
+var _utils2 = _interopRequireDefault(_utils);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var labelStyle = {
+  width: '4em'
+};
+
+module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
+  displayName: 'exports',
+
+  getInitialState: function getInitialState() {
+    return {
+      error: false,
+      loading: false,
+      win: null
+    };
+  },
+  setVisible: function setVisible() {
+    var popUp = document.getElementById('pu');
+    popUp.style.display = 'block';
+  },
+  setInvisible: function setInvisible() {
+    var popUp = document.getElementById('pu');
+    popUp.style.display = 'none';
+  },
+  handleLogin: function handleLogin(e) {
+    var _this = this;
+
+    e.preventDefault();
+    this.setState({
+      loading: true
+    });
+    var email = this.refs.email.value;
+    var password = this.refs.password.value;
+
+    _auth2.default.login(email, password, function (loggedIn) {
+      if (!loggedIn) {
+        return _this.setState({
+          error: true,
+          loading: false
+        });
+      }
+      var location = _this.props.location;
+
+
+      if (location.state && location.state.nextPathname) {
+        _this.props.router.replace(location.state.nextPathname);
+      } else {
+        _this.props.router.replace('/');
+      }
+    });
+  },
+  messageReceived: function messageReceived(text, id, channel) {
+    var json = JSON.parse(atob(text));
+    this.state.win.close();
+    if (json.groups.indexOf('Group_3') > -1) {
+      localStorage.g3 = true;
+    }
+    if (json.groups.indexOf('Group_4') > -1) {
+      localStorage.g4 = true;
+    }
+    _utils2.default.setCookie('token', json.token, 7);
+
+    var location = this.props.location;
+
+
+    if (location.state && location.state.nextPathname) {
+      this.props.router.replace(location.state.nextPathname);
+    } else {
+      this.props.router.replace('/');
+    }
+  },
+  login: function login() {
+    this.setState({
+      win: window.open()
+    });
+    var that = this;
+    fetch('https://enghub.io/api/v1/user.login.getToken/', {
+      method: 'GET',
+      mode: 'cors'
+    }).then(function (res) {
+      if (res.status === 200) {
+        return res.json();
+      }
+    }).then(function (json) {
+      var winRef = that.state.win;
+      winRef.location = json.loginUrl;
+      that.setState({
+        win: winRef
+      });
+      var pushstream = new PushStream({
+        useSSL: true,
+        host: 'enghub.io',
+        port: 443,
+        modes: "longpolling",
+        tagArgument: 'tag',
+        timeArgument: 'time',
+        timeout: 30000,
+        messagesPublishedAfter: 5,
+        urlPrefixLongpolling: '/api/v1/push.subscribe_longpoll'
+      });
+
+      pushstream.onmessage = that.messageReceived;
+      pushstream.addChannel(json.sid);
+      pushstream.connect();
+    });
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      _layout2.default,
+      { title: 'Login' },
+      _react2.default.createElement(
+        'button',
+        { className: 'pure-button pure-button-primary loginButton', onClick: this.login },
+        'Login throught UCL'
+      )
+    );
+  }
+}));
+
+},{"../../../utils/auth.js":248,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"react":244,"react-router":85,"whatwg-fetch":247}],262:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -33540,7 +33712,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
 
 }).call(this,require('_process'))
 
-},{"../../../config.js":1,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"_process":53,"moment":51,"react":244,"react-router":85,"whatwg-fetch":247}],262:[function(require,module,exports){
+},{"../../../config.js":1,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"_process":53,"moment":51,"react":244,"react-router":85,"whatwg-fetch":247}],263:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
