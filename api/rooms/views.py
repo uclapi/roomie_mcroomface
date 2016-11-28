@@ -31,6 +31,7 @@ from constants import *
 
 from . import utils
 
+
 @api_view(['GET', 'POST'])
 def no_access(request):
     return Response({"error": "You do not have appropiate permissions."})
@@ -529,11 +530,11 @@ def is_time_valid(date, start_time, end_time):
 
     dayMode = weekOrWeekend(date)
 
-    if end_time > closing_time[dayMode]:
+    if end_time > CLOSING_TIME[dayMode]:
         return {"success": False, "error": {
             "error": "Choose an end time before closing time."}}
 
-    if start_time < opening_time[dayMode]:
+    if start_time < OPENING_TIME[dayMode]:
         return {"success": False, "error": {
             "error": "Choose a starting time after opening time."}}
 
