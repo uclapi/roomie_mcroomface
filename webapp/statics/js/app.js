@@ -31887,7 +31887,10 @@ module.exports = {
       return res.json().then(function (res) {
         if (res.token) {
           if (res.groups.indexOf('Group_3') > -1) {
-            localStorage.society = true;
+            localStorage.g3 = true;
+          }
+          if (res.groups.indexOf('Group_4') > -1) {
+            localStorage.g4 = true;
           }
           _utils2.default.setCookie('token', res.token, 7);
           cb(true);
@@ -32195,8 +32198,8 @@ module.exports = _react2.default.createClass({
             'li',
             { className: 'pure-menu-item' },
             _react2.default.createElement(
-              _reactRouter.Link,
-              { className: 'pure-menu-link', to: 'https://roomie.uservoice.com/' },
+              'a',
+              { className: 'pure-menu-link', href: 'https://roomie.uservoice.com/' },
               'Feedback'
             )
           )
@@ -32667,7 +32670,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
           _react2.default.createElement(
             'div',
             { className: 'pure-u-1 card' },
-            localStorage.society ? this.state.societyRoom ? _react2.default.createElement(_societyForm2.default, {
+            localStorage.g3 ? this.state.societyRoom ? _react2.default.createElement(_societyForm2.default, {
               dateTime: this.props.params.dateTime,
               roomId: this.props.params.roomId,
               callBack: this.sendFormData
@@ -32845,8 +32848,38 @@ module.exports = _react2.default.createClass({
     e.preventDefault();
     var duration = parseInt(this.refs.duration.value.substr(0, 1));
     var notes = null;
-    var society = this.refs.society.value;
+    var society;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.state.societies[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var societyPair = _step.value;
+
+        console.log(societyPair);
+        if (societyPair[0] === this.refs.society.value) {
+          society = societyPair[1];
+          console.log('here');
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
     var eventName = this.refs.eventName.value;
+
     this.props.callBack(duration, notes, 'True', society, eventName);
   },
   getSocieties: function getSocieties() {
@@ -32955,7 +32988,7 @@ module.exports = _react2.default.createClass({
               return _react2.default.createElement(
                 'option',
                 { key: i },
-                society[1]
+                society[0]
               );
             })
           ),
@@ -33260,7 +33293,9 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   getInitialState: function getInitialState() {
     return {
       loading: 0,
-      profile: {},
+      profile: {
+        societies: []
+      },
       bookings: []
     };
   },
@@ -33278,7 +33313,6 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       });
       if (res.status === 200) {
         res.json().then(function (json) {
-          console.log(json);
           that.setState({
             profile: json
           });
@@ -33317,6 +33351,62 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       }
     });
   },
+  deleteBooking: function deleteBooking(bookingId) {
+    var that = this;
+    fetch(_config2.default.domain + '/api/v1/rooms.deleteBooking/?booking_id=' + bookingId, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          if (json.error) {
+            alert(json.error);
+          } else {
+            var bookings = that.state.bookings;
+            for (var i in bookings) {
+              if (bookings[i].booking_id === bookingId) {
+                delete bookings[i];
+              }
+            }
+            that.setState({
+              bookings: bookings
+            });
+          }
+        });
+      }
+    });
+  },
+  getToken: function getToken(societyId) {
+    var that = this;
+    fetch(_config2.default.domain + '/api/v1/society.token/?society_id=' + societyId, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
+      },
+      mode: 'cors'
+    }).then(function (res) {
+      if (res.status === 200) {
+        res.json().then(function (json) {
+          if (json.error) {
+            alert(json.error);
+          } else {
+            var profile = that.state.profile;
+            for (var i in profile.societies) {
+              if (profile.societies[i][1] === societyId) {
+                profile.societies[i][2] = json.token;
+              }
+            }
+            that.setState({
+              profile: profile
+            });
+          }
+        });
+      }
+    });
+  },
   componentDidMount: function componentDidMount() {
     this.getUserInfo();
     this.getBookings();
@@ -33324,6 +33414,8 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
     console.log(process.env.NODE_ENV);
   },
   render: function render() {
+    var _this = this;
+
     return _react2.default.createElement(
       _layout2.default,
       { title: 'Profile' },
@@ -33364,11 +33456,18 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
               _react2.default.createElement(
                 'ul',
                 null,
-                this.state.profile.societies[0].map(function (society, i) {
+                this.state.profile.societies.map(function (society, i) {
                   return _react2.default.createElement(
                     'li',
                     { key: i },
-                    society
+                    society[0],
+                    localStorage.g4 ? society[2] ? ' API Key: ' + society[2] : _react2.default.createElement(
+                      'button',
+                      { className: 'pure-button', onClick: function onClick() {
+                          return _this.getToken(society[1]);
+                        } },
+                      'Get API Key'
+                    ) : null
                   );
                 })
               )
@@ -33416,6 +33515,13 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
                     null,
                     'Notes: ',
                     booking.notes
+                  ),
+                  _react2.default.createElement(
+                    'button',
+                    { className: 'pure-button button-error', onClick: function onClick() {
+                        return _this.deleteBooking(booking.booking_id);
+                      } },
+                    'Delete booking'
                   )
                 )
               );
@@ -33482,7 +33588,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
               var room = _step.value;
 
               if (!room.individual_access) {
-                if (localStorage.society) {
+                if (localStorage.g3) {
                   rooms.push(room);
                 }
               } else {
@@ -33591,7 +33697,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
                   'p',
                   null,
                   _react2.default.createElement(
-                    'button',
+                    'div',
                     { className: 'pure-button pure-button-primary' },
                     _react2.default.createElement(
                       _reactRouter.Link,

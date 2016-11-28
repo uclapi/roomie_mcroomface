@@ -27,8 +27,13 @@ html {
 a {
   text-decoration: none;
 }
-button a {
+.pure-button a {
   color: white;
+}
+.button-error {
+  color: white;
+  background: #ca3c3c;
+  /* this is a maroon */
 }
 .panel {
   background-color: white;

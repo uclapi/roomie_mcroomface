@@ -15,8 +15,16 @@ module.exports = React.createClass({
     e.preventDefault();
     var duration = parseInt(this.refs.duration.value.substr(0,1));
     var notes = null;
-    var society = this.refs.society.value;
+    var society; 
+    for (var societyPair of this.state.societies){
+      console.log(societyPair);
+      if(societyPair[0] === this.refs.society.value){
+        society = societyPair[1];
+        console.log('here');
+      }
+    }
     var eventName = this.refs.eventName.value;
+
     this.props.callBack(duration, notes, 'True', society, eventName); 
   },
   getSocieties: function(){
@@ -79,7 +87,7 @@ module.exports = React.createClass({
             <label htmlFor="society">Society</label>
             <select ref="society" id="society">
               {this.state.societies.map((society, i) => {
-                return <option key={i}>{society[1]}</option>;
+                return <option key={i}>{society[0]}</option>;
               })}
             </select>
             <label htmlFor="eventName">Event name</label>
