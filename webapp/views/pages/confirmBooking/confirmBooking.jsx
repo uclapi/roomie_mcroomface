@@ -105,7 +105,7 @@ module.exports = withRouter(React.createClass({
         ):(
           <div className="pure-g">
             <div className="pure-u-1 card">
-              {localStorage.society ? (
+              {localStorage.g3 ? (
                 this.state.societyRoom ? (
                   <SocietyForm 
                     dateTime={this.props.params.dateTime} 

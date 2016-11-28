@@ -24,7 +24,7 @@ module.exports = withRouter(React.createClass({
           var rooms = [];
           for(var room of res){
             if(!room.individual_access){
-              if(localStorage.society){
+              if(localStorage.g3){
                 rooms.push(room);
               }
             }else{
@@ -79,7 +79,7 @@ module.exports = withRouter(React.createClass({
                     <div className="pure-u-1-3 centered">{room.printers ? '🖨' : ''}</div>
                   </div>
                   <p>
-                    <button className="pure-button pure-button-primary"><Link to={'/schedule/'+room.room_id}>View Schedule</Link></button>
+                    <div className="pure-button pure-button-primary"><Link to={'/schedule/'+room.room_id}>View Schedule</Link></div>
                   </p>
                 </div>
               </div>

@@ -16,7 +16,10 @@ module.exports = {
       return res.json().then(function(res){
         if(res.token){
           if(res.groups.indexOf('Group_3')>-1){
-            localStorage.society = true;
+            localStorage.g3 = true;
+          }
+          if(res.groups.indexOf('Group_4')>-1){
+            localStorage.g4 = true;
           }
           utils.setCookie('token', res.token, 7);
           cb(true);
