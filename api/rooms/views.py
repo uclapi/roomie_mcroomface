@@ -35,8 +35,6 @@ from . import utils
 # ShibLoginToken
 
 # Create your views here.
-closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
-opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
 
 
 @api_view(['GET', 'POST'])
@@ -648,11 +646,11 @@ def is_time_valid(date, start_time, end_time):
 
     dayMode = weekOrWeekend(date)
 
-    if end_time > closing_time[dayMode]:
+    if end_time > CLOSING_TIME[dayMode]:
         return {"success": False, "error": {
             "error": "Choose an end time before closing time"}}
 
-    if start_time < opening_time[dayMode]:
+    if start_time < OPENING_TIME[dayMode]:
         return {"success": False, "error": {
             "error": "Choose a starting time after opening time"}}
 
