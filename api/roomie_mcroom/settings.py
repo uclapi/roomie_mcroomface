@@ -150,8 +150,3 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'roomie_mcroom', 'static', 'static_root')
-
-
-# FAIZ: duplicated with rooms.views
-closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
-opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
