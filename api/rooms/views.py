@@ -224,10 +224,11 @@ def login_status(request):
     if sid_data.status == 0:
         return Response({"success": "OK", "status": "NOT_LOGGED_IN"})
     elif sid_data.status == 1:
+        token, created = Token.objects.get_or_create(user=sid_data.user)
         user_data = {
             "email": sid_data.user.email,
             "quota_left": sid_data.user.user_profile.quota_left,
-            'token': sid_data.token.key,
+            'token': token.key,
             "societies": [
                 [k.user.first_name, k.user.username] for k in
                 sid_data.user.user_profile.associated_society.all()
@@ -254,6 +255,9 @@ def login_callback(request):
         eppn = request.META['HTTP_EPPN']
         groups = request.META['HTTP_UCLINTRANETGROUPS']
         cn = request.META['HTTP_CN']
+        department = request.META['HTTP_DEPARTMENT']
+        given_name = request.META['HTTP_GIVENNAME']
+        surname = request.META['HTTP_SN']
     except:
         return HttpResponse(
             'No Shibboleth data. This page should not be accessed directly!')
@@ -269,14 +273,15 @@ def login_callback(request):
             user = User.objects.get(email=eppn)
         else:
             User.objects.create_user(
-                username=eppn,
+                username=cn,
                 email=eppn,
                 password=utils.random_string(128),
-                first_name=cn,
-                last_name=cn
+                first_name=given_name,
+                last_name=surname
             )
             user = User.objects.get(email=eppn)
             up = UserProfile(user=user)
+            up.department = department
             up.save()
 
         token, created = Token.objects.get_or_create(user=user)
