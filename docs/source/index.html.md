@@ -34,7 +34,7 @@ curl --data "username=wil&password=wilpassword" http://127.0.0.1:8000/user.login
 ```python
 import requests
 
-data = {"username":"wil", "password":"wilpassword"}
+data = {"username": "wil", "password": "wilpassword"}
 
 requests.post("http://127.0.0.1:8000/user.login/", data=data)
 ```
@@ -190,8 +190,6 @@ or
 {"success": "OK", "status": "LOGIN_ERROR"}
 ```
 
-
-
 # Get list of rooms
 
 ### `/rooms.list/`
@@ -211,9 +209,6 @@ r = requests.get("http://127.0.0.1:8000/rooms.list/", headers={"Authorization": 
 ```
 
 ```javascript
-// username & password
-
-
 // token
 var xhr = new XMLHttpRequest();
 xhr.open('GET', "http://127.0.0.1:8000/rooms.list/", true);
