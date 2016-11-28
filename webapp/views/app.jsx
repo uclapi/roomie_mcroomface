@@ -10,6 +10,7 @@ import Calendar from './pages/calendar/calendar.jsx';
 import Rooms from './pages/rooms/rooms.jsx';
 import ConfirmBooking from './pages/confirmBooking/confirmBooking.jsx';
 import Profile from './pages/profile/profile.jsx';
+import newLogin from './pages/login/newLogin.jsx';
 
 function requireAuth(nextState, replace) {
   if (!Auth.loggedIn()) {
@@ -23,7 +24,8 @@ function requireAuth(nextState, replace) {
 render((
   <Router history={browserHistory}>
     <Route path="/" component={Home}/>
-    <Route path="/login" component={Login}/>
+    <Route path="/login" component={newLogin}/>
+    <Route path="/newLogin" component={newLogin}/>
     <Route path="/rooms" component={Rooms} onEnter={requireAuth}/>
     <Route path="/schedule/:roomId" component={Calendar} onEnter={requireAuth}/>
     <Route path="/book/:roomId/:dateTime" component={ConfirmBooking} onEnter={requireAuth}/>

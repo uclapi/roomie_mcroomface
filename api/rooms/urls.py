@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^v1/user.login.status/$', views.login_status),
     url(r'^v1/user.logout/$', views.logout_view),
     url(r'^v1/user.bookings/$', views.get_users_booking),
-    url(r'^v1/user.forgotPassword/$', views.forgot_password),
+    #url(r'^v1/user.forgotPassword/$', views.forgot_password),
     url(r'^v1/user.info/$', views.get_user_meta_data),
 
     url(r'^v1/rooms.list/$', views.get_rooms_list),
@@ -22,5 +22,5 @@ urlpatterns = [
     url(r'^v1/society.removeUser/$', views.remove_user_from_group3),
 
     url(r'^v1/accounts/login/$', views.no_access, name='no permission'),
-    url(r'^v1/set_password/$', views.set_password),
+    #url(r'^v1/set_password/$', views.set_password),
 ]

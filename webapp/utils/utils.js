@@ -1,3 +1,5 @@
+import config from '../config.js';
+
 var exports = {
   setCookie: function(cname, cvalue, exdays){
     var d = new Date();
@@ -18,6 +20,24 @@ var exports = {
       }
     }
     return '';
+  },
+  authenticatedRequest: function(url, method, context){
+    fetch(config.domain + url, {
+      method: method,
+      headers:{
+        'Authorization': 'Token ' + this.getCookie('token')
+      },
+      mode: 'cors',
+    }).then(function(res){
+      if(res.status === 200){
+        return res.json();
+      } else {
+        context.props.router.push({
+          pathname: '/login',
+          state: {nextPathname: context.props.location.pathname }
+        });
+      }
+    });
   }
 };
 
