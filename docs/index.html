@@ -115,52 +115,37 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="log-in-a-user">Log in a user</h1>
+        <h1 id="introduction">Introduction</h1>
 
-<h3 id="login"><code class="prettyprint">/login</code></h3>
+<p>The base url is <code class="prettyprint">https://enghub.io/api/v1</code></p>
 
-<p>This endpoint allows a user to login to the API. You <em>must</em> login to access all other endpoints.</p>
+<h1 id="log-in-a-user">Log in a user</h1>
+
+<h3 id="user-login-gettoken"><code class="prettyprint">/user.login.getToken/</code></h3>
+
+<p>This will generate a Session ID (sid) which is used to process a login. It also gives the app the
+information required to listen for a successful login taking place.</p>
 
 <h2 id="query-parameters">Query Parameters</h2>
-<pre class="highlight shell"><code>curl --data <span class="s2">"username=wil&amp;password=wilpassword"</span> http://127.0.0.1:8000/login
+
+<p>None.</p>
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/user.login.status/
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">"username"</span><span class="p">:</span><span class="s">"wil"</span><span class="p">,</span> <span class="s">"password"</span><span class="p">:</span><span class="s">"wilpassword"</span><span class="p">}</span>
-
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/login"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/user.login.status/"</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/login'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'username=wil&amp;password=wilpassword'</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/user.login.status/'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
 <span class="c1">// response from the server</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
 </code></pre>
 
-<p><strong>Restrictions:</strong> <code class="prettyprint">nill</code></p>
+<p><strong>Restrictions:</strong> <code class="prettyprint">None.</code></p>
 
-<p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code></p>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>user</td>
-<td><code class="prettyprint">string</code></td>
-<td>This will be the user&rsquo;s email address.</td>
-</tr>
-<tr>
-<td>password</td>
-<td><code class="prettyprint">String</code></td>
-<td>The user&rsquo;s password.</td>
-</tr>
-</tbody></table>
+<p><strong>Allowed request type:</strong> <code class="prettyprint">GET</code></p>
 
 <h2 id="response">Response</h2>
 
@@ -168,22 +153,19 @@
 <p>Response</p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"groups"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="s2">"Group_3"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"Group_2"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"Group_4"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"wil@wil.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"57087bd9cc3cde97515a66bc0b58d29696063fd5"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"societies"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">[</span><span class="w">
-            </span><span class="s2">"UCLU Technology Society"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"SOTECHSOC"</span><span class="w">
-        </span><span class="p">]</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="nt">"quota_left"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="w">
+    </span><span class="nt">"loginUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://enghub.io/Shibboleth.sso/Login?target=https%3A%2F%2Fenghub.io%2Fapi%2Fv1%2Fuser.login.callback%3Fsid%3Dpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"callbackUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://enghub.io/api/v1/user.login.callback?sid=pescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"sid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"stream_sub_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://enghub.io/api/v1/push.subscribe/shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"stream_sub_lp_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://enghub.io/api/v1/push.subscribe_longpoll/shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
+
+<h3 id="user-login-status"><code class="prettyprint">/user.login.status/</code></h3>
+
+<p>Shows whether or not a user is logged in. Therefore, if streaming or long polling is not supported by the client they can check this endpoint (every, say, 2 seconds) to ascertain whether the login was successful.</p>
+
+<h2 id="query-parameters">Query Parameters</h2>
 
 <table><thead>
 <tr>
@@ -193,61 +175,60 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>groups</td>
-<td><code class="prettyprint">List</code></td>
-<td>This list contains all the groups the user is a part of.</td>
-</tr>
-<tr>
-<td>email</td>
+<td>sid</td>
 <td><code class="prettyprint">String</code></td>
-<td>The user&rsquo;s email.</td>
-</tr>
-<tr>
-<td>token</td>
-<td><code class="prettyprint">String</code></td>
-<td>This token is valid until the user logs out. If the user doesn&rsquo;t log out, the token remains valid.</td>
-</tr>
-<tr>
-<td>societies</td>
-<td><code class="prettyprint">List</code></td>
-<td>Each item in the list contains the society&rsquo;s name along with the identifer code for the society.</td>
+<td>Session ID for which we want the user to be logged in.</td>
 </tr>
 </tbody></table>
+<pre class="highlight shell"><code>curl --data <span class="s2">"sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span> http://127.0.0.1:8000/user.login.status/
+</code></pre>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<p>Upon successful login, you&rsquo;ll recieve a token in the response which expires if you log out. (If you don&rsquo;t log out, it won&rsquo;t expire).</p>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">"sid"</span><span class="p">:</span> <span class="s">"shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"</span><span class="p">}</span>
 
-<p>This will allow you to use all other endpoints provided by this API.</p>
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/user.login.status/"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</code></pre>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/user.login.status/'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd'</span><span class="p">);</span>
 
-<p>You&rsquo;ll also be able to see all the groups that you (the user) belong to as well as any societies.</p>
+<span class="c1">// response from the server</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+</code></pre>
 
-<p>Finally, your remaining quota is provided in the response (<code class="prettyprint">quota_left</code>) too. Every user has 180 minutes per week which is reset at 3am every Monday. The minutes <strong>do not</strong> carry over.</p>
+<p><strong>Restrictions:</strong> <code class="prettyprint">None.</code></p>
+
+<p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code></p>
+
+<h2 id="response">Response</h2>
+
+<blockquote>
+<p>Response</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span><span class="p">,</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NOT_LOGGED_IN"</span><span class="p">}</span><span class="w">
+</span><span class="err">or</span><span class="w">
+</span><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span><span class="p">,</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOGGED_IN"</span><span class="p">,</span><span class="w"> </span><span class="nt">"user_data"</span><span class="p">:</span><span class="w"> </span><span class="s2">"your_user_data"</span><span class="p">}</span><span class="w">
+</span><span class="err">or</span><span class="w">
+</span><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span><span class="p">,</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOGIN_ERROR"</span><span class="p">}</span><span class="w">
+</span></code></pre>
 
 <h1 id="get-list-of-rooms">Get list of rooms</h1>
 
-<h3 id="get_list_of_rooms"><code class="prettyprint">/get_list_of_rooms</code></h3>
+<h3 id="rooms-list"><code class="prettyprint">/rooms.list/</code></h3>
 
 <p>This endpoint returns a list of all the rooms available in the Engineering hub.</p>
 
 <h2 id="query-parameters">Query Parameters</h2>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/get_list_of_rooms -u wil:wilpassword
-
-<span class="c">#authenticate with token</span>
-curl http://127.0.0.1:8000/get_list_of_rooms -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/rooms.list/ -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
-<span class="c">#with username and password</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/get_list_of_rooms"</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="s">'wil'</span><span class="p">,</span> <span class="s">'wilpassword'</span><span class="p">))</span>
 
-<span class="c">#with token</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/get_list_of_rooms"</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">"Authorization"</span><span class="p">:</span><span class="s">"Token 57087bd9cc3cde97515a</span><span class="err">
-</span><span class="s">66bc0b58d29696063fd5"</span><span class="p">})</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/rooms.list/"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Token 57087bd9cc3cde97515a66bc0b58d29696063fd5"</span><span class="p">})</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="c1">// username &amp; password</span>
-
-
-<span class="c1">// token</span>
+<pre class="highlight javascript"><code><span class="c1">// token</span>
 <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/get_list_of_rooms"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/rooms.list/"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -255,11 +236,9 @@ curl http://127.0.0.1:8000/get_list_of_rooms -H <span class="s1">'Authorization:
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
 </code></pre>
 
-<p><strong>Restrictions:</strong> <code class="prettyprint">nill</code></p>
+<p><strong>Restrictions:</strong> <code class="prettyprint">None</code>.</p>
 
 <p><strong>Allowed request type:</strong> <code class="prettyprint">GET</code></p>
-
-<p>No parameters are required as long.</p>
 
 <h2 id="response">Response</h2>
 
@@ -325,27 +304,25 @@ curl http://127.0.0.1:8000/get_list_of_rooms -H <span class="s1">'Authorization:
 
 <h1 id="get-timetable-for-room">Get timetable for room</h1>
 
-<h3 id="get_room_bookings"><code class="prettyprint">/get_room_bookings</code></h3>
+<h3 id="rooms-bookings"><code class="prettyprint">/rooms.bookings/</code></h3>
 
 <p>This endpoint returns the timetable for the room on a given day.</p>
 
 <h2 id="parameters">Parameters</h2>
-<pre class="highlight shell"><code>curl <span class="s2">"http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&amp;date=20160808"</span> -u wil:wilpassword
-
-curl <span class="s2">"http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&amp;date=20160808"</span> -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
+<pre class="highlight shell"><code>curl <span class="s2">"http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&amp;date=20160808"</span> -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">"room_id"</span><span class="p">:</span><span class="s">"RO-PIZZA"</span><span class="p">,</span> <span class="s">"date"</span><span class="p">:</span><span class="s">"20160808"</span><span class="p">}</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">"room_id"</span><span class="p">:</span> <span class="s">"RO-PIZZA"</span><span class="p">,</span> <span class="s">"date"</span><span class="p">:</span> <span class="s">"20160808"</span><span class="p">}</span>
 
 <span class="c"># You can use both methods for authentication here</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/get_room_bookings"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"http://127.0.0.1:8000/rooms.bookings/"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
 </code></pre>
 <pre class="highlight javascript"><code>
 <span class="c1">// headers</span>
 <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&amp;date=20160808"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&amp;date=20160808"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -422,21 +399,16 @@ curl <span class="s2">"http://127.0.0.1:8000/get_room_bookings?room_id=RO-PIZZA&
 
 <h1 id="book-normal-rooms">Book normal rooms</h1>
 
-<h3 id="book_room_normal"><code class="prettyprint">/book_room_normal</code></h3>
+<h3 id="rooms-book"><code class="prettyprint">/rooms.book/</code></h3>
 
-<p>This end point allows the user to book rooms available to everybody. </p>
+<p>This end point allows the user to book rooms available to everybody.</p>
 
 <h2 id="parameters">Parameters</h2>
 
 <p><strong>Restrictions</strong> : Any authenticated user can make room bookings, except for token based authentications, see [REF]</p>
 
-<p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code> </p>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/book_room_normal
-    --data <span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;notes=this is an event"</span>
-    -u rema:remapassword
-
-
-curl http://127.0.0.1:8000/book_room_normal
+<p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code></p>
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/rooms.book/
     --data <span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;notes=this is an event"</span>
     -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>   
 </code></pre>
@@ -447,7 +419,11 @@ curl http://127.0.0.1:8000/book_room_normal
     <span class="s">"data"</span> <span class="p">:</span> <span class="s">"20160808"</span><span class="p">,</span>
     <span class="s">"start_time"</span> <span class="p">:</span> <span class="s">"15:00"</span><span class="p">,</span>
     <span class="s">"end_time"</span> <span class="p">:</span> <span class="s">"17:00"</span><span class="p">,</span>
-    <span class="s">"notes"</span> <span class="p">:</span> <span class="s">"This is an event"</span> 
+    <span class="s">"notes"</span> <span class="p">:</span> <span class="s">"This is an event"</span>
+<span class="p">}</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Token &lt;auth_token_here&gt;"</span>
 <span class="p">}</span>
 
 <span class="c">#You can use both methods for authentication here</span>
@@ -455,14 +431,13 @@ curl http://127.0.0.1:8000/book_room_normal
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/book_room_normal'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/rooms.book/'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;notes=this is an event"</span><span class="p">);</span>
 
 <span class="c1">// response from the server</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span>
-
 </code></pre>
 
 <table><thead>
@@ -499,20 +474,16 @@ curl http://127.0.0.1:8000/book_room_normal
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <blockquote>
 <p>or appropriate error message</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>There are two possible responses: </p>
+<p>There are two possible responses:</p>
 
 <p><code class="prettyprint">success</code> -&gt; Booking has been made.</p>
 
@@ -520,26 +491,22 @@ curl http://127.0.0.1:8000/book_room_normal
 
 <p><code class="prettyprint">error</code> -&gt; A message providing a reason will be given.</p>
 
-<p>After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response. </p>
+<p>After the request is confirmed, mintues will be taken away from your quota and you will recieve a booking id in the response.</p>
 
 <h1 id="book-a-society-room">Book a society room</h1>
 
-<h3 id="book_room_society"><code class="prettyprint">/book_room_society</code></h3>
+<h3 id="rooms-book"><code class="prettyprint">/rooms.book/</code></h3>
 
-<p>This endpoint allows society presidents or authorised members to book special society rooms. </p>
+<p>This endpoint allows society presidents or authorised members to book special society rooms.</p>
 
 <h2 id="request-parameters">Request Parameters</h2>
 
-<p><strong>Restrictions:</strong> Only users in group3 can use this endpoint and token authenticated requests </p>
+<p><strong>Restrictions:</strong> Only users in group3 can use this endpoint and token authenticated requests</p>
 
 <p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code>  </p>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/book_room_society
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/rooms.book/
     --data <span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;event_name=techandtell&amp;society=SOTECHSOC"</span>
-    -u rema:remapassword
-
-curl http://127.0.0.1:8000/book_room_society
-    --data <span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;event_name=techandtell&amp;society=SOTECHSOC"</span>
-    -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span> 
+    -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
@@ -557,7 +524,7 @@ curl http://127.0.0.1:8000/book_room_society
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/book_room_society'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s1">'http://127.0.0.1:8000/rooms.book/'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"room_id=RO-POO&amp;date=20160808&amp;start_time=15:00&amp;end_time=17:00&amp;event_name=techandtell&amp;society=SOTECHSOC"</span><span class="p">);</span>
@@ -600,20 +567,16 @@ curl http://127.0.0.1:8000/book_room_society
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <blockquote>
 <p>or appropriate error message</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>There are two possible responses: </p>
+<p>There are two possible responses:</p>
 
 <p><code class="prettyprint">success</code> -&gt; Booking has been made.</p>
 
@@ -623,17 +586,15 @@ curl http://127.0.0.1:8000/book_room_society
 
 <h1 id="get-all-bookings-from-a-user">Get all bookings from a user</h1>
 
-<h3 id="get_users_booking">: <code class="prettyprint">/get_users_booking</code></h3>
+<h3 id="user-bookings"><code class="prettyprint">/user.bookings/</code></h3>
 
 <p>This endpoint shows all the rooms the logged-in user has booked.</p>
 
 <h2 id="request-parameters">Request Parameters:</h2>
 
 <p><strong>Restrictions:</strong> Only authenticated users are allowed<br>
-<strong>Allowed request type:</strong> <code class="prettyprint">GET</code> </p>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/get_users_booking?date<span class="o">=</span>20160808 -u rema:remapassword
-
-curl http://127.0.0.1:8000/get_users_booking?date<span class="o">=</span>20160808 -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span> 
+<strong>Allowed request type:</strong> <code class="prettyprint">GET</code></p>
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/user.bookings/?date<span class="o">=</span>20160808 -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
@@ -646,7 +607,7 @@ curl http://127.0.0.1:8000/get_users_booking?date<span class="o">=</span>2016080
 
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/get_users_booking?date=20160808"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/user.bookings/?date=20160808"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -687,9 +648,7 @@ curl http://127.0.0.1:8000/get_users_booking?date<span class="o">=</span>2016080
 <blockquote>
 <p>or appropriate error message</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error message"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <table><thead>
@@ -730,22 +689,24 @@ curl http://127.0.0.1:8000/get_users_booking?date<span class="o">=</span>2016080
 
 <h1 id="get-token">Get token</h1>
 
-<h3 id="token"><code class="prettyprint">/token</code></h3>
+<h3 id="society-token"><code class="prettyprint">/society.token/</code></h3>
 
 <p>This endpoint allows a society president to access a token which can be then used to allow other members of his/her society to book as part of a society.</p>
 
 <h2 id="request-parameters">Request Parameters</h2>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/token/?society_id<span class="o">=</span>SOTECHSOC -u wil:wilpassword
-
-curl http://127.0.0.1:8000/token/?society_id<span class="o">=</span>SOTECHSOC -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span> 
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/society.token/?society_id<span class="o">=</span>SOTECHSOC -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Token &lt;auth_token_here&gt;"</span>
+<span class="p">}</span>
 
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">"society_id"</span><span class="p">:</span><span class="s">"SOTECHSOC"</span><span class="p">},</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/token?society_id=SOTECHSOC"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/society.token?society_id=SOTECHSOC"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -769,16 +730,14 @@ curl http://127.0.0.1:8000/token/?society_id<span class="o">=</span>SOTECHSOC -H
 
 <p><strong>Allowed request type:</strong> GET  </p>
 
-<p><strong>Restrictions:</strong> Only Group4 Users can access this (Society Predidents) </p>
+<p><strong>Restrictions:</strong> Only Group4 Users can access this (Society Presidents)</p>
 
 <h2 id="response-parameters"> Response Parameters</h2>
 
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"token"</span><span class="p">:</span><span class="s2">"token"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"token"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <table><thead>
@@ -799,11 +758,9 @@ curl http://127.0.0.1:8000/token/?society_id<span class="o">=</span>SOTECHSOC -H
 
 <p>This code can be given to anybody and can be used to book society rooms.</p>
 
-<p>GET FAIZ TO ADD HEADER FOR THE TOKEN LMAO</p>
-
 <h1 id="delete-a-booking">Delete a booking</h1>
 
-<h3 id="delete_booking"><code class="prettyprint">/delete_booking</code></h3>
+<h3 id="rooms-deletebooking"><code class="prettyprint">/rooms.deleteBooking/</code></h3>
 
 <p>This allows users to delete a booking they have already booked.</p>
 
@@ -812,10 +769,7 @@ curl http://127.0.0.1:8000/token/?society_id<span class="o">=</span>SOTECHSOC -H
 <p><strong>Restrictions:</strong> Only object owner can delete the booking and user has to be authenticated  </p>
 
 <p><strong>Allowed request type:</strong> <code class="prettyprint">GET</code>  </p>
-<pre class="highlight shell"><code>curl http:127.0.0.1:8000/delete_booking?booking_id<span class="o">=</span>21cf0a17-4b64-4a5f-9a0e-9381d4195af1
-    -u rema:remapassword
-
-curl http:127.0.0.1:8000/delete_booking?booking_id<span class="o">=</span>21cf0a17-4b64-4a5f-9a0e-9381d4195af1
+<pre class="highlight shell"><code>curl http:127.0.0.1:8000/rooms.deleteBooking/?booking_id<span class="o">=</span>21cf0a17-4b64-4a5f-9a0e-9381d4195af1
 -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>     
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
@@ -826,7 +780,7 @@ curl http:127.0.0.1:8000/delete_booking?booking_id<span class="o">=</span>21cf0a
 
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/delete_booking?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -844,7 +798,7 @@ curl http:127.0.0.1:8000/delete_booking?booking_id<span class="o">=</span>21cf0a
 <tr>
 <td>booking_id</td>
 <td><code class="prettyprint">String</code></td>
-<td>The booking id associated with the room booking</td>
+<td>The booking id associated with the room booking.</td>
 </tr>
 </tbody></table>
 
@@ -853,35 +807,29 @@ curl http:127.0.0.1:8000/delete_booking?booking_id<span class="o">=</span>21cf0a
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"token"</span><span class="p">:</span><span class="s2">"token"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"token"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <blockquote>
 <p>or error message</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"error"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"blah blah"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"error"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"blah blah"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <p>Once the booking is deleted, the length of the booking will be added back to the users quota.</p>
 
 <h1 id="give-normal-users-society-access">Give normal users society access</h1>
 
-<h3 id="add_user_to_group3"><code class="prettyprint">/add_user_to_group3</code></h3>
+<h3 id="society-adduser"><code class="prettyprint">/society.addUser/</code></h3>
 
 <p>This endpoint allows society presidents to give access to other students and allow them to be included in group 3.</p>
 
 <h2 id="request-parameters">Request Parameters</h2>
 
-<p><strong>Restriction:</strong> Only Group4 users have access to this </p>
+<p><strong>Restriction:</strong> Only Group4 users have access to this.</p>
 
 <p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code>  </p>
-<pre class="highlight shell"><code>curl --data <span class="s2">"username=rema"</span> http://127.0.0.1:8000/add_user_to_group3?society_id<span class="o">=</span>SOTECHSOC -u wil:wilpassword
-
-curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> http://127.0.0.1:8000/add_user_to_group3 -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span> 
+<pre class="highlight shell"><code>curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> http://127.0.0.1:8000/society.addUser/ -H <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
@@ -890,10 +838,14 @@ curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> htt
     <span class="s">"username"</span> <span class="p">:</span> <span class="s">"rema"</span>
 <span class="p">}</span>
 
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"Authorization: Token &lt;abcd&gt;"</span>
+<span class="p">}</span>
+
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/add_user_to_group3"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/society.addUser/"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span><span class="p">);</span>
@@ -921,25 +873,21 @@ curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> htt
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Successfully added rema boo to society access groups!"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Successfully added rema boo to society access groups!"</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <h1 id="remove-normal-user-39-s-society-access">Remove normal user&rsquo;s society access</h1>
 
-<h3 id="delete_user_from_group3"><code class="prettyprint">/delete_user_from_group3</code></h3>
+<h3 id="society-deleteuser"><code class="prettyprint">/society.deleteUser/</code></h3>
 
-<p>This endpoint removes user from group3 , denying them society room booking powers. </p>
+<p>This endpoint removes user from group3, denying them society room booking powers.</p>
 
 <h2 id="request-parameters">Request Parameters</h2>
 
-<p><strong>Restriction:</strong> Only Group4 users have access to this </p>
+<p><strong>Restriction:</strong> Only Group4 users can access this.</p>
 
 <p><strong>Allowed request type:</strong> <code class="prettyprint">POST</code>  </p>
-<pre class="highlight shell"><code>curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> http://127.0.0.1:8000/delete_user_from_group3?society_id<span class="o">=</span>SOCTECHSOC -u wil:wilpassword
-
-curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> http://127.0.0.1:8000/delete_user_from_group3 <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
+<pre class="highlight shell"><code>curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> http://127.0.0.1:8000/society.deleteUser/ <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
@@ -951,7 +899,7 @@ curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> htt
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/delete_user_from_group3"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'POST'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/society.deleteUser/"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-type'</span><span class="p">,</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span><span class="p">);</span>
@@ -979,33 +927,28 @@ curl --data <span class="s2">"username=rema&amp;society_id=SOTECHSOC"</span> htt
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
 <h1 id="logout-a-user">Logout a user</h1>
 
-<h3 id="logout"><code class="prettyprint">/logout</code></h3>
+<h3 id="user-logout"><code class="prettyprint">/user.logout/</code></h3>
 
 <p>This end point logs a user out of the API so they can no longer make requests. They must log back in.</p>
 
 <h2 id="request-parameters">Request Parameters</h2>
 
-<p><strong>Restrictions: <code class="prettyprint">nill</code></strong></p>
+<p><strong>Restrictions: <code class="prettyprint">None.</code></strong></p>
 
 <p><strong>Allowed request types:</strong> <code class="prettyprint">GET</code>  </p>
-<pre class="highlight shell"><code>curl http://127.0.0.1:8000/logout -u username:password
-
-curl http://127.0.0.1:8000/logout <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
+<pre class="highlight shell"><code>curl http://127.0.0.1:8000/user.logout/ <span class="s1">'Authorization: Token &lt;auth_token_here&gt;'</span>
 </code></pre>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
-
 </code></pre>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/logout"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s2">"http://127.0.0.1:8000/user.logout/"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Authorization'</span><span class="p">,</span> <span class="s1">'Token &lt;auth_token_here&gt;'</span><span class="p">);</span>
 <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 
@@ -1022,7 +965,7 @@ curl http://127.0.0.1:8000/logout <span class="s1">'Authorization: Token &lt;aut
 </thead><tbody>
 <tr>
 <td>user</td>
-<td><code class="prettyprint">string</code></td>
+<td><code class="prettyprint">String</code></td>
 <td>This will be the user&rsquo;s email address.</td>
 </tr>
 <tr>
@@ -1035,20 +978,18 @@ curl http://127.0.0.1:8000/logout <span class="s1">'Authorization: Token &lt;aut
 <blockquote>
 <p>Response</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>Feel free to make users and test them from admin interface localhost:8000/admin  username: admin, password: adminpassword</p>
+<h1 id="streaming-api">Streaming API</h1>
 
-<p>Some test users I made:
-    wil, wilpassword -&gt; Group2, Group3, Group4
-    moynappa, moynappapassword -&gt; Group2, Group3, Group4
-    rema, remapassword -&gt; Group2 only I think
-    emily, emilypassword -&gt; Group2 only
-    matt, mattpassword -&gt; Group2
-    vicky, vickypassword -&gt; Group2</p>
+<h3 id="stream-sub-xxx"><code class="prettyprint">/stream.sub/XXX</code></h3>
+
+<p>A socket endpoint to listen on channel XXX (e.g. the sid)</p>
+
+<h3 id="stream-sub_lp-xxx"><code class="prettyprint">/stream.sub_lp/XXX</code></h3>
+
+<p>A long polling endpoint for channel XXX (e.g. the sid)</p>
 
           <h1 id="errors">Errors</h1>
 
