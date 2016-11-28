@@ -19,7 +19,7 @@ module.exports = React.createClass({
               <Link className="pure-menu-link" to="/profile">Profile</Link>
             </li>
             <li className="pure-menu-item">
-              <Link className="pure-menu-link" to="https://roomie.uservoice.com/">Feedback</Link>
+              <a className="pure-menu-link" href="https://roomie.uservoice.com/" >Feedback</a>
             </li>
           </ul>
         </div>
