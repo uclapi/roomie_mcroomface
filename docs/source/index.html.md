@@ -49,14 +49,14 @@ xhr.send('username=wil&password=wilpassword');
 xhr.responseText;
 ```
 
-**Restrictions:** `nill`
+**Restrictions:** `None.`
 
 **Allowed request type:** `POST`
 
 
 Parameter | Type | Description
 --------- | ---------- | -----------
-user | `string` | This will be the user's email address.
+user | `String` | This will be the user's email address.
 password | `String`| The user's password.
 
 ## Response
@@ -97,6 +97,101 @@ You'll also be able to see all the groups that you (the user) belong to as well 
 
 Finally, your remaining quota is provided in the response (`quota_left`) too. Every user has 180 minutes per week which is reset at 3am every Monday. The minutes **do not** carry over.
 
+### `/user.login.getToken/`
+
+This will generate a Session ID (sid) which is used to process a login. It also gives the app the
+information required to listen for a successful login taking place.
+
+## Query Parameters
+None.
+
+```shell
+curl http://127.0.0.1:8000/user.login.status/
+```
+
+```python
+import requests
+
+requests.get("http://127.0.0.1:8000/user.login.status/")
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://127.0.0.1:8000/user.login.status/', true);
+xhr.send();
+
+// response from the server
+xhr.responseText;
+```
+
+**Restrictions:** `None.`
+
+**Allowed request type:** `GET`
+
+## Response
+
+> Response
+
+```json
+{
+    "loginUrl": "https://enghub.io/Shibboleth.sso/Login?target=https%3A%2F%2Fenghub.io%2Fapi%2Fv1%2Fuser.login.callback%3Fsid%3Dpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd",
+    "callbackUrl": "https://enghub.io/api/v1/user.login.callback?sid=pescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd",
+    "sid": "shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd",
+    "stream_sub_url": "https://enghub.io/api/v1/push.subscribe/shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd",
+    "stream_sub_lp_url": "https://enghub.io/api/v1/push.subscribe_longpoll/shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"
+}
+```
+
+### `/user.login.status/`
+
+Shows whether or not a user is logged in. Therefore, if streaming or long polling is not supported by the client they can check this endpoint (every, say, 2 seconds) to ascertain whether the login was successful.
+
+## Query Parameters
+
+Field | Type | Description
+--------- | ---------- | -----------
+sid | `String` | Session ID for which we want the user to be logged in.
+
+```shell
+curl --data "sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd" http://127.0.0.1:8000/user.login.status/
+```
+
+```python
+import requests
+
+data = {"sid": "shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"}
+
+requests.post("http://127.0.0.1:8000/user.login.status/", data=data)
+```
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://127.0.0.1:8000/user.login.status/', true);
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send('sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd');
+
+// response from the server
+xhr.responseText;
+```
+
+**Restrictions:** `None.`
+
+**Allowed request type:** `POST`
+
+## Response
+
+> Response
+
+```json
+{"success": "OK", "status": "NOT_LOGGED_IN"}
+or
+{"success": "OK", "status": "LOGGED_IN", "user_data": "your_user_data"}
+or
+{"success": "OK", "status": "LOGIN_ERROR"}
+```
+
+
+
 # Get list of rooms
 
 ### `/rooms.list/`
@@ -106,20 +201,13 @@ This endpoint returns a list of all the rooms available in the Engineering hub.
 ## Query Parameters
 
 ```shell
-curl http://127.0.0.1:8000/rooms.list/ -u wil:wilpassword
-
-#authenticate with token
 curl http://127.0.0.1:8000/rooms.list/ -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
 import requests
-#with username and password
-r = requests.get("http://127.0.0.1:8000/rooms.list/", auth=requests.auth.HTTPBasicAuth('wil', 'wilpassword'))
 
-#with token
-r = requests.get("http://127.0.0.1:8000/rooms.list/", headers = {"Authorization":"Token 57087bd9cc3cde97515a
-66bc0b58d29696063fd5"})
+r = requests.get("http://127.0.0.1:8000/rooms.list/", headers={"Authorization": "Token 57087bd9cc3cde97515a66bc0b58d29696063fd5"})
 ```
 
 ```javascript
@@ -136,12 +224,9 @@ xhr.send();
 xhr.responseText;
 ```
 
-**Restrictions:** `nill`
+**Restrictions:** `None`.
 
 **Allowed request type:** `GET`
-
-
-No parameters are required as long.
 
 ## Response
 
@@ -179,14 +264,12 @@ This endpoint returns the timetable for the room on a given day.
 ## Parameters
 
 ```shell
-curl "http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -u wil:wilpassword
-
 curl "http://127.0.0.1:8000/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
 ```
 ```python
 import requests
 
-params = {"room_id":"RO-PIZZA", "date":"20160808"}
+params = {"room_id": "RO-PIZZA", "date": "20160808"}
 
 # You can use both methods for authentication here
 r = requests.get("http://127.0.0.1:8000/rooms.bookings/", params=params, headers=headers)
@@ -249,11 +332,6 @@ This end point allows the user to book rooms available to everybody.
 ```shell
 curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
-    -u rema:remapassword
-
-
-curl http://127.0.0.1:8000/rooms.book/
-    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -H 'Authorization: Token <auth_token_here>'   
 ```
 
@@ -266,6 +344,10 @@ data = {
     "start_time" : "15:00",
     "end_time" : "17:00",
     "notes" : "This is an event"
+}
+
+headers = {
+    "Authorization": "Token <auth_token_here>"
 }
 
 #You can use both methods for authentication here
@@ -282,7 +364,6 @@ xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=thi
 
 // response from the server
 xhr.responseText
-
 ```
 
 Parameter | Type | Description
@@ -297,17 +378,13 @@ Parameter | Type | Description
 > Response
 
 ```json
-{
-    "success": true
-}
+{"success": true}
 ```
 
 > or appropriate error message
 
 ```json
-{
-    "error": "error message"
-}
+{"error": "error message"}
 ```
 There are two possible responses:
 
@@ -330,10 +407,6 @@ This endpoint allows society presidents or authorised members to book special so
 **Allowed request type:** `POST`  
 
 ```shell
-curl http://127.0.0.1:8000/rooms.book/
-    --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
-    -u rema:remapassword
-
 curl http://127.0.0.1:8000/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -H 'Authorization: Token <auth_token_here>'
@@ -377,17 +450,13 @@ Parameter | Type | Description
 > Response
 
 ```json
-{
-    "success": true
-}
+{"success": true}
 ```
 
 > or appropriate error message
 
 ```json
-{
-    "error": "error message"
-}
+{"error": "error message"}
 ```
 There are two possible responses:
 
@@ -408,8 +477,6 @@ This endpoint shows all the rooms the logged-in user has booked.
 
 
 ```shell
-curl http://127.0.0.1:8000/user.bookings/?date=20160808 -u rema:remapassword
-
 curl http://127.0.0.1:8000/user.bookings/?date=20160808 -H 'Authorization: Token <auth_token_here>'
 
 ```
@@ -457,9 +524,7 @@ date | `String` | The date in _YYYYMMDD_ format
 > or appropriate error message
 
 ```json
-{
-    "error": "error message"
-}
+{"error": "error message"}
 ```
 
 Field | Type | Description
@@ -481,13 +546,15 @@ This endpoint allows a society president to access a token which can be then use
 
 
 ```shell
-curl http://127.0.0.1:8000/society.token/?society_id=SOTECHSOC -u wil:wilpassword
-
 curl http://127.0.0.1:8000/society.token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
 import requests
+
+headers = {
+    "Authorization": "Token <auth_token_here>"
+}
 
 r = requests.get(url, params={"society_id":"SOTECHSOC"}, headers=headers)
 
@@ -509,7 +576,7 @@ society_id | `String` | Society-ID eg.`SO-XXXXXX`
 
 **Allowed request type:** GET  
 
-**Restrictions:** Only Group4 Users can access this (Society Predidents)
+**Restrictions:** Only Group4 Users can access this (Society Presidents)
 
 
 ## Response Parameters
@@ -517,9 +584,7 @@ society_id | `String` | Society-ID eg.`SO-XXXXXX`
 > Response
 
 ```json
-{
-    "token":"token"
-}
+{"token": "token"}
 ```
 Field| Type | Description
 --------- | ---------- | -----------
@@ -529,8 +594,6 @@ token| `String` | Token to authorise others to book rooms as a society.
 This endpoint creates a token on behalf of the society, valid for 100 days. The society leader can regenerates this token at any point causing the previous token to expire. Only 1 token is valid at any time.
 
 This code can be given to anybody and can be used to book society rooms.
-
-GET FAIZ TO ADD HEADER FOR THE TOKEN LMAO
 
 #Delete a booking
 ### `/rooms.deleteBooking/`
@@ -543,9 +606,6 @@ This allows users to delete a booking they have already booked.
 **Allowed request type:** `GET`  
 
 ```shell
-curl http:127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
-    -u rema:remapassword
-
 curl http:127.0.0.1:8000/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1
 -H 'Authorization: Token <auth_token_here>'     
 ```
@@ -571,24 +631,20 @@ xhr.responseText;
 
 Parameter | Type | Description
 --------- | ---------- | -----------
-booking_id| `String` | The booking id associated with the room booking
+booking_id| `String` | The booking id associated with the room booking.
 
 ## Response
 
 > Response
 
 ```json
-{
-    "token":"token"
-}
+{"token": "token"}
 ```
 
 > or error message
 
 ```json
-{
-    "error" : "blah blah"
-}
+{"error" : "blah blah"}
 ```
 
 Once the booking is deleted, the length of the booking will be added back to the users quota.
@@ -600,13 +656,11 @@ This endpoint allows society presidents to give access to other students and all
 
 ## Request Parameters
 
-**Restriction:** Only Group4 users have access to this
+**Restriction:** Only Group4 users have access to this.
 
 **Allowed request type:** `POST`  
 
 ```shell
-curl --data "username=rema" http://127.0.0.1:8000/society.addUser/?society_id=SOTECHSOC -u wil:wilpassword
-
 curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.addUser/ -H 'Authorization: Token <auth_token_here>'
 ```
 
@@ -616,6 +670,10 @@ import requests
 data = {
     "society_id" : "SOTECHSOC",
     "username" : "rema"
+}
+
+headers = {
+    "Authorization: Token <abcd>"
 }
 
 r = requests.post(url, data=data, headers=headers)
@@ -642,26 +700,20 @@ username | `string` | This will be the user's email address.
 > Response
 
 ```json
-{
-    "success": "Successfully added rema boo to society access groups!"
-}
+{"success": "Successfully added rema boo to society access groups!"}
 ```
-
-
 
 # Remove normal user's society access
 ### `/society.deleteUser/`
-This endpoint removes user from group3 , denying them society room booking powers.
+This endpoint removes user from group3, denying them society room booking powers.
 ## Request Parameters
 
-**Restriction:** Only Group4 users have access to this
+**Restriction:** Only Group4 users can access this.
 
 **Allowed request type:** `POST`  
 
 
 ```shell
-curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.deleteUser/?society_id=SOCTECHSOC -u wil:wilpassword
-
 curl --data "username=rema&society_id=SOTECHSOC" http://127.0.0.1:8000/society.deleteUser/ 'Authorization: Token <auth_token_here>'
 ```
 
@@ -696,11 +748,8 @@ username | `string` | This will be the user's email address.
 > Response
 
 ```json
-{
-    "success": true
-}
+{"success": true}
 ```
-
 
 # Logout a user
 ### `/user.logout/`
@@ -708,13 +757,11 @@ This end point logs a user out of the API so they can no longer make requests. T
 
 ## Request Parameters
 
-**Restrictions: `nill`**
+**Restrictions: `None.`**
 
 **Allowed request types:** `GET`  
 
 ```shell
-curl http://127.0.0.1:8000/user.logout/ -u username:password
-
 curl http://127.0.0.1:8000/user.logout/ 'Authorization: Token <auth_token_here>'
 ```
 
@@ -722,7 +769,6 @@ curl http://127.0.0.1:8000/user.logout/ 'Authorization: Token <auth_token_here>'
 import requests
 
 r = requests.get(url, headers=headers)
-
 ```
 
 ```javascript
@@ -737,7 +783,7 @@ xhr.responseText;
 
 Parameter | Type | Description
 --------- | ---------- | -----------
-user | `string` | This will be the user's email address.
+user | `String` | This will be the user's email address.
 password | `String`| The user's password.
 
 > Response
@@ -748,14 +794,9 @@ password | `String`| The user's password.
 }
 ```
 
+# Streaming API
+### `/stream.sub/XXX`
+A socket endpoint to listen on channel XXX (e.g. the sid)
 
-Feel free to make users and test them from admin interface localhost:8000/api/admin  username: admin, password: adminpassword
-
-
-Some test users I made:
-    wil, wilpassword -> Group2, Group3, Group4
-    moynappa, moynappapassword -> Group2, Group3, Group4
-    rema, remapassword -> Group2 only I think
-    emily, emilypassword -> Group2 only
-    matt, mattpassword -> Group2
-    vicky, vickypassword -> Group2
+### `/stream.sub_lp/XXX`
+A long polling endpoint for channel XXX (e.g. the sid)
