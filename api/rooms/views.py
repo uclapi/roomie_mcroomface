@@ -414,8 +414,8 @@ def book_a_room(request, room, date, start_time,
     current_user = request.user.user_profile
 
     try:
-        start_time = convertTime(start_time)
-        end_time = convertTime(end_time)
+        start_time = utils.convertTime(start_time)
+        end_time = utils.convertTime(end_time)
         dateString = date
         dateOfSearch = datetime.datetime.strptime(dateString, "%Y%m%d").date()
     except:
@@ -500,7 +500,7 @@ def is_time_valid(date, start_time, end_time):
     if end_time <= start_time:
         return {"success": False, "error": {"error": "Invalid times given."}}
 
-    dayMode = weekOrWeekend(date)
+    dayMode = utils.weekOrWeekend(date)
 
     if end_time > CLOSING_TIME[dayMode]:
         return {"success": False, "error": {
