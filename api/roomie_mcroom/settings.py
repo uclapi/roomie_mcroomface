@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import datetime
+import dotenv
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'd^!1rp^2qjwz%!=bsz^zg+glmz!9pw_9(!4qis_g&_946e@aw#'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['enghub.io']
 
 
 # Application definition
@@ -150,5 +151,7 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'roomie_mcroom', 'static', 'static_root')
 
+
+# FAIZ: duplicated with rooms.views
 closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
 opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
