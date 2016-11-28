@@ -6,6 +6,7 @@ from .models import Booking, BookingSociety, UserProfile, Room, Verifier, \
 import datetime
 import pytz
 import json
+import base64
 
 import requests
 
@@ -292,7 +293,9 @@ def login_callback(request):
 
         url = STREAM_PUBLISH_URL + "/?id=" + sid
         try:
-            r = requests.post(url, json=login_response)
+            login_response_str = json.dumps(login_response)
+            b64 = base64.b64encode(login_response_str)
+            r = requests.post(url, data=b64)
             print(r.text)
         except:
             print("Error sending the data to stream backend")
