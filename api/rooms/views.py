@@ -301,12 +301,18 @@ def login_callback(request):
         }
 
         try:
+            ShibLoginToken.objects.get(user=user).delete()
+        except ShibLoginToken.DoesNotExist:
+            print("User has never tried logging in before, so there was nothing to delete. Continuing...")
+
+        try:
             token = ShibLoginToken.objects.get(sid=sid)
             token.status = 1
             token.user = user
             token.save()
-        except:
+        except Exception as e:
             print("Error updating token in database")
+            print(e)
 
         url = STREAM_PUBLISH_URL + "/?id=" + sid
         try:
