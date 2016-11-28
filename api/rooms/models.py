@@ -23,6 +23,8 @@ class UserProfile(models.Model):
     society_access = models.BooleanField(default=False)
     quota_left = models.IntegerField(default=180)
     associated_society = models.ManyToManyField('self', blank=True)
+    department = models.CharField(max_length=100, default="No Department")
+
 
 
 class Booking(models.Model):
