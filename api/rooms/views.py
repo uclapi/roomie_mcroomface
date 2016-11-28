@@ -335,6 +335,150 @@ def login_callback(request):
 
 
 @api_view(['GET'])
+def login_get_token(request):
+    sid = "shib" + utils.random_string(60)
+
+    login_token = ShibLoginToken(sid=sid)
+    login_token.save()
+
+    callback_url = ROOT_URL + 'user.login.callback?sid=' + sid
+
+    return Response({
+        "loginUrl": SHIB_URL + "Login?target=" +
+        urllib.parse.quote_plus(callback_url),
+        "callbackUrl": callback_url,
+        "sid": sid,
+        "stream_sub_url": STREAM_SUBSCRIBE_URL + sid,
+        "stream_sub_lp_url": STREAM_SUBSCRIBE_LP_URL + sid
+    })
+
+
+@api_view(['POST'])
+def login_status(request):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        sid = data["sid"]
+    except:
+        return Response({"error": "No sid supplied"})
+
+    try:
+        sid_data = ShibLoginToken.objects.get(sid=sid)
+    except:
+        return Response({"error": "Invalid sid"})
+
+    if sid_data.status == 0:
+        return Response({"success": "OK", "status": "NOT_LOGGED_IN"})
+    elif sid_data.status == 1:
+        token, created = Token.objects.get_or_create(user=sid_data.user)
+        user_data = {
+            "email": sid_data.user.email,
+            "quota_left": sid_data.user.user_profile.quota_left,
+            'token': token.key,
+            "societies": [
+                [k.user.first_name, k.user.username] for k in
+                sid_data.user.user_profile.associated_society.all()
+                ],
+            "groups": [k.name for k in sid_data.user.groups.all()]
+        }
+        return Response(
+            {
+                "success": "OK",
+                "status": "LOGGED_IN",
+                "user_data": user_data
+            })
+    else:
+        return Response({"success": "OK", "status": "LOGIN_ERROR"})
+
+
+def login_callback(request):
+    try:
+        sid = request.GET['sid']
+    except:
+        return HttpResponse('No sid supplied, so login cannot continue.')
+
+    try:
+        sid_data = ShibLoginToken.objects.get(sid=sid)
+    except ShibLoginToken.DoesNotExist:
+        return HttpResponse('Invalid sid. Please try logging in again.')
+
+    try:
+        eppn = request.META['HTTP_EPPN']
+        groups = request.META['HTTP_UCLINTRANETGROUPS']
+        cn = request.META['HTTP_CN']
+        department = request.META['HTTP_DEPARTMENT']
+        given_name = request.META['HTTP_GIVENNAME']
+        surname = request.META['HTTP_SN']
+    except:
+        return HttpResponse(
+            'No Shibboleth data. This page should not be accessed directly!')
+
+    if "engscifac-ug" not in groups.split(';'):
+        login_response = {
+            "result": "failure",
+            "message": ("This system is available only"
+                        " to members of the engineering faculty.")
+            }
+    else:
+        if User.objects.filter(email=eppn).exists():
+            user = User.objects.get(email=eppn)
+        else:
+            User.objects.create_user(
+                username=cn,
+                email=eppn,
+                password=utils.random_string(128),
+                first_name=given_name,
+                last_name=surname
+            )
+            user = User.objects.get(email=eppn)
+            up = UserProfile(user=user)
+            up.department = department
+            up.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        token.save()
+
+        login_response = {
+            "result": "success",
+            "message": "Login successful",
+            "email": user.email,
+            "quota_left": user.user_profile.quota_left,
+            'token': token.key,
+            "societies": [
+                [k.user.first_name, k.user.username] for k in
+                user.user_profile.associated_society.all()
+            ],
+            "groups": [k.name for k in user.groups.all()]
+        }
+
+        try:
+            t = ShibLoginToken.objects.get(user=user)
+            if t.sid != sid:
+                t.delete()
+        except ShibLoginToken.DoesNotExist:
+            print("User has never tried logging in before, so there was nothing to delete. Continuing...")
+
+        try:
+            token = ShibLoginToken.objects.get(sid=sid)
+            token.status = 1
+            token.user = user
+            token.save()
+        except Exception as e:
+            print("Error updating token in database")
+            print(e)
+
+        url = STREAM_PUBLISH_URL + "/?id=" + sid
+        try:
+            r = requests.post(url, json=login_response)
+            print(r.text)
+        except:
+            print("Error sending the data to stream backend")
+
+    response = HttpResponse(content_type="text/html")
+    response.write(login_response)
+    return response
+
+
+@api_view(['GET'])
 def password_changed_successfully(request):
     return Response({"success": "thanks bud"})
 
