@@ -13,6 +13,11 @@ module.exports = React.createClass({
   },
   submitForm: function(e){
     e.preventDefault();
+    console.log(this.refs.eventName.value);
+    if(this.refs.eventName.value === ''){
+      alert('Event name can\'t be empty.');
+      return;
+    }
     var duration = parseInt(this.refs.duration.value.substr(0,1));
     var notes = null;
     var society; 
