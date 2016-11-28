@@ -43,7 +43,8 @@ module.exports = {
       mode: 'cors'
     });
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
-    delete localStorage.society;
+    delete localStorage.g3;
+    delete localStorage.g4;
     if (cb) cb();
   },
 

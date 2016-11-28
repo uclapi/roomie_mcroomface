@@ -19,5 +19,5 @@ urlpatterns = [
     url(r'^v1/society.addUser/$', views.add_user_to_group3),
     url(r'^v1/society.removeUser/$', views.remove_user_from_group3),
 
-    url(r'^v1/accounts/login/$', views.no_access, name='no permission'),
+    url(r'^v1/accounts/login/$', views.no_access, name='no permission')
 ]
