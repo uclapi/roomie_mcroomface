@@ -70,4 +70,4 @@ class ShibLoginToken(models.Model):
     status = models.IntegerField(default=0)
     timestamp = models.DateTimeField(default=datetime.now)
     user = models.OneToOneField(
-        UserProfile, related_name='shib_login_token', blank=True)
+        UserProfile, related_name='shib_login_token', blank=True, null=True)
