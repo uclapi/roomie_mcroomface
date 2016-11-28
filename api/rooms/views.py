@@ -1,6 +1,5 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
-from .util import convertTime, weekOrWeekend
 from .models import Booking, BookingSociety, UserProfile, Room, Verifier, \
     ShibLoginToken
 
