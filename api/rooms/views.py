@@ -301,7 +301,9 @@ def login_callback(request):
         }
 
         try:
-            ShibLoginToken.objects.get(user=user).delete()
+            t = ShibLoginToken.objects.get(user=user)
+            if t.sid != sid:
+                t.delete()
         except ShibLoginToken.DoesNotExist:
             print("User has never tried logging in before, so there was nothing to delete. Continuing...")
 
