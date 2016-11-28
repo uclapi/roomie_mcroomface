@@ -416,7 +416,7 @@ def get_users_booking(request):
     current_user = request.user.user_profile
     bookings = list(Booking.objects.filter(user=current_user))
 
-    if current_user.society_access:
+    if len(current_user.associated_society.all()):
         bookings.extend(
             list(BookingSociety.objects.filter(user=current_user)))
 
