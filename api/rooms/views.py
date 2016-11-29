@@ -255,6 +255,9 @@ def login_callback(request):
                 last_name=surname
             )
             user = User.objects.get(email=eppn)
+            group_2 = Group.objects.get(name="Group_2")
+            user.groups.add(group_2)
+            user.save()
             up = UserProfile(user=user)
             up.department = department
             up.save()
