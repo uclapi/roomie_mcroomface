@@ -6,7 +6,7 @@ var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
 var less = require('gulp-less');
 var cleanCSS = require('gulp-clean-css');
-var stripDebug = require('gulp-strip-debug');
+//var stripDebug = require('gulp-strip-debug');
 
 module.exports = function(){
   var b = browserify({
@@ -16,7 +16,7 @@ module.exports = function(){
   b.bundle()
     .pipe(source('app.js'))
     .pipe(buffer())
-    .pipe(stripDebug())
+//    .pipe(stripDebug())
     .pipe(uglify())
     .on('error', gutil.log)
     .pipe(gulp.dest('./dist/js/'));
