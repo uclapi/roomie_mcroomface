@@ -124,11 +124,56 @@ module.exports = withRouter(React.createClass({
       }
     });
   },
+  addSocietyMember: function(e){
+    e.preventDefault();
+    fetch(config.domain + '/api/v1/society.addUser/',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Token ' + utils.getCookie('token')
+      },
+      mode: 'cors',
+      body: 'username=' + this.refs.username.value +
+        '&society_id=' + this.refs.society.value
+    }).then(function(res){
+      if(res.status == 200){
+        res.json().then(function(json){
+          console.log(json);
+          if(json.error){
+            alert(json.error);
+          }else{
+            alert(json.success);
+          }
+        });
+      }
+    });
+  },
+  removeSocietyMember: function(e){
+    e.preventDefault();
+    fetch(config.domain + '/api/v1/society.deleteUser/',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Token ' + utils.getCookie('token')
+      },
+      mode: 'cors',
+      body: 'username=' + this.refs.username.value +
+        '&society_id=' + this.refs.society.value
+    }).then(function(res){
+      if(res.status == 200){
+        res.json().then(function(json){
+          if(json.error){
+            alert(json.error);
+          }else{
+            alert(json.success);
+          }
+        });
+      }
+    });
+  },
   componentDidMount: function(){
     this.getUserInfo();
     this.getBookings();
-    console.log(config.domain);
-    console.log(process.env.NODE_ENV);
   },
   render: function() {
     return (
@@ -155,11 +200,26 @@ module.exports = withRouter(React.createClass({
                             (<button className="pure-button" onClick={() => this.getToken(society[1])}>
                               Get API Key
                             </button>)
-                          
                         ):null}
+                        <hr/>
                       </li>;
                     })}
                   </ul>
+                  {localStorage.g4?(
+                    <form className="pure-form">
+                      <fieldset>
+                        <legend>Add/remove someone from a society</legend>
+                        <input id="username" ref="username" type="text" placeholder="Username"/>
+                        <select id="society" ref="society">
+                          {this.state.profile.societies.map((society, i)=>{
+                            return <option id={i} value={society[1]}>{society[0]}</option>
+                          })}
+                        </select>
+                        <button className="pure-button pure-button-primary" onClick={this.addSocietyMember}>Add</button>
+                        <button className="pure-button pure-button-primary" onClick={this.removeSocietyMember}>Remove</button>
+                      </fieldset>
+                    </form>
+                  ):null}
                 </div>
                 <div className="pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3"></div>
               </div>
