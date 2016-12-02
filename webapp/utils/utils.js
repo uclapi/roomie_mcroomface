@@ -21,13 +21,15 @@ var exports = {
     }
     return '';
   },
-  authenticatedRequest: function(url, method, context){
-    fetch(config.domain + url, {
+  authenticatedRequest: function(url, method, context, data){
+    return fetch(config.domain + url, {
       method: method,
       headers:{
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Token ' + this.getCookie('token')
       },
       mode: 'cors',
+      body: data
     }).then(function(res){
       if(res.status === 200){
         return res.json();
