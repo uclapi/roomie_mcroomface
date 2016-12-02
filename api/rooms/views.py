@@ -294,15 +294,15 @@ def login_callback(request):
             print("Error updating token in database")
             print(e)
 
-        url = STREAM_PUBLISH_URL + "/?id=" + sid
-        try:
-            login_response_str = json.dumps(login_response)
-            b64 = base64.b64encode(login_response_str.encode('utf-8'))
-            r = requests.post(url, data=b64)
-            print(r.text)
-        except Exception as e:
-            print("Error sending the data to stream backend")
-            print(e)
+    url = STREAM_PUBLISH_URL + "/?id=" + sid
+    try:
+        login_response_str = json.dumps(login_response)
+        b64 = base64.b64encode(login_response_str.encode('utf-8'))
+        r = requests.post(url, data=b64)
+        print(r.text)
+    except Exception as e:
+        print("Error sending the data to stream backend")
+        print(e)
 
     response = HttpResponse(content_type="text/html")
     response.write(login_response)
