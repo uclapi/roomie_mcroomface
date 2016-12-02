@@ -1,17 +1,22 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
-from .models import Booking, BookingSociety, UserProfile, Room, Verifier
-from .util import convertTime, weekOrWeekend
+from .models import Booking, BookingSociety, UserProfile, Room, Verifier, ShibLoginToken
 
 import datetime
 import requests
 import pytz
+import json
+
+
+import urllib.parse
+import urllib.request
 
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group, User
 from django.shortcuts import render
 from django.template.context_processors import csrf
+from django.http import HttpResponse
 
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
@@ -20,7 +25,15 @@ from rest_framework.decorators import api_view, permission_classes, \
     authentication_classes
 from rest_framework.response import Response
 
-from roomie_mcroom.settings import closing_time, opening_time
+from constants import *
+
+from . import utils
+
+#from models import Room, UserProfile, Booking, BookingSociety, Verifier, ShibLoginToken
+
+# Create your views here.
+closing_time = {"weekend": datetime.time(18, 0), "week": datetime.time(21, 0)}
+opening_time = {"weekend": datetime.time(9, 0), "week": datetime.time(8, 0)}
 
 
 @api_view(['GET', 'POST'])
@@ -36,7 +49,7 @@ def no_access(request):
 def get_rooms_list(request):
     rooms = Room.objects.all()
     room_dict = []
-    for room in (rooms):
+    for room in rooms:
         room_dict.append({
             "capacity": room.capacity,
             "coffee": room.coffee,
@@ -181,6 +194,101 @@ def login(request):
 
 
 # FAIZ
+@api_view(['GET'])
+def login_get_token(request):
+    sid = "shib" + utils.random_string(60)
+
+    login_token = ShibLoginToken(sid=sid)
+    login_token.save()
+
+    callback_url = ROOT_URL + 'user.login.callback?sid=' + sid
+
+    return Response({
+        "loginUrl":             SHIB_URL + "Login?target=" + urllib.parse.quote_plus(callback_url),
+        "callbackUrl":          callback_url,
+        "sid":                  sid,
+        "stream_sub_url":       STREAM_SUBSCRIBE_URL + sid,
+        "stream_sub_lp_url":    STREAM_SUBSCRIBE_LP_URL + sid
+    })
+
+
+@api_view(['POST'])
+def login_status(request):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        sid = data["sid"]
+    except:
+        return Response({"error": "No sid supplied"})
+
+    try:
+        sid_data = ShibLoginToken.objects.get(sid=sid)
+    except:
+        return Response({"error": "Invalid sid"})
+
+    if sid_data.status == 0:
+        return Response({"success": "OK", "status": "NOT_LOGGED_IN"})
+    elif sid_data.status == 1:
+        return Response({"success": "OK", "status": "LOGGED_IN"})
+    else:
+        return Response({"success": "OK", "status": "LOGIN_ERROR"})
+
+
+def login_callback(request):
+    try:
+        eppn = request.META['eppn']
+        groups = request.META['uclIntranetGroups']
+        cn = request.META['cn']
+        sid = request.GET['sid']
+    except:
+        return HttpResponse('No Shibboleth data. This page should not be accessed directly!')
+
+    if "engscifac-ug" not in groups.split(';'):
+        login_response = {
+            "result": "failure",
+            "message": "This system is available only to members of the engineering faculty."
+            }
+    else:
+        if User.objects.filter(email=eppn).exists():
+            user = User.objects.get(email=eppn)
+        else:
+            User.objects.createuser(
+                username=eppn,
+                email=eppn,
+                password=random_string(128),
+                first_name=cn,
+                last_name=cn
+            )
+            user = User.objects.get(email=eppn)
+            up = UserProfile(user=user)
+            up.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        token.save()
+
+        login_response = {
+            "result": "success",
+            "message": "Login successful",
+            "email": user.email,
+            "quota_left": user.user_profile.quota_left,
+            'token': token.key,
+            "societies": [
+                [k.user.first_name, k.user.username] for k in
+                user.user_profile.associated_society.all()
+            ],
+            "groups": [k.name for k in user.groups.all()]
+        }
+
+        url = STREAM_PUBLISH_URL + "/" + sid
+        data = urllib.parse.urlencode(login_response)
+        data = data.encode('ascii')
+        req = urllib.request.Request(url, data)
+        with urllib.request.urlopen(req) as response:
+            content = response.read()
+            print("Received " + content + " from publish URL")
+
+    return Response(login_response)
+
+
 @api_view(['GET'])
 def password_changed_successfully(request):
     return Response({"success": "thanks bud"})
