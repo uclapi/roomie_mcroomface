@@ -109,7 +109,7 @@ module.exports = withRouter(React.createClass({
             key={i}
             time={i + 8}
             taken={taken}
-            date={this.props.date.format('YYYYMMDD')}
+            date={this.props.date.format('YYYY[-]MM[-]DD')}
             roomId={this.props.roomId}/>
         })}
       </div>
