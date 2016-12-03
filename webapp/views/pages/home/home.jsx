@@ -15,7 +15,10 @@ module.exports = React.createClass({
               <h1>Welcome to the Engineering Hub</h1>
               {auth.loggedIn()?
                 (<Link className="button" to="/rooms">Book a room now</Link>):
-                (<p>If you're an undergraduate student part of the engineering faculty you can click the button above to log in and start booking rooms.</p>)
+                (<div>
+                  <Link className="button" to="/login">Sign in</Link>
+                  <p>If you're an undergraduate student part of the engineering faculty you can click the button above to log in and start booking rooms.</p>
+                </div>)
               }
             </div>
             <div className="pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3"></div>

@@ -33122,10 +33122,14 @@ module.exports = _react2.default.createClass({
               { className: 'button', to: '/rooms' },
               'Book a room now'
             ) : _react2.default.createElement(
+              _reactRouter.Link,
+              { className: 'button', to: '/login' },
+              'Login'
+            )(_react2.default.createElement(
               'p',
               null,
               'If you\'re an undergraduate student part of the engineering faculty you can click the button above to log in and start booking rooms.'
-            )
+            ))
           ),
           _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
         )
