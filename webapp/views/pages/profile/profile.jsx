@@ -190,21 +190,25 @@ module.exports = withRouter(React.createClass({
                 <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered">
                   <h2>{this.state.profile.email}</h2>
                   <h3>Time left this week: {this.state.profile.quota_left} minutes</h3>
-                  <h3>Societies you belong to</h3>
-                  <ul>
-                    {this.state.profile.societies.map((society, i)=>{
-                      return <li key={i}>
-                        {society[0]} 
-                        {localStorage.g4?(
-                          society[2]?( ' API Key: ' +society[2]):
-                            (<button className="pure-button" onClick={() => this.getToken(society[1])}>
-                              Get API Key
-                            </button>)
-                        ):null}
-                        <hr/>
-                      </li>;
-                    })}
-                  </ul>
+                  {this.state.profile.societies.length === 0?(null):(
+                    <div>
+                      <h3>You are a committee member of the following societies</h3>
+                      <ul>
+                        {this.state.profile.societies.map((society, i)=>{
+                          return <li key={i}>
+                            {society[0]} 
+                            {localStorage.g4?(
+                              society[2]?( ' API Key: ' +society[2]):
+                                (<button className="pure-button" onClick={() => this.getToken(society[1])}>
+                                  Get API Key
+                                </button>)
+                            ):null}
+                            <hr/>
+                          </li>;
+                        })}
+                      </ul>
+                      </div>
+                  )}
                   {localStorage.g4?(
                     <form className="pure-form">
                       <fieldset>

@@ -19,9 +19,9 @@ module.exports = function(){
 //    .pipe(stripDebug())
     .pipe(uglify())
     .on('error', gutil.log)
-    .pipe(gulp.dest('./dist/js/'));
+    .pipe(gulp.dest('./production/js/'));
   gulp.src('./views/index.less')
     .pipe(less())
     .pipe(cleanCSS())
-    .pipe(gulp.dest('./dist/css/'));
+    .pipe(gulp.dest('./production/css/'));
 };

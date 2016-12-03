@@ -108,7 +108,7 @@ module.exports = withRouter(React.createClass({
   render: function() {
     return (
       <Layout title="Login">
-        <button className="pure-button pure-button-primary loginButton" onClick={this.login}>Login throught UCL</button>
+        <button className="pure-button pure-button-primary loginButton" onClick={this.login}>Login through UCL</button>
       </Layout>
     );
   }
