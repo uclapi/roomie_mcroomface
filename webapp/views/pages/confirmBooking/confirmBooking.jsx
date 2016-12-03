@@ -15,7 +15,6 @@ module.exports = withRouter(React.createClass({
     params: React.PropTypes.object,
     roomId: React.PropTypes.string,
     dateTime: React.PropTypes.string
-
   },
   bookRoom: function(society_booking){
     var that = this;
@@ -55,6 +54,7 @@ module.exports = withRouter(React.createClass({
   getInitialState:function(){
     return {
       result: '',
+      roomName: '',
       duration: 0,
       societyRoom:false,
       loading: true
@@ -85,6 +85,7 @@ module.exports = withRouter(React.createClass({
           if(room.room_id === that.props.params.roomId){
             that.setState({
               societyRoom: !room.individual_access,
+              roomName: room.room_name,
               loading: false
             });
           }
@@ -105,6 +106,7 @@ module.exports = withRouter(React.createClass({
         ):(
           <div className="pure-g">
             <div className="pure-u-1 card">
+              <h1>{this.state.roomName}</h1>
               {localStorage.g3 ? (
                 this.state.societyRoom ? (
                   <SocietyForm 

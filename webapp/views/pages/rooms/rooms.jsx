@@ -20,7 +20,6 @@ module.exports = withRouter(React.createClass({
       });
       if(res.status === 200){
         res.json().then(function(res){
-          console.log(JSON.stringify( res ));
           var rooms = [];
           for(var room of res){
             if(!room.individual_access){
@@ -31,7 +30,6 @@ module.exports = withRouter(React.createClass({
               rooms.push(room);
             }
           }
-          console.log(rooms);
           that.setState({
             rooms: rooms
           });

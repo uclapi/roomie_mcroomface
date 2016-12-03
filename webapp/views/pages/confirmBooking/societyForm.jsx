@@ -78,7 +78,6 @@ module.exports = React.createClass({
   render: function(){
     return ( 
       <div className="societyForm">
-        <h1>{this.props.roomId}</h1>
         <p>Date: {moment(this.props.dateTime).format('dddd Do MMMM')}</p>
         <p>Time: {moment(this.props.dateTime).format('kk:mm')}</p>
         <form className="pure-form pure-form-stacked" onSubmit={this.submitForm}>
