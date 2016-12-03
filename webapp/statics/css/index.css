@@ -320,6 +320,15 @@ p {
   list-style: none;
   padding: 0;
 }
+.profile form input {
+  margin: 5px;
+}
+.profile form select {
+  margin: 5px;
+}
+.profile form button {
+  margin: 5px;
+}
 #eventName {
   margin: auto;
 }

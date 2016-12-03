@@ -31951,13 +31951,15 @@ var _exports = {
     }
     return '';
   },
-  authenticatedRequest: function authenticatedRequest(url, method, context) {
-    fetch(_config2.default.domain + url, {
+  authenticatedRequest: function authenticatedRequest(url, method, context, data) {
+    return fetch(_config2.default.domain + url, {
       method: method,
       headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Token ' + this.getCookie('token')
       },
-      mode: 'cors'
+      mode: 'cors',
+      body: data
     }).then(function (res) {
       if (res.status === 200) {
         return res.json();
@@ -32535,7 +32537,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
             key: i,
             time: i + 8,
             taken: taken,
-            date: _this.props.date.format('YYYYMMDD'),
+            date: _this.props.date.format('YYYY[-]MM[-]DD'),
             roomId: _this.props.roomId });
         })
       ),
@@ -33088,11 +33090,14 @@ var _layout = require('../../components/layout.jsx');
 
 var _layout2 = _interopRequireDefault(_layout);
 
+var _auth = require('../../../utils/auth.js');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
-  displayName: 'exports',
-
+  displayName: 'Home',
   render: function render() {
     return _react2.default.createElement(
       _layout2.default,
@@ -33112,10 +33117,14 @@ module.exports = _react2.default.createClass({
               null,
               'Welcome to the Engineering Hub'
             ),
-            _react2.default.createElement(
+            _auth2.default.loggedIn() ? _react2.default.createElement(
               _reactRouter.Link,
               { className: 'button', to: '/rooms' },
               'Book a room now'
+            ) : _react2.default.createElement(
+              'p',
+              null,
+              'If you\'re an undergraduate student part of the engineering faculty you can click the button above to log in and start booking rooms.'
             )
           ),
           _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
@@ -33135,24 +33144,30 @@ module.exports = _react2.default.createClass({
               'div',
               { className: 'card' },
               _react2.default.createElement(
-                'h2',
-                null,
-                'What?'
-              ),
-              _react2.default.createElement(
                 'p',
                 null,
-                'The engineering hub is a new bookable space only for engineering students and members of societies related to the engineering department. Here engineers are free to do whatever they want, which will mostly involve lots of maths and programming probably...'
+                'The Engineering Hub is a new student hub that opened in October 2016. It\'s located in the Henry Morley Building. The space is open to all students in undergraduate engineering and all members of engineering related student societies. The hub includes 2 large social working spaces and 5 group work rooms.'
               ),
               _react2.default.createElement(
                 'h2',
                 null,
-                'Where?'
+                'Map'
+              ),
+              _react2.default.createElement('iframe', { src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.4189593493284!2d-0.13415328422942108!3d51.52387507963791!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTHCsDMxJzI1LjkiTiAwwrAwNyc1NS4xIlc!5e0!3m2!1sen!2sus!4v1480692047899', width: '100%', height: '500vw', frameBorder: '0', style: { border: 0 }, allowFullScreen: true }),
+              _react2.default.createElement(
+                'h2',
+                null,
+                'Directions'
               ),
               _react2.default.createElement(
                 'p',
                 null,
-                'Its hidden away round the back of the church becuase no one else wants to interact with engineers.'
+                'Get detailed directions ',
+                _react2.default.createElement(
+                  'a',
+                  { href: 'http://www.ucl.ac.uk/maps/henry-morley-building' },
+                  'here.'
+                )
               )
             )
           ),
@@ -33163,7 +33178,7 @@ module.exports = _react2.default.createClass({
   }
 });
 
-},{"../../components/layout.jsx":251,"react":244,"react-router":85}],260:[function(require,module,exports){
+},{"../../../utils/auth.js":248,"../../components/layout.jsx":251,"react":244,"react-router":85}],260:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -33428,14 +33443,13 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       _react2.default.createElement(
         'button',
         { className: 'pure-button pure-button-primary loginButton', onClick: this.login },
-        'Login throught UCL'
+        'Login through UCL'
       )
     );
   }
 }));
 
 },{"../../../utils/auth.js":248,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"react":244,"react-router":85,"whatwg-fetch":247}],262:[function(require,module,exports){
-(function (process){
 'use strict';
 
 var _react = require('react');
@@ -33584,11 +33598,54 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
       }
     });
   },
+  addSocietyMember: function addSocietyMember(e) {
+    e.preventDefault();
+    fetch(_config2.default.domain + '/api/v1/society.addUser/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
+      },
+      mode: 'cors',
+      body: 'username=' + this.refs.username.value + '&society_id=' + this.refs.society.value
+    }).then(function (res) {
+      if (res.status == 200) {
+        res.json().then(function (json) {
+          console.log(json);
+          if (json.error) {
+            alert(json.error);
+          } else {
+            alert(json.success);
+          }
+        });
+      }
+    });
+  },
+  removeSocietyMember: function removeSocietyMember(e) {
+    e.preventDefault();
+    fetch(_config2.default.domain + '/api/v1/society.deleteUser/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Token ' + _utils2.default.getCookie('token')
+      },
+      mode: 'cors',
+      body: 'username=' + this.refs.username.value + '&society_id=' + this.refs.society.value
+    }).then(function (res) {
+      if (res.status == 200) {
+        res.json().then(function (json) {
+          if (json.error) {
+            alert(json.error);
+          } else {
+            alert(json.success);
+          }
+        });
+      }
+    });
+  },
   componentDidMount: function componentDidMount() {
     this.getUserInfo();
     this.getBookings();
-    console.log(_config2.default.domain);
-    console.log(process.env.NODE_ENV);
   },
   render: function render() {
     var _this = this;
@@ -33625,29 +33682,69 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
                 this.state.profile.quota_left,
                 ' minutes'
               ),
-              _react2.default.createElement(
-                'h3',
+              this.state.profile.societies.length === 0 ? null : _react2.default.createElement(
+                'div',
                 null,
-                'Societies you belong to'
+                _react2.default.createElement(
+                  'h3',
+                  null,
+                  'You are a committee member of the following societies'
+                ),
+                _react2.default.createElement(
+                  'ul',
+                  null,
+                  this.state.profile.societies.map(function (society, i) {
+                    return _react2.default.createElement(
+                      'li',
+                      { key: i },
+                      society[0],
+                      localStorage.g4 ? society[2] ? ' API Key: ' + society[2] : _react2.default.createElement(
+                        'button',
+                        { className: 'pure-button', onClick: function onClick() {
+                            return _this.getToken(society[1]);
+                          } },
+                        'Get API Key'
+                      ) : null,
+                      _react2.default.createElement('hr', null)
+                    );
+                  })
+                )
               ),
-              _react2.default.createElement(
-                'ul',
-                null,
-                this.state.profile.societies.map(function (society, i) {
-                  return _react2.default.createElement(
-                    'li',
-                    { key: i },
-                    society[0],
-                    localStorage.g4 ? society[2] ? ' API Key: ' + society[2] : _react2.default.createElement(
-                      'button',
-                      { className: 'pure-button', onClick: function onClick() {
-                          return _this.getToken(society[1]);
-                        } },
-                      'Get API Key'
-                    ) : null
-                  );
-                })
-              )
+              localStorage.g4 ? _react2.default.createElement(
+                'form',
+                { className: 'pure-form' },
+                _react2.default.createElement(
+                  'fieldset',
+                  null,
+                  _react2.default.createElement(
+                    'legend',
+                    null,
+                    'Add/remove someone from a society'
+                  ),
+                  _react2.default.createElement('input', { id: 'username', ref: 'username', type: 'text', placeholder: 'Username' }),
+                  _react2.default.createElement(
+                    'select',
+                    { id: 'society', ref: 'society' },
+                    this.state.profile.societies.map(function (society, i) {
+                      return _react2.default.createElement(
+                        'option',
+                        { id: i, value: society[1] },
+                        society[0]
+                      );
+                    })
+                  ),
+                  _react2.default.createElement(
+                    'button',
+                    { className: 'pure-button pure-button-primary', onClick: this.addSocietyMember },
+                    'Add'
+                  ),
+                  _react2.default.createElement(
+                    'button',
+                    { className: 'pure-button pure-button-primary', onClick: this.removeSocietyMember },
+                    'Remove'
+                  )
+                )
+              ) : null
             ),
             _react2.default.createElement('div', { className: 'pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3' })
           ),
@@ -33710,9 +33807,7 @@ module.exports = (0, _reactRouter.withRouter)(_react2.default.createClass({
   }
 }));
 
-}).call(this,require('_process'))
-
-},{"../../../config.js":1,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"_process":53,"moment":51,"react":244,"react-router":85,"whatwg-fetch":247}],263:[function(require,module,exports){
+},{"../../../config.js":1,"../../../utils/utils.js":249,"../../components/layout.jsx":251,"moment":51,"react":244,"react-router":85,"whatwg-fetch":247}],263:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
