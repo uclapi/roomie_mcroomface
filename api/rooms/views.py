@@ -1,7 +1,7 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
 from .models import Booking, BookingSociety, UserProfile, Room, Verifier, \
-    ShibLoginToken
+    ShibLoginToken, WhiteList
 
 import datetime
 import pytz
@@ -237,7 +237,10 @@ def login_callback(request):
         return HttpResponse(
             'No Shibboleth data. This page should not be accessed directly!')
 
-    if "engscifac-ug" not in groups.split(';'):
+    # check if the user is in the internal whitelist
+    white_listed = WhiteList.objects.filter(eppn=eppn).exists()
+
+    if "engscifac-ug" not in groups.split(';') and not white_listed:
         login_response = {
             "result": "failure",
             "message": ("This system is available only"
@@ -590,7 +593,7 @@ def delete_booking(request):
 
     booking_time = datetime.datetime.combine(booking.date, booking.start)
 
-    if booking_time > datetime.datetime.now():
+    if datetime.datetime.now() - booking_time > datetime.timedelta(hours=6):
         minutes = (
             datetime.datetime.combine(datetime.date.today(), booking.end) -
             datetime.datetime.combine(datetime.date.today(), booking.start))
