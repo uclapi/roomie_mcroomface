@@ -587,6 +587,16 @@ def delete_booking(request):
     if request.user.user_profile != booking.user:
         return Response(
             {"error": "The booking does not belong to you."})
+
+    booking_time = datetime.datetime.combine(booking.date, booking.start)
+
+    if booking_time > datetime.datetime.now():
+        minutes = (
+            datetime.datetime.combine(datetime.date.today(), booking.end) -
+            datetime.datetime.combine(datetime.date.today(), booking.start))
+        booking.user.quota_left += minutes.seconds // 60
+        booking.user.save()
+
     booking.delete()
     return Response({"success": True})
 
