@@ -24,7 +24,6 @@ class UserProfile(models.Model):
     department = models.CharField(max_length=100, default="No Department")
 
 
-
 class Booking(models.Model):
     booking_id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -55,7 +54,7 @@ class Verifier(models.Model):
 
 
 class WhiteList(models.Model):
-    eppn = models.CharField(max_length=100)       
+    eppn = models.CharField(max_length=100)
 
 
 class ShibLoginToken(models.Model):
