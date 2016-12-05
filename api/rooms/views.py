@@ -474,8 +474,7 @@ def _book_room(current_user, room, dateOfSearch, start_time,
         if (minutes.seconds // 60) > current_user.quota_left:
             return Response({"error": "You do not have enough quota left."})
         else:
-            hour_offset = end_time.hour - start_time.hour
-            current_user.quota_left -= ((minutes.seconds // 60) + hour_offset)
+            current_user.quota_left -= (minutes.seconds // 60 + 1)
             current_user.save()
 
     if is_society_booking:
@@ -598,8 +597,7 @@ def delete_booking(request):
         minutes = (
             datetime.datetime.combine(datetime.date.today(), booking.end) -
             datetime.datetime.combine(datetime.date.today(), booking.start))
-        hour_offset = booking.end.hour - booking.start.hour
-        booking.user.quota_left += (minutes.seconds // 60 + hour_offset)
+        booking.user.quota_left += (minutes.seconds // 60 + 1)
         booking.user.save()
 
     booking.delete()
