@@ -29,18 +29,18 @@ information required to listen for a successful login taking place.
 None.
 
 ```shell
-curl https://enghub.io/user.login.status/
+curl https://enghub.io/api/v1/user.login.status/
 ```
 
 ```python
 import requests
 
-requests.get("https://enghub.io/user.login.status/")
+requests.get("https://enghub.io/api/v1/user.login.status/")
 ```
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://enghub.io/user.login.status/', true);
+xhr.open('GET', 'https://enghub.io/api/v1/user.login.status/', true);
 xhr.send();
 
 // response from the server
@@ -76,7 +76,7 @@ Field | Type | Description
 sid | `String` | Session ID for which we want the user to be logged in.
 
 ```shell
-curl --data "sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd" https://enghub.io/user.login.status/
+curl --data "sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd" https://enghub.io/api/v1/user.login.status/
 ```
 
 ```python
@@ -84,12 +84,12 @@ import requests
 
 data = {"sid": "shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd"}
 
-requests.post("https://enghub.io/user.login.status/", data=data)
+requests.post("https://enghub.io/api/v1/user.login.status/", data=data)
 ```
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'https://enghub.io/user.login.status/', true);
+xhr.open('POST', 'https://enghub.io/api/v1/user.login.status/', true);
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send('sid=shibpescvktqatuvacymiwxhewsrrvsybexcijjpskcrcvngylmquwszbbtoujpd');
 
@@ -122,19 +122,19 @@ This endpoint returns a list of all the rooms available in the Engineering hub.
 ## Query Parameters
 
 ```shell
-curl https://enghub.io/rooms.list/ -H 'Authorization: Token <auth_token_here>'
+curl https://enghub.io/api/v1/rooms.list/ -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
 import requests
 
-r = requests.get("https://enghub.io/rooms.list/", headers={"Authorization": "Token 57087bd9cc3cde97515a66bc0b58d29696063fd5"})
+r = requests.get("https://enghub.io/api/v1/rooms.list/", headers={"Authorization": "Token 57087bd9cc3cde97515a66bc0b58d29696063fd5"})
 ```
 
 ```javascript
 // token
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/rooms.list/", true);
+xhr.open('GET', "https://enghub.io/api/v1/rooms.list/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -182,7 +182,7 @@ This endpoint returns the timetable for the room on a given day.
 ## Parameters
 
 ```shell
-curl "https://enghub.io/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
+curl "https://enghub.io/api/v1/rooms.bookings/?room_id=RO-PIZZA&date=20160808" -H 'Authorization: Token <auth_token_here>'
 ```
 ```python
 import requests
@@ -190,7 +190,7 @@ import requests
 params = {"room_id": "RO-PIZZA", "date": "20160808"}
 
 # You can use both methods for authentication here
-r = requests.get("https://enghub.io/rooms.bookings/", params=params, headers=headers)
+r = requests.get("https://enghub.io/api/v1/rooms.bookings/", params=params, headers=headers)
 
 ```
 
@@ -198,7 +198,7 @@ r = requests.get("https://enghub.io/rooms.bookings/", params=params, headers=hea
 
 // headers
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/rooms.bookings/?room_id=RO-PIZZA&date=20160808", true);
+xhr.open('GET', "https://enghub.io/api/v1/rooms.bookings/?room_id=RO-PIZZA&date=20160808", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -248,7 +248,7 @@ This end point allows the user to book rooms available to everybody.
 **Allowed request type:** `POST`
 
 ```shell
-curl https://enghub.io/rooms.book/
+curl https://enghub.io/api/v1/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event"
     -H 'Authorization: Token <auth_token_here>'   
 ```
@@ -275,7 +275,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'https://enghub.io/rooms.book/', true);
+xhr.open('POST', 'https://enghub.io/api/v1/rooms.book/', true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&notes=this is an event");
@@ -325,7 +325,7 @@ This endpoint allows society presidents or authorised members to book special so
 **Allowed request type:** `POST`  
 
 ```shell
-curl https://enghub.io/rooms.book/
+curl https://enghub.io/api/v1/rooms.book/
     --data "room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC"
     -H 'Authorization: Token <auth_token_here>'
 ```
@@ -348,7 +348,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', 'https://enghub.io/rooms.book/', true);
+xhr.open('POST', 'https://enghub.io/api/v1/rooms.book/', true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("room_id=RO-POO&date=20160808&start_time=15:00&end_time=17:00&event_name=techandtell&society=SOTECHSOC");
@@ -395,7 +395,7 @@ This endpoint shows all the rooms the logged-in user has booked.
 
 
 ```shell
-curl https://enghub.io/user.bookings/?date=20160808 -H 'Authorization: Token <auth_token_here>'
+curl https://enghub.io/api/v1/user.bookings/?date=20160808 -H 'Authorization: Token <auth_token_here>'
 
 ```
 
@@ -412,7 +412,7 @@ r = requests.get(url, params=params)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/user.bookings/?date=20160808", true);
+xhr.open('GET', "https://enghub.io/api/v1/user.bookings/?date=20160808", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -464,7 +464,7 @@ This endpoint allows a society president to access a token which can be then use
 
 
 ```shell
-curl https://enghub.io/society.token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>'
+curl https://enghub.io/api/v1/society.token/?society_id=SOTECHSOC -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -480,7 +480,7 @@ r = requests.get(url, params={"society_id":"SOTECHSOC"}, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/society.token?society_id=SOTECHSOC", true);
+xhr.open('GET', "https://enghub.io/api/v1/society.token?society_id=SOTECHSOC", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -539,7 +539,7 @@ r = requests.get(url, params=params, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1", true);
+xhr.open('GET', "https://enghub.io/api/v1/rooms.deleteBooking/?booking_id=21cf0a17-4b64-4a5f-9a0e-9381d4195af1", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
@@ -579,7 +579,7 @@ This endpoint allows society presidents to give access to other students and all
 **Allowed request type:** `POST`  
 
 ```shell
-curl --data "username=rema&society_id=SOTECHSOC" https://enghub.io/society.addUser/ -H 'Authorization: Token <auth_token_here>'
+curl --data "username=rema&society_id=SOTECHSOC" https://enghub.io/api/v1/society.addUser/ -H 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -599,7 +599,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', "https://enghub.io/society.addUser/", true);
+xhr.open('POST', "https://enghub.io/api/v1/society.addUser/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("username=rema&society_id=SOTECHSOC");
@@ -632,7 +632,7 @@ This endpoint removes user from group3, denying them society room booking powers
 
 
 ```shell
-curl --data "username=rema&society_id=SOTECHSOC" https://enghub.io/society.deleteUser/ 'Authorization: Token <auth_token_here>'
+curl --data "username=rema&society_id=SOTECHSOC" https://enghub.io/api/v1/society.deleteUser/ 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -648,7 +648,7 @@ r = requests.post(url, data=data, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('POST', "https://enghub.io/society.deleteUser/", true);
+xhr.open('POST', "https://enghub.io/api/v1/society.deleteUser/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 xhr.send("username=rema&society_id=SOTECHSOC");
@@ -680,7 +680,7 @@ This end point logs a user out of the API so they can no longer make requests. T
 **Allowed request types:** `GET`  
 
 ```shell
-curl https://enghub.io/user.logout/ 'Authorization: Token <auth_token_here>'
+curl https://enghub.io/api/v1/user.logout/ 'Authorization: Token <auth_token_here>'
 ```
 
 ```python
@@ -691,7 +691,7 @@ r = requests.get(url, headers=headers)
 
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.open('GET', "https://enghub.io/user.logout/", true);
+xhr.open('GET', "https://enghub.io/api/v1/user.logout/", true);
 xhr.setRequestHeader('Authorization', 'Token <auth_token_here>');
 xhr.send();
 
