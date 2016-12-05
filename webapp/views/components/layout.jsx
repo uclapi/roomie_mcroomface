@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router';
+import {Link, withRouter} from 'react-router';
 import Sidebar from './sidebar.jsx';
 import auth from '../../utils/auth.js';
 
-module.exports = React.createClass({
+module.exports = withRouter(React.createClass({
 
   getInitialState: function() {
     return {
@@ -17,7 +17,7 @@ module.exports = React.createClass({
     var app = document.getElementById('app');
     this.toggleClass(container, 'sidebar-open');
   },
-  
+
   toggleClass: function(element, className) {
     var classes = element.className.split(' ');
     var length = classes.length;
@@ -40,6 +40,7 @@ module.exports = React.createClass({
     e.preventDefault();
     auth.logout();
     this.setState({loggedIn: false}); 
+    this.props.router.replace('/');
   },
 
   render: function() {
@@ -65,14 +66,14 @@ module.exports = React.createClass({
                   <Link className="button" id="top-right" to="/login" >Sign In</Link>
                   )}
                 </div>
-            </div>
+              </div>
 
-            <div className="content centered">
-              {this.props.children}
+              <div className="content centered">
+                {this.props.children}
+              </div>
+              <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
             </div>
-            <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
           </div>
-      </div>
-    );
+           );
   }
-});
+}));
