@@ -62,7 +62,7 @@ module.exports = withRouter(React.createClass({
           <div className="pure-g">
             <div className="pure-u-1">
               <div className="card">
-                <img className="pure-img" style={{maxHeight: "600px", margin: "auto"}} src="/img/blueprint.png"/>
+                <img className="pure-img" style={{maxHeight: "600px", margin: "auto"}} src="/img/EngHubLayout.jpg"/>
               </div>
             </div>
             {this.state.rooms.map((room, i) =>{

@@ -89,7 +89,7 @@ module.exports = React.createClass({
               <div className="pure-button" onClick={this.addDay}>&gt;</div>
               <div className="pure-g">
                 <div className="pure-u-1-7">
-                  <DayView date={this.state.date} rightBorder={true} roomId={this.props.params.roomId} callback={this.updateLoading}/>
+                  <DayView date={this.state.date.clone().add(0, 'day')} rightBorder={true} roomId={this.props.params.roomId} callback={this.updateLoading}/>
                 </div>
                 <div className="pure-u-1-7">
                   <DayView date={this.state.date.clone().add(1,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
