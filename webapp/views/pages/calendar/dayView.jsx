@@ -75,13 +75,13 @@ module.exports = withRouter(React.createClass({
             if(res.status === 200){
               that.props.callback();
               res.json().then(function(json){
-                console.log(json);
                 that.setState({
                   bookings:json
+                },()=>{
+                  that.setState({
+                    slots:that.setSlots()
+                  })
                 });
-                that.setState({
-                  slots:that.setSlots()
-                })
               })
             }else{
               that.props.router.push({
@@ -99,6 +99,11 @@ module.exports = withRouter(React.createClass({
   },
   componentDidMount: function(){
     this.getBookings();
+  },
+  componentDidUpdate: function(prevProps, prevState){
+    if(this.props.date.format('YYYYMMDD') !== prevProps.date.format('YYYYMMDD')){
+      this.getBookings();
+    }
   },
   render: function() {
     return <div className={this.props.rightBorder ? "dayView rightBorder": "dayView"}>

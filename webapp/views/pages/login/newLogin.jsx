@@ -16,7 +16,7 @@ module.exports = withRouter(React.createClass({
     return{
       error: false,
       loading: false, 
-			win: null
+      win: null,
     };
   },
   setVisible: function(){
@@ -75,7 +75,7 @@ module.exports = withRouter(React.createClass({
   login: function(){
 		this.setState({
       win: window.open()
-    })	
+    });
     var that = this;
     fetch('https://enghub.io/api/v1/user.login.getToken/', {
       method: 'GET',
@@ -98,7 +98,6 @@ module.exports = withRouter(React.createClass({
         tagArgument: 'tag',
         timeArgument: 'time',
         timeout: 30000,
-        messagesPublishedAfter: 5,
         urlPrefixLongpolling: '/api/v1/push.subscribe_longpoll'
 			});
 			pushstream.onmessage = that.messageReceived;
