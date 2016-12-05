@@ -38,14 +38,15 @@ module.exports = {
     fetch(config.domain + '/api/v1/user.logout/', {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + localStorage.token
+        'Authorization': 'Token ' + utils.getCookie('token')
       },
       mode: 'cors'
+    }).then(()=>{
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
+      delete localStorage.g3;
+      delete localStorage.g4;
+      if (cb) cb();
     });
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
-    delete localStorage.g3;
-    delete localStorage.g4;
-    if (cb) cb();
   },
 
   loggedIn() {

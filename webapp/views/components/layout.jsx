@@ -38,9 +38,10 @@ module.exports = withRouter(React.createClass({
 
   logout: function(e){
     e.preventDefault();
-    auth.logout();
-    this.setState({loggedIn: false}); 
-    this.props.router.replace('/');
+    auth.logout(() => {
+      this.setState({loggedIn: false}); 
+      this.props.router.replace('/');
+    });
   },
 
   render: function() {

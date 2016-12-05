@@ -69,6 +69,8 @@ module.exports = withRouter(React.createClass({
     } else {
       this.props.router.replace('/');
     }
+
+    this.state.stream.disconnect();
   },
   login: function(){
 		this.setState({
@@ -99,10 +101,12 @@ module.exports = withRouter(React.createClass({
         messagesPublishedAfter: 5,
         urlPrefixLongpolling: '/api/v1/push.subscribe_longpoll'
 			});
-
 			pushstream.onmessage = that.messageReceived;
 			pushstream.addChannel(json.sid);
 			pushstream.connect();  
+      that.setState({
+        stream: pushstream
+      });
     });
   },
   render: function() {
