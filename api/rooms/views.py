@@ -594,7 +594,7 @@ def delete_booking(request):
 
     booking_time = datetime.datetime.combine(booking.date, booking.start)
 
-    if datetime.datetime.now() - booking_time > datetime.timedelta(hours=6):
+    if booking_time - datetime.datetime.now() > datetime.timedelta(hours=6):
         minutes = (
             datetime.datetime.combine(datetime.date.today(), booking.end) -
             datetime.datetime.combine(datetime.date.today(), booking.start))
