@@ -598,7 +598,8 @@ def delete_booking(request):
         minutes = (
             datetime.datetime.combine(datetime.date.today(), booking.end) -
             datetime.datetime.combine(datetime.date.today(), booking.start))
-        booking.user.quota_left += minutes.seconds // 60
+        hour_offset = booking.end.hour - booking.start.hour
+        booking.user.quota_left += (minutes.seconds // 60 + hour_offset)
         booking.user.save()
 
     booking.delete()
