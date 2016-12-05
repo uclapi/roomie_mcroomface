@@ -475,7 +475,7 @@ def _book_room(current_user, room, dateOfSearch, start_time,
             return Response({"error": "You do not have enough quota left."})
         else:
             hour_offset = end_time.hour - start_time.hour
-            current_user.quota_left -= (minutes.seconds // 60) - hour_offset
+            current_user.quota_left -= ((minutes.seconds // 60) + hour_offset)
             current_user.save()
 
     if is_society_booking:
