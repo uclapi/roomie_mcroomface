@@ -561,6 +561,7 @@ def get_users_booking(request):
             "end": booking.end,
             "booking_id": booking.booking_id,
             "date": booking.date,
+            "room_name": booking.room.name,
             "notes": booking.remarks if isinstance(booking, Booking) else
             booking.remarks + " -" + booking.society.user.first_name
         })
