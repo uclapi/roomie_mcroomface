@@ -234,6 +234,7 @@ module.exports = withRouter(React.createClass({
                 {this.state.bookings.map((booking, i) => {
                   return <div key={i} className="pure-u-1 pure-u-sm-1-2 pure-u-md-1-3 pure-u-lg-1-4 pure-u-xl-1-5">
                     <div className="card centered">
+                      <h2>{booking.room_name}</h2>
                       <h2>{moment(booking.date).format('ddd Do MMM')}</h2>
                       <h3>Start time: {booking.start}</h3>
                       <h3>End time: {booking.end}</h3>
