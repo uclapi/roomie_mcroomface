@@ -69,14 +69,26 @@ module.exports = React.createClass({
     this.getRoomName();
   },
   render: function() {
+    var days = [];
+    for(var i = 0; i < 7; i++){
+      var date = this.state.date.clone().add(i, 'day');
+      var day = date.format('ddd');
+      if(day !== 'Sat' && day !== 'Sun'){
+        days.push(
+          <div className="pure-u-1-5">
+            <DayView date={date} rightBorder={i!==6} roomId={this.props.params.roomId} callback={this.updateLoading}/>
+          </div>
+        );
+      }
+    }
     return (
       <Layout title="Calendar">
-        {this.state.loading < 7 ? (
+        {this.state.loading < 6 ? (
           <div className="spinnerContainer">
             <div className="spinner"></div>
           </div>
         ):(<div></div>)}
-        <div className="pure-g calendar" hidden={this.state.loading < 8 ? true:false}>
+        <div className="pure-g calendar" hidden={this.state.loading < 6 ? true:false}>
           <div className="pure-u-sm-1-12"></div>
           <div className="pure-u-1 pure-u-sm-20-24 centered">
             <div className="card">
@@ -88,29 +100,8 @@ module.exports = React.createClass({
               <div className="pure-button" onClick={this.today}>Today</div>
               <div className="pure-button" onClick={this.addDay}>&gt;</div>
               <div className="pure-g">
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(0, 'day')} rightBorder={true} roomId={this.props.params.roomId} callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(1,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(2,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(3,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(4,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(5,'day')} rightBorder={true}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
-                <div className="pure-u-1-7">
-                  <DayView date={this.state.date.clone().add(6,'day')} rightBorder={false}roomId={this.props.params.roomId}callback={this.updateLoading}/>
-                </div>
+                {days}
               </div>
-
             </div>
           </div>
           <div className="pure-u-sm-1-12"></div>
