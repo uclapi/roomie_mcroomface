@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-
 module.exports = React.createClass({
   displayName: 'Sidebar',
   render:function () {
     return (
-      <div className="sideBar">
+      <div className={ 'sideBar ' + (this.props.open ? '' : 'closed')}>
         <div className="pure-menu">
           <Link className="pure-menu-heading" to="/">Engineering Hub</Link>
           <ul className="pure-menu-list">

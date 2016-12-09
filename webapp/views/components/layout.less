@@ -1,13 +1,17 @@
 @import '../constants.less';
 
+html {
+  overflow-x: hidden;
+}
+
 .container{
   position: relative;
   left: 0px;
-  -webkit-transition:  left 0.4s ease-in-out;
-  -moz-transition:  left 0.4s ease-in-out;
-  -ms-transition:  left 0.4s ease-in-out;
-  -o-transition:  left 0.4s ease-in-out;
-  transition:  left 0.4s ease-in-out;
+  -webkit-transition:  all 0.4s ease-in-out;
+  -moz-transition:  all 0.4s ease-in-out;
+  -ms-transition:  all 0.4s ease-in-out;
+  -o-transition:  all 0.4s ease-in-out;
+  transition:  all 0.4s ease-in-out;
   height: ~"calc(100% - 60px)";
   width: 100%;
 
@@ -29,14 +33,14 @@
       left: 0px;
       top:0px;
       width: 100%;
-     .BoxShadowHelper(2); 
+     .BoxShadowHelper(2);
 
      h1{
        margin: .17em 0;
        color: white;
      }
     }
-    
+
     .love{
       display: none;
       position: fixed;
@@ -48,12 +52,12 @@
       }
 
       a{
-        color: @primaryColour; 
+        color: @primaryColour;
         text-decoration: none;
       }
     }
   }
-  
+
   .content{
     padding-top: 60px;
   }
@@ -63,4 +67,3 @@
 .sidebar-open{
   left: @sideBarWidth;
 }
-

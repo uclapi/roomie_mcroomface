@@ -7,47 +7,26 @@ module.exports = withRouter(React.createClass({
 
   getInitialState: function() {
     return {
-      loggedIn: auth.loggedIn()
+      loggedIn: auth.loggedIn(),
+      open: false,
     };
   },
-
   handleClick: function(e){
     e.preventDefault();
-    var container = document.getElementById('app-container');
-    var app = document.getElementById('app');
-    this.toggleClass(container, 'sidebar-open');
+    this.setState({loggedIn: this.state.loggedIn, open: !this.state.open});
   },
-
-  toggleClass: function(element, className) {
-    var classes = element.className.split(' ');
-    var length = classes.length;
-
-    for(var i = 0; i < length; i++){
-      if(classes[i] === className) {
-        classes.splice(i, 1);
-        break;
-      }
-    }
-
-    if(length === classes.length){
-      classes.push(className);
-    }
-
-    element.className = classes.join(' ');
-  },
-
   logout: function(e){
     e.preventDefault();
     auth.logout(() => {
-      this.setState({loggedIn: false}); 
+      this.setState({loggedIn: false});
       this.props.router.replace('/');
     });
   },
 
   render: function() {
-    return ( 
-      <div className="container" id="app-container">
-        <Sidebar />
+    return (
+      <div className={'container' + (this.state.open ? ' sidebar-open' : '')} id="app-container">
+        <Sidebar open={this.state.open}/>
         <div className="main-content">
           <div className="pure-g menu-bar">
             <div className="pure-u-1-6 pure-u-sm-1-3">
