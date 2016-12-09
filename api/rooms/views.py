@@ -528,8 +528,7 @@ def checkAvailability(room, date, start_time, end_time):
                              (list(soc_bookings) + list(normal_bookings))))
 
     for booking in booking_times:
-        if (booking[0] <= start_time <= booking[1]) or (
-                booking[0] <= end_time <= booking[1]):
+        if (start_time <= booking[1] and booking[0] <= end_time):
             return {
                 "success": False,
                 "error": {"error": "This slot has already been booked."}
