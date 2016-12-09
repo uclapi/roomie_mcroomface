@@ -170,22 +170,33 @@ p {
   }
 }
 .sideBar {
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -ms-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
   width: 240px;
-  left: -240px;
+  left: 0;
   top: 60px;
   bottom: 0px;
-  position: absolute;
+  position: fixed;
   height: 100%;
   background-color: #212121;
+}
+.closed {
+  left: -240px;
+}
+html {
+  overflow-x: hidden;
 }
 .container {
   position: relative;
   left: 0px;
-  -webkit-transition: left 0.4s ease-in-out;
-  -moz-transition: left 0.4s ease-in-out;
-  -ms-transition: left 0.4s ease-in-out;
-  -o-transition: left 0.4s ease-in-out;
-  transition: left 0.4s ease-in-out;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -ms-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
   height: calc(100% - 60px);
   width: 100%;
 }
