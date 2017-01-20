@@ -286,7 +286,8 @@ def login_callback(request):
             if t.sid != sid:
                 t.delete()
         except ShibLoginToken.DoesNotExist:
-            print("User has never tried logging in before, so there was nothing to delete. Continuing...")
+            print(("User has never tried logging in before,"
+                   " so there was nothing to delete. Continuing..."))
 
         try:
             token = ShibLoginToken.objects.get(sid=sid)
@@ -351,7 +352,8 @@ def book_room(request):
             society = request.POST["society"]
             event_name = request.POST["event_name"]
         except:
-            return Response({"error": "Could not parse the POST request data."})
+            return Response({
+                "error": "Could not parse the POST request data."})
 
         try:
             soc = User.objects.get(username=society)
@@ -390,7 +392,8 @@ def book_room(request):
             end_time = request.POST["end_time"]
             notes = request.POST["notes"]
         except:
-            return Response({"error": "Could not parse the POST request data."})
+            return Response({
+                "error": "Could not parse the POST request data."})
 
         try:
             room = Room.objects.filter(room_id=room_id, indiv_bookable=True)[0]
@@ -545,11 +548,13 @@ def checkAvailability(room, date, start_time, end_time):
 def get_users_booking(request):
 
     current_user = request.user.user_profile
-    bookings = list(Booking.objects.filter(user=current_user))
+    bookings = list(Booking.objects.filter(
+            user=current_user, date__gte=datetime.date.today()))
 
     if len(current_user.associated_society.all()):
         bookings.extend(
-            list(BookingSociety.objects.filter(user=current_user)))
+            list(BookingSociety.objects.filter(
+                user=current_user, date__gte=datetime.date.today())))
 
     # serialize the data and send it back
     retDict = []
