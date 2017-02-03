@@ -444,7 +444,7 @@ def book_a_room(request, room, date, start_time,
                 return Response(
                     {
                         "error": ("You are not allowed to book"
-                                  " more than 60 days in advance.")
+                                  " more than 90 days in advance.")
                     })
         else:
             if days_ahead > 7:
