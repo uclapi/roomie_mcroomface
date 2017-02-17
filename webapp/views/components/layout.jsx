@@ -13,7 +13,7 @@ module.exports = withRouter(React.createClass({
   },
   handleClick: function(e){
     e.preventDefault();
-    this.setState({loggedIn: this.state.loggedIn, open: !this.state.open});
+    this.setState((prevState) => ({loggedIn: prevState.loggedIn, open: !prevState.open}));
   },
   logout: function(e){
     e.preventDefault();
