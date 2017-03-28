@@ -74,3 +74,8 @@ class ShibLoginToken(models.Model):
     timestamp = models.DateTimeField(default=datetime.now)
     user = models.OneToOneField(
         User, related_name='shib_login_token', blank=True, null=True)
+
+
+class PrivateKey(models.Model):
+    user_id = models.IntegerField(primary_key=True, default=180)
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

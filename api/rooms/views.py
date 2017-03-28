@@ -1,11 +1,12 @@
 from .authentication import ExpiringTokenAuthentication, \
     ValidatingTokenAuthentication
-from .models import Booking, BookingSociety, UserProfile, Room, Verifier, \
+from .models import Booking, BookingSociety, UserProfile, Room, PrivateKey, \
     ShibLoginToken, WhiteList
 
 import datetime
 import pytz
 import json
+import uuid
 import base64
 
 import requests
@@ -692,3 +693,26 @@ def remove_user_from_group3(request):
         user.user_profile.save()
         user.save()
     return Response({"success": True})
+
+
+@api_view(['GET'])
+@authentication_classes(
+    (SessionAuthentication, ValidatingTokenAuthentication)
+)
+@permission_classes((permissions.IsAuthenticated,))
+def generate_private_key(request):
+    """
+    Generates a private key for a logged in user
+    Creates a new key for the user whenever the method is called
+    """
+    current_user = request.user
+    try:
+        private_key = PrivateKey.objects.get(user_id=current_user.id)
+        new_token = uuid.uuid4()
+        print(new_token.hex)
+        private_key.token = new_token.hex
+        private_key.save()
+    except PrivateKey.DoesNotExist:
+        return Response({"error": "User not found"})
+
+    return Response({'token': new_token.hex})
