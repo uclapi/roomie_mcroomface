@@ -1,3 +1,5 @@
+from .models import PrivateKey
+
 import datetime
 import pytz
 
@@ -32,6 +34,12 @@ class ValidatingTokenAuthentication(TokenAuthentication):
         try:
             token = model.objects.select_related('user').get(key=key)
         except:
-            raise exceptions.AuthenticationFailed('Invalid token')
+            # sessio token not valid
+            # Checking if it is the user's private key
+            try:
+                private_key = PrivateKey.objects.get(token=key)
+                return (private_key.user_id, private_key.token.hex)
+            except PrivateKey.DoesNotExist:
+                raise exceptions.AuthenticationFailed('Invalid token')
 
         return (token.user, token)
