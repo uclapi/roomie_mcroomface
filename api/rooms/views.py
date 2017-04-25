@@ -235,7 +235,7 @@ def login_callback(request):
         surname = request.META['HTTP_SN']
     except:
         return HttpResponse(
-            'No Shibboleth data. This page should not be accessed directly!')
+            'If you browsed to this page directly then please head back to the homepage and log in from there. If you are not expecting to end up here, close all your browser windows and try to log in again. If the issue persists then there may be an issue with UCL Single Sign On (Shibboleth), so please inform the administrators.')
 
     # check if the user is in the internal whitelist
     white_listed = WhiteList.objects.filter(eppn=eppn).exists()
