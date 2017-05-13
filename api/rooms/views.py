@@ -696,23 +696,44 @@ def remove_user_from_group3(request):
 
 
 @api_view(['GET'])
-@authentication_classes(
-    (SessionAuthentication, ValidatingTokenAuthentication)
-)
+@authentication_classes((SessionAuthentication, ValidatingTokenAuthentication))
 @permission_classes((permissions.IsAuthenticated,))
 def generate_private_key(request):
     """
     Generates a private key for a logged in user
     Creates a new key for the user whenever the method is called
     """
+
     current_user = request.user
+
     try:
+        # Replacing the old private key of the user
         private_key = PrivateKey.objects.get(user_id=current_user.id)
         new_token = uuid.uuid4()
-        print(new_token.hex)
         private_key.token = new_token.hex
         private_key.save()
     except PrivateKey.DoesNotExist:
+        # Creating a new private key for the user
+        new_key = PrivateKey(user_id=current_user.id)
+        new_token = uuid.uuid4()
+        new_key.token = new_token.hex
+        new_key.save()
         return Response({"error": "User not found"})
 
     return Response({'token': new_token.hex})
+
+
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, ValidatingTokenAuthentication))
+@permission_classes((permissions.IsAuthenticated,))
+def get_private_key(request):
+    """Returns the private key for the user"""
+
+    current_user = request.user
+
+    try:
+        private_key = PrivateKey.objects.get(user_id=current_user.id)
+    except PrivateKey.DoesNotExist:
+        return Response({"error": "User hasn't generated a private key"})
+
+    return Response({'token': private_key.token})

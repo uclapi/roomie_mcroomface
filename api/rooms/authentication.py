@@ -31,10 +31,11 @@ class ExpiringTokenAuthentication(TokenAuthentication):
 class ValidatingTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         model = self.get_model()
+        
         try:
             token = model.objects.select_related('user').get(key=key)
         except:
-            # sessio token not valid
+            # Session token is not valid
             # Checking if it is the user's private key
             try:
                 private_key = PrivateKey.objects.get(token=key)

@@ -8,7 +8,8 @@ urlpatterns = [
     url(r'^v1/user.logout/$', views.logout_view),
     url(r'^v1/user.bookings/$', views.get_users_booking),
     url(r'^v1/user.info/$', views.get_user_meta_data),
-    url(r'^v1/user.privateKey/$', views.generate_private_key),
+    url(r'^v1/user.generateKey/$', views.generate_private_key),
+    url(r'^v1/user.privateKey/$', views.get_private_key),
 
     url(r'^v1/rooms.list/$', views.get_rooms_list),
     url(r'^v1/rooms.bookings/$', views.get_room_bookings),
