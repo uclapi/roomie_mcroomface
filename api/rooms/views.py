@@ -718,7 +718,6 @@ def generate_private_key(request):
         new_token = uuid.uuid4()
         new_key.token = new_token.hex
         new_key.save()
-        return Response({"error": "User not found"})
 
     return Response({'token': new_token.hex})
 

@@ -7,15 +7,18 @@ import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
 
 module.exports = withRouter(React.createClass({
+
   getInitialState: function(){
     return {
       loading: 0,
       profile:{
         societies: []
       },
-      bookings:[]
+      bookings:[],
+      privateKey: ""
     };
   },
+
   getUserInfo: function(){
     var that = this;
     fetch(config.domain + '/api/v1/user.info/', {
@@ -42,6 +45,7 @@ module.exports = withRouter(React.createClass({
       }
     });
   },
+
   getBookings: function(){
     var that = this;
     fetch(config.domain + '/api/v1/user.bookings/', {
@@ -68,6 +72,7 @@ module.exports = withRouter(React.createClass({
       }
     })
   },
+
   deleteBooking: function(bookingId){
     var that = this;
     fetch(config.domain + '/api/v1/rooms.deleteBooking/?booking_id=' + bookingId, {
@@ -96,6 +101,7 @@ module.exports = withRouter(React.createClass({
       }
     })
   },
+
   getToken: function(societyId){
     var that = this;
     fetch(config.domain + '/api/v1/society.token/?society_id=' + societyId, {
@@ -113,7 +119,7 @@ module.exports = withRouter(React.createClass({
             var profile = that.state.profile;
             for(var i in profile.societies){
               if(profile.societies[i][1] === societyId){
-                profile.societies[i][2] = json.token; 
+                profile.societies[i][2] = json.token;
               }
             }
             that.setState({
@@ -124,6 +130,7 @@ module.exports = withRouter(React.createClass({
       }
     });
   },
+
   addSocietyMember: function(e){
     e.preventDefault();
     fetch(config.domain + '/api/v1/society.addUser/',{
@@ -148,6 +155,7 @@ module.exports = withRouter(React.createClass({
       }
     });
   },
+
   removeSocietyMember: function(e){
     e.preventDefault();
     fetch(config.domain + '/api/v1/society.deleteUser/',{
@@ -171,10 +179,71 @@ module.exports = withRouter(React.createClass({
       }
     });
   },
+
+  getPrivateKey: function(){
+    var that = this;
+
+    fetch(config.domain + '/api/v1/user.privateKey/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + utils.getCookie('token')
+      },
+      mode: 'cors'
+    }).then(function(res){
+
+      if (res.status === 200){
+        res.json().then(function(json){
+          if (json.token) {
+            that.setState({
+              privateKey: json.token
+            });
+          }
+        });
+      }
+      else{
+        that.props.router.push({
+          pathname: '/login',
+          state: {nextPathname: '/profile'}
+        });
+      }
+
+    });
+  },
+
+  generatePrivateKey: function(){
+    var that = this;
+
+    fetch(config.domain + '/api/v1/user.generateKey/', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Token ' + utils.getCookie('token')
+      },
+      mode: 'cors'
+    }).then(function(res){
+
+      if (res.status === 200){
+        res.json().then(function(json){
+          that.setState({
+            privateKey: json.token
+          });
+        });
+      }
+      else{
+        that.props.router.push({
+          pathname: '/login',
+          state: {nextPathname: '/profile'}
+        });
+      }
+
+    });
+  },
+
   componentDidMount: function(){
     this.getUserInfo();
     this.getBookings();
+    this.getPrivateKey();
   },
+
   render: function() {
     return (
       <Layout title="Profile">
@@ -190,13 +259,13 @@ module.exports = withRouter(React.createClass({
                 <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-1-2 pure-u-lg-1-3 centered">
                   <h2>{this.state.profile.email}</h2>
                   <h3>Time left this week: {this.state.profile.quota_left} minutes</h3>
-                  {this.state.profile.societies.length === 0?(null):(
+                  {this.state.profile.societies.length === 0 ? (null) : (
                     <div>
                       <h3>You are a committee member of the following societies</h3>
                       <ul>
                         {this.state.profile.societies.map((society, i)=>{
                           return <li key={i}>
-                            {society[0]} 
+                            {society[0]}
                             {localStorage.g4?(
                               society[2]?( ' API Key: ' +society[2]):
                                 (<button className="pure-button" onClick={() => this.getToken(society[1])}>
@@ -209,6 +278,7 @@ module.exports = withRouter(React.createClass({
                       </ul>
                       </div>
                   )}
+
                   {localStorage.g4?(
                     <form className="pure-form">
                       <fieldset>
@@ -224,6 +294,7 @@ module.exports = withRouter(React.createClass({
                       </fieldset>
                     </form>
                   ):null}
+
                 </div>
                 <div className="pure-u-sm-1-8 pure-u-md-1-4 pure-u-lg-1-3"></div>
               </div>
@@ -244,10 +315,23 @@ module.exports = withRouter(React.createClass({
                   </div>
                 })}
               </div>
+
+              {/* Developer Key */}
+              <div className="pure-g">
+                <div className="pure-u-1">
+                  <h1>Your Developer key</h1>
+                </div>
+                {this.state.privateKey === "" ? (
+                    <button className="pure-button pure-button-primary" onClick={() => this.generatePrivateKey()}>Generate Developer Key</button>
+                ) : (
+                  <h2>{this.state.privateKey}</h2>
+                )}
+              </div>
             </div>
           )}
         </div>
       </Layout>
     );
   }
+
 }));
