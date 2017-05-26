@@ -15,7 +15,7 @@ module.exports = withRouter(React.createClass({
   getInitialState: function(){
     return{
       error: false,
-      loading: false, 
+      loading: false,
       win: null,
     };
   },
@@ -102,7 +102,7 @@ module.exports = withRouter(React.createClass({
 			});
 			pushstream.onmessage = that.messageReceived;
 			pushstream.addChannel(json.sid);
-			pushstream.connect();  
+			pushstream.connect();
       that.setState({
         stream: pushstream
       });

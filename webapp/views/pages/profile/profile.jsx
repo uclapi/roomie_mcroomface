@@ -320,13 +320,14 @@ module.exports = withRouter(React.createClass({
               <div className="pure-g">
                 <div className="pure-u-1">
                   <h1>Your Developer key</h1>
+                  {
+                    (this.state.privateKey === "") ?
+                    (<button className="pure-button pure-button-primary " onClick={() => this.generatePrivateKey()}>Generate Developer Key</button>)
+                    : (<h3>{this.state.privateKey}</h3>)
+                  }
                 </div>
-                {this.state.privateKey === "" ? (
-                    <button className="pure-button pure-button-primary" onClick={() => this.generatePrivateKey()}>Generate Developer Key</button>
-                ) : (
-                  <h2>{this.state.privateKey}</h2>
-                )}
               </div>
+              
             </div>
           )}
         </div>

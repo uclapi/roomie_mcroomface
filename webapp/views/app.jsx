@@ -4,7 +4,7 @@ import { Router, Route, browserHistory } from 'react-router';
 import Auth from '../utils/auth.js';
 
 import Home from './pages/home/home.jsx';
-import Login from './pages/login/login.jsx'; 
+import Login from './pages/login/login.jsx';
 import ErrorPage from './pages/error/error.jsx';
 import Calendar from './pages/calendar/calendar.jsx';
 import Rooms from './pages/rooms/rooms.jsx';
