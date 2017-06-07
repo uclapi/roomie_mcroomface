@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from rooms.models import UserProfile
-from rooms.utils import convertTime, weekOrWeekend
+from rooms.utils import convertTime, random_string, weekOrWeekend
 from rooms.views import is_time_valid
 
 
@@ -27,6 +27,15 @@ class ResetQuotaTestCase(TestCase):
 
 
 class UtilsTestCase(TestCase):
+    def test_random_string(self):
+        s = random_string(0)
+        self.assertFalse(s.isalpha(), False)
+        self.assertEqual(len(s), 0)
+
+        s = random_string(50)
+        self.assertTrue(s.isalpha(), True)
+        self.assertEqual(len(s), 50)
+
     def test_convert_time(self):
         for hours in range(0, 24):
             for minutes in range(0, 60):
