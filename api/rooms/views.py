@@ -313,11 +313,6 @@ def login_callback(request):
     return response
 
 
-@api_view(['GET'])
-def password_changed_successfully(request):
-    return Response({"success": "thanks bud"})
-
-
 # this method is called logout_view so that it does not clash with built-in's
 # logout() method from django.contrib.auth
 @api_view(['GET'])
