@@ -1,4 +1,4 @@
-# Roomie McRoomFace
+# Roomie McRoomFace [![Build Status](https://travis-ci.org/uclapi/roomie_mcroomface.svg?branch=master)](https://travis-ci.org/uclapi/roomie_mcroomface) [![codecov](https://codecov.io/gh/uclapi/roomie_mcroomface/branch/master/graph/badge.svg)](https://codecov.io/gh/uclapi/roomie_mcroomface)
 ## The room booking system for the UCL Engineering Hub
 It's live at [enghub.io](https://enghub.io)
 
