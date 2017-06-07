@@ -4,5 +4,8 @@ python:
 cache: pip
 install:
   - pip install -r ./api/requirements.txt
+  - pip install codecov
 script:
-  - python ./api/manage.py test --testrunner 'rooms.custom_test_runner.NoDbTestRunner'
+  -  coverage run --source="./api/." --omit="*migrations*" ./api/manage.py test --testrunner "rooms.custom_test_runner.NoDbTestRunner"
+after_success:
+  - codecov
