@@ -8,14 +8,10 @@ django-celery==3.1.17
 django-cors-headers==1.1.0
 django-dotenv==1.4.1
 djangorestframework==3.4.1
-flake8==3.0.4
 future==0.15.2
 kombu==3.0.35
-mccabe==0.5.2
 opbeat==3.5.1
 psycopg2==2.6.2
-pycodestyle==2.0.0
-pyflakes==1.2.3
 pytz==2016.6.1
 requests==2.11.1
 urllib3==1.16
