@@ -217,7 +217,7 @@ def login_status(request):
 
 def is_summer_postgrad(groups):
     return ("engscifac-pg" in groups
-            and datetime.datetime.today() < datetime.datetime(2017, 9, 30)):
+            and datetime.datetime.today() < datetime.datetime(2017, 9, 30))
 
 
 def login_callback(request):
