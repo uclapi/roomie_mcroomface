@@ -215,6 +215,11 @@ def login_status(request):
         return Response({"success": "OK", "status": "LOGIN_ERROR"})
 
 
+def is_summer_postgrad(groups):
+    return ("engscifac-pg" in groups
+            and datetime.datetime.today() < datetime.datetime(2017, 9, 30))
+
+
 def login_callback(request):
     try:
         sid = request.GET['sid']
@@ -240,7 +245,8 @@ def login_callback(request):
     # check if the user is in the internal whitelist
     white_listed = WhiteList.objects.filter(eppn=eppn).exists()
 
-    if "engscifac-ug" not in groups.split(';') and not white_listed:
+    if ("engscifac-ug" not in groups.split(';') and not white_listed
+            and not is_summer_postgrad(groups.split(';'))):
         login_response = {
             "result": "failure",
             "message": ("This system is available only"
