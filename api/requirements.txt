@@ -10,7 +10,7 @@ django-dotenv==1.4.1
 djangorestframework==3.9.4
 future==0.17.1
 kombu==3.0.35
-opbeat==3.5.1
+opbeat==3.6.1
 psycopg2==2.6.2
 pytz==2019.1
 requests==2.22.0
