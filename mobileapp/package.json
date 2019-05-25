@@ -3,18 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "react": "15.3.2",
-    "react-native": "^0.34.0",
+    "react-native": "^0.59.0",
     "react-native-navigation": "^2.0.0-experimental.118",
     "react-native-sglistview": "^0.3.2",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "redux-logger": "^2.6.1",
     "redux-persist": "^4.0.0-alpha5",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "snyk": "^1.162.0"
   },
   "devDependencies": {
     "eslint": "^2.13.1",
@@ -23,5 +26,6 @@
     "eslint-plugin-jsx-a11y": "^1.5.3",
     "eslint-plugin-react": "^5.2.2",
     "eslint-plugin-react-native": "^1.1.0"
-  }
+  },
+  "snyk": true
 }
