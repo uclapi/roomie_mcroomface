@@ -5,7 +5,7 @@ celery==3.1.23
 certifi==2019.3.9
 Django==2.2.1
 django-celery==3.3.0
-django-cors-headers==3.0.1
+django-cors-headers==3.0.2
 django-dotenv==1.4.1
 djangorestframework==3.9.4
 future==0.17.1
