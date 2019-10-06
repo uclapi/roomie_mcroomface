@@ -22,6 +22,9 @@ class UserProfile(models.Model):
     quota_left = models.IntegerField(default=180)
     associated_society = models.ManyToManyField('self', blank=True)
     department = models.CharField(max_length=100, default="No Department")
+    
+    def __str__(self):
+        return str(self.user.username)
 
 
 class Booking(models.Model):
