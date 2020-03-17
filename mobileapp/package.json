@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "react": "15.3.2",
-    "react-native": "^0.59.0",
+    "react-native": "^0.60.0",
     "react-native-navigation": "^2.0.0-experimental.118",
     "react-native-sglistview": "^0.3.2",
     "react-redux": "^4.4.5",
