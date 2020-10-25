@@ -6,7 +6,9 @@ import config from '../../../config.js';
 
 import DayView from './dayView.jsx';
 
-module.exports = React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = createReactClass({
   getInitialState:function(){
     return {
       date:moment(),

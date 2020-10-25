@@ -1,6 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router';
-module.exports = React.createClass({
+import { Link } from 'react-router-dom';
+
+var createReactClass = require('create-react-class');
+
+module.exports = createReactClass({
   displayName: 'Sidebar',
   render:function () {
     return (

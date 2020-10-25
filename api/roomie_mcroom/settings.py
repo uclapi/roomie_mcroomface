@@ -41,15 +41,8 @@ INSTALLED_APPS = [
     'rooms',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
-    'opbeat.contrib.django'
+    'corsheaders'
 ]
-
-OPBEAT = {
-    'ORGANIZATION_ID': os.environ.get('OPBEAT_ORGANIZATION_ID'),
-    'APP_ID': os.environ.get('OPBEAT_APP_ID'),
-    'SECRET_TOKEN': os.environ.get('OPBEAT_SECRET_TOKEN'),
-}
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -64,18 +57,20 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE_CLASSES = [
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+]
+
+MIDDLEWARE = [
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -107,7 +102,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("USERNAME"),
+        'USER': os.environ.get("DB_USER"),
         'PASSWORD': os.environ.get("PASSWORD"),
         'HOST': os.environ.get("HOST"),
         'PORT': os.environ.get("PORT"),

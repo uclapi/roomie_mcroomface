@@ -1,12 +1,14 @@
 import React from 'react';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import Layout from '../../components/layout.jsx';
 import 'whatwg-fetch';
 import moment from 'moment';
 import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
 
-module.exports = withRouter(React.createClass({
+var createReactClass = require('create-react-class');
+
+export default withRouter(createReactClass({
   getInitialState: function(){
     return {
       loading: 0,

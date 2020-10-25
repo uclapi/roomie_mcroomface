@@ -1,11 +1,13 @@
 import React from 'react';
-import {Link, withRouter} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
 import Layout from '../../components/layout.jsx';
 import 'whatwg-fetch';
 import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
 
-module.exports = withRouter(React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = withRouter(createReactClass({
   getRoomList:function(){
     var that = this;
     fetch(config.domain + '/api/v1/rooms.list/', {

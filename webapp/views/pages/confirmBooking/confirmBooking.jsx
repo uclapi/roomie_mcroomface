@@ -1,5 +1,5 @@
 import React from 'react';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import Layout from '../../components/layout.jsx';
 import moment from 'moment';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -8,13 +8,16 @@ import IndividualForm from './individualForm.jsx';
 import SocietyForm from './societyForm.jsx';
 import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
+import PropTypes from 'prop-types';
 
-module.exports = withRouter(React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = withRouter(createReactClass({
   displayName: 'Confirm Booking',
   propTypes:{
-    params: React.PropTypes.object,
-    roomId: React.PropTypes.string,
-    dateTime: React.PropTypes.string
+    params: PropTypes.object,
+    roomId: PropTypes.string,
+    dateTime: PropTypes.string
   },
   bookRoom: function(society_booking){
     var that = this;

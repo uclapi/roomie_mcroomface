@@ -1,12 +1,15 @@
 import React from 'react';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
-module.exports = React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = createReactClass({
   displayName: 'Individual Form',
   propTypes: {
-    roomId: React.PropTypes.string,
-    dateTime: React.PropTypes.string,
-    callBack: React.PropTypes.func
+    roomId: PropTypes.string,
+    dateTime: PropTypes.string,
+    callBack: PropTypes.func
   },
   submitForm: function(e){
     e.preventDefault();

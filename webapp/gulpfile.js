@@ -5,6 +5,6 @@ var gulp = require('./gulp')([
   'productionBuild'
 ]);
 
-gulp.task('build', ['browserify', 'less']);
-gulp.task('default', ['build', 'watch']);
-gulp.task('production', ['productionBuild']);
+gulp.task('build', gulp.series('browserify', 'less'));
+gulp.task('default', gulp.series('build', 'watch'));
+gulp.task('production', gulp.series('productionBuild'));

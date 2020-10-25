@@ -1,7 +1,9 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
-module.exports = React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = createReactClass({
   render: function(){
     return (
       <div className="error">

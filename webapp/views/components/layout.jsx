@@ -1,9 +1,11 @@
 import React from 'react';
-import {Link, withRouter} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
 import Sidebar from './sidebar.jsx';
 import auth from '../../utils/auth.js';
 
-module.exports = withRouter(React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = withRouter(createReactClass({
 
   getInitialState: function() {
     return {
@@ -51,7 +53,7 @@ module.exports = withRouter(React.createClass({
               <div className="content centered">
                 {this.props.children}
               </div>
-              <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
+              <div className="love">Made with ❤  by <a href="https://uclapi.com">UCL API</a></div>
             </div>
           </div>
            );

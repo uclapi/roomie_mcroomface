@@ -12,7 +12,7 @@ module.exports = function() {
     entries: './views/app.jsx',
     debug: true
   });
-  b.bundle()
+  return b.bundle()
     .pipe(source('app.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))

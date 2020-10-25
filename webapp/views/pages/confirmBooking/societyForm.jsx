@@ -1,15 +1,18 @@
 import React from 'react';
 import moment from 'moment';
-import { Router } from 'react-router';
+import { Router } from 'react-router-dom';
 import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
+import PropTypes from 'prop-types';
 
-module.exports = React.createClass({
+var createReactClass = require('create-react-class');
+
+module.exports = createReactClass({
   displayName: 'Society Form',
   propTypes: {
-    roomId: React.PropTypes.string,
-    dateTime: React.PropTypes.string,
-    callBack: React.PropTypes.func
+    roomId: PropTypes.string,
+    dateTime: PropTypes.string,
+    callBack: PropTypes.func
   },
   submitForm: function(e){
     e.preventDefault();

@@ -218,7 +218,7 @@ html {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 .container .main-content .menu-bar h1 {
-  margin: .17em 0;
+  margin: 0.17em 0;
   color: white;
 }
 .container .main-content .love {

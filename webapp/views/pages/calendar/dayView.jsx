@@ -1,9 +1,11 @@
 import React from 'react'
-import { Link , withRouter} from 'react-router'
+import { Link , withRouter} from 'react-router-dom'
 import 'whatwg-fetch';
 import utils from '../../../utils/utils.js';
 import config from '../../../config.js';
-var Slot = React.createClass({
+var createReactClass = require('create-react-class');
+
+var Slot = createReactClass({
   getInitialState: function(){
     return{
       content:this.props.time+":00"
@@ -36,7 +38,7 @@ var Slot = React.createClass({
     );
   }
 })
-module.exports = withRouter(React.createClass({
+module.exports = withRouter(createReactClass({
   setSlots: function(){
     var slots = [];
     for(var i = 0; i < 14; i++){

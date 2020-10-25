@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, browserHistory } from 'react-router';
 import Auth from '../utils/auth.js';
 
 import Home from './pages/home/home.jsx';
@@ -11,6 +10,7 @@ import Rooms from './pages/rooms/rooms.jsx';
 import ConfirmBooking from './pages/confirmBooking/confirmBooking.jsx';
 import Profile from './pages/profile/profile.jsx';
 import newLogin from './pages/login/newLogin.jsx';
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 function requireAuth(nextState, replace) {
   if (!Auth.loggedIn()) {
@@ -22,7 +22,7 @@ function requireAuth(nextState, replace) {
 }
 
 render((
-  <Router history={browserHistory}>
+  <Router>
     <Route path="/" component={Home}/>
     <Route path="/login" component={newLogin}/>
     <Route path="/newLogin" component={newLogin}/>

@@ -1,13 +1,15 @@
 import React from 'react';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 import auth from '../../../utils/auth.js';
+
+var createReactClass = require('create-react-class');
 
 var labelStyle = {
   width: '4em'
 };
 
-module.exports = withRouter(React.createClass({
+module.exports = withRouter(createReactClass({
   getInitialState: function(){
     return{
       error: false,

@@ -17,7 +17,7 @@ class Room(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='user_profile')
+    user = models.OneToOneField(User, related_name='user_profile', on_delete=models.DO_NOTHING)
     society_access = models.BooleanField(default=False)
     quota_left = models.IntegerField(default=180)
     associated_society = models.ManyToManyField('self', blank=True)
@@ -30,8 +30,8 @@ class UserProfile(models.Model):
 class Booking(models.Model):
     booking_id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(UserProfile, related_name='booking')
-    room = models.ForeignKey(Room, related_name='booking')
+    user = models.ForeignKey(UserProfile, related_name='booking', on_delete=models.DO_NOTHING)
+    room = models.ForeignKey(Room, related_name='booking', on_delete=models.DO_NOTHING)
     date = models.DateField()
     start = models.TimeField()
     end = models.TimeField()
@@ -41,13 +41,13 @@ class Booking(models.Model):
 class BookingSociety(models.Model):
     booking_id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(UserProfile, related_name='society_booking')
-    room = models.ForeignKey(Room, related_name='society_booking')
+    user = models.ForeignKey(UserProfile, related_name='society_booking', on_delete=models.DO_NOTHING)
+    room = models.ForeignKey(Room, related_name='society_booking', on_delete=models.DO_NOTHING)
     date = models.DateField()
     start = models.TimeField()
     end = models.TimeField()
     remarks = models.CharField(max_length=150, blank=True)
-    society = models.ForeignKey(UserProfile)
+    society = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
 
 
 class Verifier(models.Model):
@@ -75,5 +75,4 @@ class ShibLoginToken(models.Model):
     sid = models.CharField(max_length=64, primary_key=True)
     status = models.IntegerField(default=0)
     timestamp = models.DateTimeField(default=datetime.now)
-    user = models.OneToOneField(
-        User, related_name='shib_login_token', blank=True, null=True)
+    user = models.OneToOneField(User, related_name='shib_login_token', blank=True, null=True, on_delete=models.DO_NOTHING)
