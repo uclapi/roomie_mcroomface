@@ -7,7 +7,7 @@ Django==2.2.1
 django-celery==3.3.0
 django-cors-headers==3.0.1
 django-dotenv==1.4.1
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 future==0.17.1
 kombu==3.0.35
 opbeat==3.5.1
