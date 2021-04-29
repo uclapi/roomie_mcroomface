@@ -1,0 +1,50 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/api"
+  schedule:
+    interval: daily
+    time: "08:00"
+    timezone: Europe/London
+  open-pull-requests-limit: 10
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+  ignore:
+  - dependency-name: amqp
+    versions:
+    - 5.0.5
+  - dependency-name: django
+    versions:
+    - 2.2.13
+  - dependency-name: billiard
+    versions:
+    - 3.6.3.0
+- package-ecosystem: npm
+  directory: "/webapp"
+  schedule:
+    interval: daily
+    time: "08:00"
+    timezone: Europe/London
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: eslint
+    versions:
+    - 7.18.0
+    - 7.19.0
+    - 7.20.0
+    - 7.21.0
+    - 7.22.0
+    - 7.23.0
+    - 7.24.0
+  - dependency-name: react-tabs
+    versions:
+    - 3.2.0
+    - 3.2.1
+  - dependency-name: react
+    versions:
+    - 16.14.0
+    - 17.0.1
+  - dependency-name: gulp-strip-debug
+    versions:
+    - 3.0.0
