@@ -51,7 +51,7 @@ module.exports = withRouter(React.createClass({
               <div className="content centered">
                 {this.props.children}
               </div>
-              <div className="love">Made with ❤  by <a href="http://techsoc.io">TechSoc</a></div>
+              <div className="love">Made with ❤  by <a href="https://uclapi.com">UCLAPI</a></div>
             </div>
           </div>
            );
