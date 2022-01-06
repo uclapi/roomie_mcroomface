@@ -1,7 +1,7 @@
 amqp==2.4.2
 anyjson==0.3.3
 billiard==3.3.0.23
-celery==3.1.23
+celery==5.2.2
 certifi==2019.3.9
 Django==2.2.1
 django-celery==3.3.0
